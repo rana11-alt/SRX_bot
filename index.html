@@ -211,13 +211,23 @@
         const BOT_USERNAME = "SRX_2026_bot"; 
 
         const firebaseConfig = {
-apiKey: "AIzaSyCv8HcH4-6VdYgCcdOZlR-MTL4HbL-Is7Y",
-authDomain: "gen-lang-client-0231834349.firebaseapp.com",
-projectId: "gen-lang-client-0231834349",
-storageBucket: "gen-lang-client-0231834349.firebasestorage.app",
-messagingSenderId: "148097864437",
-appId: "1:148097864437:web:a9d15cd9b249d8cbb52bbc"
+
+  apiKey: "AIzaSyCv8HcH4-6VdYgCcdOZlR-MTL4HbL-Is7Y",
+
+  authDomain: "gen-lang-client-0231834349.firebaseapp.com",
+
+  databaseURL: "https://gen-lang-client-0231834349-default-rtdb.firebaseio.com",
+
+  projectId: "gen-lang-client-0231834349",
+
+  storageBucket: "gen-lang-client-0231834349.firebasestorage.app",
+
+  messagingSenderId: "148097864437",
+
+  appId: "1:148097864437:web:a9d15cd9b249d8cbb52bbc"
+
 };
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
