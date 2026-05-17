@@ -1,619 +1,520 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>COMIC TASK HEROES</title>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --comic-yellow: #FFDE03;
-            --comic-blue: #03A9F4;
-            --comic-red: #E63946;
-            --comic-border: 3px solid #000;
-            --comic-shadow: 4px 4px 0px #000;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f0f0;
-            background-image: radial-gradient(#bcbcbc 1px, transparent 1px);
-            background-size: 20px 20px;
-            color: #000;
-            overflow-x: hidden;
-            margin: 0; padding: 0;
-        }
-        .comic-font { font-family: 'Bangers', cursive; letter-spacing: 1px; }
-        .comic-card {
-            background: #fff;
-            border: var(--comic-border);
-            box-shadow: var(--comic-shadow);
-            border-radius: 4px;
-            transition: transform 0.2s;
-        }
-        .comic-card:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px #000; }
-        .btn-action {
-            background: var(--comic-yellow);
-            border: var(--comic-border);
-            box-shadow: 3px 3px 0px #000;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-        }
-        .btn-action:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #000; }
-        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
-        .nav-bar {
-            position: fixed;
-            bottom: 0; width: 100%;
-            background: #fff;
-            border-top: var(--comic-border);
-            display: flex; justify-content: space-around;
-            padding: 10px 0; z-index: 1000;
-        }
-        .nav-item { font-size: 10px; font-weight: 800; text-align: center; color: #555; cursor: pointer; }
-        .nav-item.active { color: var(--comic-red); }
-        .nav-icon { font-size: 20px; display: block; }
-        .tab-content { display: none; padding: 15px 15px 100px 15px; animation: slideIn 0.3s ease-out; }
-        .tab-content.active { display: block; }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        #toast {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 10001; padding: 12px 24px; border: var(--comic-border);
-            background: var(--comic-yellow); box-shadow: var(--comic-shadow);
-            display: none; font-weight: bold; font-family: 'Bangers';
-            font-size: 16px; white-space: nowrap;
-        }
-        .loader {
-            border: 4px solid #f3f3f3; border-top: 4px solid #000;
-            border-radius: 50%; width: 30px; height: 30px;
-            animation: spin 1s linear infinite; margin: auto;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .coin-pulse {
-            animation: coinGlow 1.5s ease-in-out infinite alternate;
-        }
-        @keyframes coinGlow {
-            from { box-shadow: 0 0 4px #FFDE03; }
-            to { box-shadow: 0 0 14px #FFDE03, 0 0 4px #000; }
-        }
-        .rank-bar-outer {
-            background: #ddd; border: 2px solid #000; border-radius: 2px; height: 10px; overflow: hidden;
-        }
-        .rank-bar-inner {
-            background: var(--comic-yellow); height: 100%;
-            transition: width 0.6s ease;
-        }
-        .status-badge {
-            font-size: 10px; font-weight: 900; text-transform: uppercase;
-            padding: 2px 8px; border: 2px solid #000;
-        }
-        .badge-pending { background: #f97316; color: #fff; }
-        .badge-approved { background: #22c55e; color: #fff; }
-        .badge-rejected { background: #ef4444; color: #fff; }
-        .task-done { opacity: 0.5; pointer-events: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>INFINITE HEROES</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#FFDE03;--red:#E63946;--blue:#1E90FF;--green:#22c55e;--bg:#f0f0f0;--card:#fff;--ink:#000}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);background-image:radial-gradient(#ccc 1px,transparent 1px);background-size:20px 20px;color:var(--ink);overflow-x:hidden;min-height:100vh}
+.bf{font-family:'Bangers',cursive;letter-spacing:1px}
+/* COMIC CARD */
+.cc{background:var(--card);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);border-radius:0}
+/* BUTTON */
+.cb{border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-weight:900;cursor:pointer;text-transform:uppercase;transition:transform .1s,box-shadow .1s;display:inline-block;font-family:'Inter'}
+.cb:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.cb:disabled{opacity:.5;cursor:not-allowed}
+/* NAV */
+.nav{position:fixed;bottom:0;width:100%;background:var(--card);border-top:3px solid var(--ink);display:flex;justify-content:space-around;padding:8px 0 12px;z-index:1000}
+.nav-i{font-size:10px;font-weight:900;text-align:center;color:#777;cursor:pointer;padding:0 8px}
+.nav-i.on{color:var(--red)}
+.nav-ic{font-size:22px;display:block;margin-bottom:2px}
+/* TABS */
+.tab{display:none;padding:14px 14px 100px;animation:si .25s ease}
+.tab.on{display:block}
+@keyframes si{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* TOAST */
+#toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;padding:10px 20px;background:var(--gold);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-family:'Bangers';font-size:16px;display:none;white-space:nowrap;max-width:90vw}
+/* COIN PULSE */
+.cpulse{animation:cp 1.5s ease-in-out infinite alternate}
+@keyframes cp{from{box-shadow:0 0 4px var(--gold)}to{box-shadow:0 0 14px var(--gold),0 0 4px var(--ink)}}
+/* RANK BAR */
+.rb-out{background:#ddd;border:2px solid var(--ink);height:10px;overflow:hidden}
+.rb-in{background:var(--gold);height:100%;transition:width .6s}
+/* BADGES */
+.bpend{background:#f97316;color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border:2px solid var(--ink)}
+.bapp{background:var(--green);color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border:2px solid var(--ink)}
+.brej{background:var(--red);color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border:2px solid var(--ink)}
+/* TASK */
+.task-done{opacity:.5;pointer-events:none}
+.task-done .cb{background:#e5e7eb!important}
+/* LOADER */
+.spin{border:3px solid #ddd;border-top:3px solid var(--ink);border-radius:50%;width:28px;height:28px;animation:sp 1s linear infinite;margin:24px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:5000;align-items:center;justify-content:center;padding:16px}
+.mo.open{display:flex}
+.mo-box{background:var(--card);border:3px solid var(--ink);box-shadow:5px 5px 0 var(--red);width:100%;max-width:400px;max-height:88vh;overflow-y:auto}
+.mo-head{padding:14px 16px;border-bottom:3px solid var(--ink);display:flex;justify-content:space-between;align-items:center}
+.mo-head h3{font-family:'Bangers';font-size:22px;letter-spacing:2px}
+.mo-x{background:none;border:none;font-size:22px;cursor:pointer;line-height:1}
+.mo-body{padding:16px}
+.mo-foot{padding:12px 16px;border-top:3px solid var(--ink);display:flex;justify-content:flex-end;gap:8px}
+input,select,textarea{width:100%;padding:8px 10px;border:2px solid var(--ink);font-size:13px;font-weight:700;outline:none;font-family:'Inter';background:#fff;margin-bottom:10px}
+input:focus,select:focus,textarea:focus{border-color:var(--red)}
+.lbl{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:block;color:#555}
+/* REALTIME indicator */
+.rt-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:5px;animation:rtp 2s infinite}
+@keyframes rtp{0%,100%{opacity:1}50%{opacity:.2}}
+</style>
 </head>
 <body>
+<div id="toast"></div>
 
-    <div id="toast"></div>
+<!-- HOME TAB -->
+<div id="tab-home" class="tab on">
+  <div class="cc p-4 mb-3" style="padding:14px;margin-bottom:12px;background:var(--gold)">
+    <div style="display:flex;align-items:center;gap:10px">
+      <img id="av" src="" style="width:50px;height:50px;border:3px solid var(--ink);border-radius:50%;background:#ddd;object-fit:cover;flex-shrink:0">
+      <div style="flex:1;min-width:0">
+        <div id="uname" class="bf" style="font-size:22px;line-height:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">LOADING...</div>
+        <div id="uid-txt" style="font-size:10px;font-weight:900;color:#555">ID: ----</div>
+        <div id="urank" style="font-size:10px;font-weight:900;color:var(--red);text-transform:uppercase;margin-top:2px">Rookie Hero</div>
+      </div>
+      <div class="cc cpulse" style="padding:8px 12px;text-align:center;background:#fff;flex-shrink:0">
+        <div id="hcoins" class="bf" style="font-size:22px;line-height:1">0</div>
+        <div style="font-size:9px;font-weight:900">COINS</div>
+      </div>
+    </div>
+  </div>
 
-    <!-- TAB 1: DASHBOARD -->
-    <section id="tab-dashboard" class="tab-content active">
-        <header class="comic-card p-4 mb-4 bg-white flex items-center gap-4">
-            <img id="user-avatar" src="" class="w-14 h-14 border-2 border-black rounded-full bg-blue-100 object-cover">
-            <div class="flex-1 min-w-0">
-                <h2 id="user-name-display" class="comic-font text-2xl leading-none truncate">HERO LOADING...</h2>
-                <p id="user-id-display" class="text-xs font-bold text-gray-500">ID: --------</p>
-                <p id="user-rank-display" class="text-xs font-black text-red-500 uppercase mt-1">Rookie Hero</p>
-            </div>
-            <div class="comic-card px-3 py-2 bg-yellow-300 coin-pulse text-center">
-                <p class="comic-font text-xl leading-none" id="header-coins">0</p>
-                <p class="text-[9px] font-black">COINS</p>
-            </div>
-        </header>
+  <div class="cc mb-3" style="padding:10px;margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+      <span style="font-size:10px;font-weight:900;text-transform:uppercase">RANK PROGRESS</span>
+      <span id="rank-next" style="font-size:10px;font-weight:700;color:#777"></span>
+    </div>
+    <div class="rb-out"><div class="rb-in" id="rank-bar" style="width:0%"></div></div>
+  </div>
 
-        <!-- Rank Progress -->
-        <div class="comic-card p-3 mb-4 bg-white">
-            <div class="flex justify-between mb-1">
-                <span class="text-[10px] font-black uppercase">HERO RANK PROGRESS</span>
-                <span id="rank-next-label" class="text-[10px] font-bold text-gray-400"></span>
-            </div>
-            <div class="rank-bar-outer">
-                <div class="rank-bar-inner" id="rank-bar" style="width:0%"></div>
-            </div>
-        </div>
+  <!-- Announcement -->
+  <div id="ann-box" class="cc mb-3" style="display:none;padding:10px;background:#dbeafe;border-color:var(--blue);margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+      <p id="ann-txt" style="font-weight:700;font-size:13px;flex:1;line-height:1.4"></p>
+      <button onclick="document.getElementById('ann-box').style.display='none'" style="background:var(--ink);color:#fff;border:none;padding:2px 8px;cursor:pointer;font-size:11px;flex-shrink:0">✕</button>
+    </div>
+  </div>
 
-        <!-- Announcement -->
-        <div id="announcement-box" class="hidden comic-card bg-blue-400 p-3 mb-4 flex justify-between items-center text-white">
-            <p id="announcement-text" class="font-bold italic text-sm flex-1 pr-2"></p>
-            <button onclick="this.parentElement.classList.add('hidden')" class="bg-black text-white text-xs px-2 py-1 border border-white flex-shrink-0">✕</button>
-        </div>
+  <!-- Stats -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div class="cc" style="padding:10px;background:#fef9c3"><div style="font-size:10px;font-weight:900;text-transform:uppercase">Coins</div><div id="sc" class="bf" style="font-size:26px">0</div></div>
+    <div class="cc" style="padding:10px;background:#dcfce7"><div style="font-size:10px;font-weight:900;text-transform:uppercase">Referrals</div><div id="sr" class="bf" style="font-size:26px">0</div></div>
+    <div class="cc" style="padding:10px;background:#fce7f3"><div style="font-size:10px;font-weight:900;text-transform:uppercase">Withdrawals</div><div id="sw" class="bf" style="font-size:26px">0</div></div>
+    <div class="cc" style="padding:10px;background:#ede9fe"><div style="font-size:10px;font-weight:900;text-transform:uppercase">Missions Done</div><div id="sm" class="bf" style="font-size:26px">0</div></div>
+  </div>
 
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="comic-card p-3 bg-yellow-300">
-                <p class="text-[10px] font-black uppercase">Coins</p>
-                <p id="stat-coins" class="comic-font text-2xl">0</p>
-            </div>
-            <div class="comic-card p-3 bg-green-300">
-                <p class="text-[10px] font-black uppercase">Sidekicks</p>
-                <p id="stat-reffer" class="comic-font text-2xl">0</p>
-            </div>
-            <div class="comic-card p-3 bg-red-300">
-                <p class="text-[10px] font-black uppercase">Withdrawals</p>
-                <p id="stat-withdrawals" class="comic-font text-2xl">0</p>
-            </div>
-            <div class="comic-card p-3 bg-purple-300">
-                <p class="text-[10px] font-black uppercase">Missions Done</p>
-                <p id="stat-tasks" class="comic-font text-2xl">0</p>
-            </div>
-        </div>
+  <div class="bf" style="font-size:20px;margin-bottom:8px">⚡ Quick Missions</div>
+  <div id="quick-list"><div class="spin"></div></div>
 
-        <h3 class="comic-font text-xl mb-2 italic">⚡ Quick Missions</h3>
-        <div id="quick-tasks" class="space-y-3">
-            <div class="flex justify-center py-4"><div class="loader"></div></div>
-        </div>
+  <div style="margin-top:14px">
+    <div class="bf" style="font-size:18px;margin-bottom:6px">🔗 Your Invite Link</div>
+    <div class="cc" style="padding:8px;display:flex;align-items:center;gap:8px">
+      <input type="text" id="ref-link" readonly style="flex:1;font-size:10px;font-weight:700;border:none;outline:none;background:transparent;min-width:0;margin:0">
+      <button class="cb" onclick="copyRef()" style="padding:6px 12px;background:var(--ink);color:#fff;font-size:11px;flex-shrink:0">COPY</button>
+    </div>
+  </div>
+</div>
 
-        <div class="mt-6">
-            <h3 class="comic-font text-xl mb-2">🔗 Recruitment Link</h3>
-            <div class="comic-card p-2 bg-white flex items-center gap-2">
-                <input type="text" id="ref-link-input" readonly class="text-[10px] font-bold flex-1 outline-none bg-transparent min-w-0">
-                <button onclick="copyReferralLink()" class="btn-action bg-black text-white text-xs px-3 py-1 flex-shrink-0">COPY</button>
-            </div>
-        </div>
-    </section>
+<!-- TASKS TAB -->
+<div id="tab-tasks" class="tab">
+  <div class="bf" style="font-size:28px;text-align:center;margin-bottom:12px">⚡ HERO MISSIONS</div>
+  <input type="text" id="tsearch" oninput="filterTasks()" placeholder="SEARCH MISSIONS..." style="margin-bottom:12px">
+  <div id="full-list"><div class="spin"></div></div>
+</div>
 
-    <!-- TAB 2: TASKS -->
-    <section id="tab-tasks" class="tab-content">
-        <h2 class="comic-font text-3xl mb-4 text-center">⚡ MISSION BOARD</h2>
-        <input type="text" id="task-search" oninput="filterTasks()" placeholder="SEARCH MISSIONS..." class="comic-card w-full p-3 mb-4 outline-none font-bold text-sm">
-        <div id="full-task-list" class="space-y-4">
-            <div class="flex justify-center py-6"><div class="loader"></div></div>
-        </div>
-    </section>
+<!-- WALLET TAB -->
+<div id="tab-wallet" class="tab">
+  <div class="bf" style="font-size:26px;margin-bottom:12px">💰 PAYOUT REQUEST</div>
+  <div class="cc mb-3" style="padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;background:#fef9c3">
+    <div><div style="font-size:10px;font-weight:900;text-transform:uppercase">Your Coins</div><div id="wal-bal" class="bf" style="font-size:28px">0</div></div>
+    <div style="text-align:right"><div style="font-size:10px;font-weight:900;text-transform:uppercase">Min. Payout</div><div class="bf" style="font-size:20px;color:var(--red)">500 🪙</div></div>
+  </div>
+  <div class="cc" style="padding:14px;margin-bottom:14px">
+    <label class="lbl">WALLET / bKash / Nagad</label>
+    <input type="text" id="wal-addr" placeholder="Enter address or number...">
+    <label class="lbl">COINS TO WITHDRAW (min 500)</label>
+    <input type="number" id="wal-amt" placeholder="500" min="500">
+    <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:10px">= <span id="wal-usd">$0.00</span> (100 coins = $1)</div>
+    <button class="cb" onclick="submitWithdraw()" style="width:100%;padding:12px;background:var(--gold);font-size:18px" class="bf">⚡ REQUEST PAYOUT</button>
+  </div>
+  <div class="bf" style="font-size:18px;margin-bottom:8px">📋 Payout History</div>
+  <div id="pay-hist"><div class="spin"></div></div>
+</div>
 
-    <!-- TAB 3: WITHDRAWAL -->
-    <section id="tab-withdraw" class="tab-content">
-        <h2 class="comic-font text-3xl mb-4">💰 PAYOUT REQUEST</h2>
+<!-- PROFILE TAB -->
+<div id="tab-profile" class="tab">
+  <div class="cc" style="padding:20px;text-align:center;margin-bottom:12px">
+    <img id="pav" src="" style="width:80px;height:80px;border:4px solid var(--ink);border-radius:50%;background:#ddd;object-fit:cover;margin:0 auto 12px">
+    <div id="pname" class="bf" style="font-size:28px"></div>
+    <div id="pid" style="font-size:11px;font-weight:900;color:#777;margin-bottom:4px"></div>
+    <div id="prank" style="font-size:11px;font-weight:900;color:var(--red);text-transform:uppercase;margin-bottom:14px"></div>
+    <div style="text-align:left;border-top:3px solid var(--ink);padding-top:12px">
+      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:8px"><span>Total Coins</span><span id="pcoins" style="color:var(--green)">0</span></div>
+      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:8px"><span>Referrals</span><span id="pref">0</span></div>
+      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:8px"><span>Missions Done</span><span id="pmis">0</span></div>
+      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px"><span>Referred By</span><span id="prefby" style="color:var(--blue)">None</span></div>
+    </div>
+  </div>
+  <button class="cb" onclick="copyRef()" style="width:100%;padding:12px;background:var(--ink);color:#fff;font-size:16px;margin-bottom:10px">📤 SHARE INVITE LINK</button>
+  <button class="cb" onclick="location.reload()" style="width:100%;padding:12px;background:var(--card);font-size:16px">🔄 REFRESH DATA</button>
+</div>
 
-        <!-- Balance info -->
-        <div class="comic-card p-3 mb-4 bg-yellow-100 flex justify-between items-center">
-            <div>
-                <p class="text-[10px] font-black uppercase">Available Coins</p>
-                <p id="withdraw-balance" class="comic-font text-2xl">0</p>
-            </div>
-            <div class="text-right">
-                <p class="text-[10px] font-black uppercase">Min. Payout</p>
-                <p class="comic-font text-xl text-red-500">500 COINS</p>
-            </div>
-        </div>
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-i on" id="btn-home" onclick="goTab('home')"><span class="nav-ic">🏠</span>HOME</div>
+  <div class="nav-i" id="btn-tasks" onclick="goTab('tasks')"><span class="nav-ic">⚡</span>TASKS</div>
+  <div class="nav-i" id="btn-wallet" onclick="goTab('wallet')"><span class="nav-ic">💰</span>WALLET</div>
+  <div class="nav-i" id="btn-profile" onclick="goTab('profile')"><span class="nav-ic">👤</span>PROFILE</div>
+</nav>
 
-        <div class="comic-card p-4 bg-white mb-6">
-            <label class="block text-xs font-black mb-1">USDC ADDRESS (Polygon / BEP20)</label>
-            <input type="text" id="withdraw-address" placeholder="0x..." class="w-full border-2 border-black p-2 mb-4 font-bold text-sm outline-none">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script>
+/* ── CONFIG ── */
+var BOT = "SRX_2026_bot";
+var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+if (tg) { tg.ready(); tg.expand(); }
 
-            <label class="block text-xs font-black mb-1">AMOUNT (COINS) — min 500</label>
-            <input type="number" id="withdraw-amount" placeholder="e.g. 500" min="500" class="w-full border-2 border-black p-2 mb-4 font-bold text-sm outline-none">
+/* ── FIREBASE ── */
+try {
+  firebase.initializeApp({
+    apiKey:"AIzaSyCv8HcH4-6VdYgCcdOZlR-MTL4HbL-Is7Y",
+    authDomain:"gen-lang-client-0231834349.firebaseapp.com",
+    projectId:"gen-lang-client-0231834349",
+    storageBucket:"gen-lang-client-0231834349.firebasestorage.app",
+    messagingSenderId:"148097864437",
+    appId:"1:148097864437:web:a9d15cd9b249d8cbb52bbc"
+  });
+} catch(e){}
 
-            <button onclick="submitWithdrawal()" class="btn-action w-full py-3 comic-font text-2xl">⚡ SEND REQUEST</button>
-        </div>
+var db = firebase.firestore();
+var FS = firebase.firestore.FieldValue;
 
-        <h3 class="comic-font text-xl mb-3 italic">📋 Payout History</h3>
-        <div id="withdraw-history" class="space-y-2">
-            <p class="text-center italic text-xs font-bold text-gray-400">Loading...</p>
-        </div>
-    </section>
+/* Offline persistence */
+db.enablePersistence({synchronizeTabs:true}).catch(function(){});
 
-    <!-- TAB 4: PROFILE -->
-    <section id="tab-profile" class="tab-content">
-        <div class="comic-card p-6 bg-white text-center mb-4">
-            <img id="profile-avatar-large" src="" class="w-24 h-24 border-4 border-black rounded-full mx-auto mb-4 bg-blue-100 object-cover">
-            <h2 id="profile-name" class="comic-font text-3xl mb-1">HERO</h2>
-            <p id="profile-id" class="font-black text-gray-400 mb-1 text-sm"></p>
-            <p id="profile-rank" class="font-black text-red-500 uppercase text-sm mb-4">Rookie Hero</p>
+/* ── GLOBALS ── */
+var ME = null;        // current user object
+var UID = null;       // telegram id string
+var _claimed = {};    // { taskId: true } — in-memory claimed set
+var _tasks = [];      // latest tasks array
+var _listeners = {};  // unsubscribe functions
+var _toastT;
 
-            <div class="text-left space-y-3 border-t-2 border-black pt-4">
-                <div class="flex justify-between font-bold text-sm">
-                    <span>Referred By:</span>
-                    <span id="profile-ref-by" class="text-blue-600">None</span>
-                </div>
-                <div class="flex justify-between font-bold text-sm">
-                    <span>Total Coins Earned:</span>
-                    <span id="profile-coins" class="text-green-600">0</span>
-                </div>
-                <div class="flex justify-between font-bold text-sm">
-                    <span>Referrals Made:</span>
-                    <span id="profile-ref-count">0</span>
-                </div>
-                <div class="flex justify-between font-bold text-sm">
-                    <span>Missions Completed:</span>
-                    <span id="profile-missions">0</span>
-                </div>
-            </div>
-        </div>
+/* ── RANKS ── */
+var RANKS = [
+  {name:"Rookie Hero",     min:0,    max:499},
+  {name:"Street Guardian", min:500,  max:1499},
+  {name:"City Defender",   min:1500, max:3999},
+  {name:"Elite Avenger",   min:4000, max:9999},
+  {name:"Infinite Hero",   min:10000,max:Infinity}
+];
+function getRank(c) { return RANKS.find(function(r){return c>=r.min&&c<=r.max;})||RANKS[0]; }
 
-        <button onclick="location.reload()" class="btn-action w-full py-3 bg-white font-bold comic-font text-xl mb-3">🔄 REFRESH HERO DATA</button>
-        <button onclick="copyReferralLink()" class="btn-action w-full py-3 bg-black text-white font-bold comic-font text-xl">📤 SHARE INVITE LINK</button>
-    </section>
+/* ── INIT ── */
+function boot() {
+  var tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+  var devUser = {id:99999, first_name:"DevHero", photo_url:""};
+  var u = tgUser || devUser;
+  UID = String(u.id);
+  var refBy = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? String(tg.initDataUnsafe.start_param) : null;
 
-    <!-- Navigation -->
-    <nav class="nav-bar">
-        <div onclick="switchTabs('dashboard')" id="btn-dashboard" class="nav-item active">
-            <span class="nav-icon">🏠</span>DASHBOARD
-        </div>
-        <div onclick="switchTabs('tasks')" id="btn-tasks" class="nav-item">
-            <span class="nav-icon">🎯</span>TASKS
-        </div>
-        <div onclick="switchTabs('withdraw')" id="btn-withdraw" class="nav-item">
-            <span class="nav-icon">💰</span>PAYOUT
-        </div>
-        <div onclick="switchTabs('profile')" id="btn-profile" class="nav-item">
-            <span class="nav-icon">👤</span>PROFILE
-        </div>
-    </nav>
+  initUser(u, refBy).then(function() {
+    attachListeners();
+  }).catch(function(e){ showToast("❌ " + e.message); });
+}
 
-    <script>
-        // ==========================================
-        // CONFIGURATION
-        // ==========================================
-        const BOT_USERNAME = "SRX_2026_bot";
+async function initUser(u, refBy) {
+  var uref = db.collection('users').doc(UID);
+  var snap = await uref.get();
+  if (!snap.exists) {
+    if (refBy && refBy !== UID) {
+      var rref = db.collection('users').doc(refBy);
+      var rsnap = await rref.get();
+      if (rsnap.exists) {
+        rref.update({ reffer: FS.increment(1), coins: FS.increment(50) });
+      }
+    }
+    var newU = {
+      id: UID, name: u.first_name||"Hero",
+      photoURL: u.photo_url || ("https://api.dicebear.com/7.x/avataaars/svg?seed=" + UID),
+      coins:0, reffer:0, refferBy: refBy||null,
+      tasksCompleted:0, totalWithdrawals:0,
+      joinedAt: FS.serverTimestamp()
+    };
+    await uref.set(newU);
+    ME = newU;
+  } else {
+    ME = snap.data();
+  }
+  setAvatarAndRef();
+}
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCv8HcH4-6VdYgCcdOZlR-MTL4HbL-Is7Y",
-            authDomain: "gen-lang-client-0231834349.firebaseapp.com",
-            projectId: "gen-lang-client-0231834349",
-            storageBucket: "gen-lang-client-0231834349.firebasestorage.app",
-            messagingSenderId: "148097864437",
-            appId: "1:148097864437:web:a9d15cd9b249d8cbb52bbc"
-        };
+/* ── ATTACH ALL REAL-TIME LISTENERS ── */
+function attachListeners() {
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+  /* 1. USER — real-time profile + stats */
+  _listeners.user = db.collection('users').doc(UID).onSnapshot(function(snap) {
+    if (!snap.exists) return;
+    ME = snap.data();
+    updateStats();
+    updateRankUI(ME.coins||0);
+    updateProfileUI();
+    var wb = document.getElementById('wal-bal');
+    if (wb) wb.innerText = ME.coins||0;
+  });
 
-        const tg = window.Telegram?.WebApp;
-        if (tg) { tg.ready(); tg.expand(); }
+  /* 2. TASKS + CLAIMS — both in parallel, re-render when either changes */
+  _listeners.tasks = db.collection('tasks').orderBy('createdAt','desc').onSnapshot(function(snap) {
+    _tasks = snap.docs.map(function(d){ return Object.assign({_id:d.id}, d.data()); })
+                      .filter(function(t){ return t.isActive !== false; });
+    renderTasks();
+  });
 
-        let currentUser = null;
-        let userData = {};
-        let allTasks = [];
-        let claimedTaskIds = new Set();
+  _listeners.claims = db.collection('user_claims').where('userId','==',UID).onSnapshot(function(snap) {
+    _claimed = {};
+    snap.docs.forEach(function(d){ _claimed[d.data().taskId] = true; });
+    renderTasks(); // re-render with updated claimed state
+  });
 
-        // ==========================================
-        // RANK SYSTEM
-        // ==========================================
-        const RANKS = [
-            { name: "Rookie Hero",    min: 0,     max: 499  },
-            { name: "Street Guardian",min: 500,   max: 1499 },
-            { name: "City Defender",  min: 1500,  max: 3999 },
-            { name: "Elite Avenger",  min: 4000,  max: 9999 },
-            { name: "Infinite Hero",  min: 10000, max: Infinity }
-        ];
+  /* 3. WITHDRAWAL HISTORY — real-time */
+  _listeners.pays = db.collection('withdrawals')
+    .where('userId','==',UID)
+    .orderBy('createdAt','desc')
+    .limit(20)
+    .onSnapshot(function(snap) {
+      renderPayHistory(snap.docs.map(function(d){ return Object.assign({_id:d.id},d.data()); }));
+    });
 
-        function getRank(coins) {
-            return RANKS.find(r => coins >= r.min && coins <= r.max) || RANKS[0];
-        }
+  /* 4. ANNOUNCEMENTS — latest one */
+  _listeners.ann = db.collection('announcements').orderBy('createdAt','desc').limit(1).onSnapshot(function(snap) {
+    if (!snap.empty) {
+      var a = snap.docs[0].data();
+      document.getElementById('ann-txt').innerText = "📢 " + (a.title||'');
+      document.getElementById('ann-box').style.display = 'block';
+    }
+  });
+}
 
-        function updateRankUI(coins) {
-            const rank = getRank(coins);
-            const nextRank = RANKS[RANKS.indexOf(rank) + 1];
-            document.getElementById('user-rank-display').textContent = rank.name;
-            document.getElementById('profile-rank').textContent = rank.name;
+/* ── RENDER TASKS ──
+   Called whenever _tasks OR _claimed changes.
+   Both are in-memory — no extra Firestore reads.
+*/
+function renderTasks() {
+  var quick = document.getElementById('quick-list');
+  var full  = document.getElementById('full-list');
+  if (!quick || !full) return;
 
-            if (nextRank) {
-                const progress = ((coins - rank.min) / (nextRank.min - rank.min)) * 100;
-                document.getElementById('rank-bar').style.width = Math.min(progress, 100) + '%';
-                document.getElementById('rank-next-label').textContent = `Next: ${nextRank.name} (${nextRank.min - coins} coins away)`;
-            } else {
-                document.getElementById('rank-bar').style.width = '100%';
-                document.getElementById('rank-next-label').textContent = 'MAX RANK ACHIEVED!';
-            }
-        }
+  if (!_tasks.length) {
+    var e = '<p style="text-align:center;font-weight:700;color:#777;padding:24px">No missions yet.</p>';
+    quick.innerHTML = e; full.innerHTML = e; return;
+  }
 
-        // ==========================================
-        // INIT
-        // ==========================================
-        async function initApp() {
-            const tgUser = tg?.initDataUnsafe?.user;
-            const user = tgUser || { id: "12345", first_name: "DevHero", photo_url: "" };
-            const startParam = tg?.initDataUnsafe?.start_param || null;
-            currentUser = user;
+  var html = _tasks.map(function(t) {
+    var done = !!_claimed[t._id];
+    var coins = t.reward || t.coins || 0;
+    return '<div class="cc '+(done?'task-done':'')+'" style="padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px">' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="font-weight:900;font-size:14px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(t.name||'Task') + '</div>' +
+        '<div style="font-size:10px;font-weight:700;color:var(--blue);margin-top:2px">' + esc(t.type||'Task') + ' • +' + coins + ' COINS</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;flex-shrink:0">' +
+        (t.link ? '<a href="'+esc(t.link)+'" target="_blank" rel="noopener" onclick="openLink(event,\''+esc(t.link)+'\')" class="cb" style="padding:6px 8px;background:#fff;font-size:10px;text-decoration:none;color:var(--ink)">OPEN</a>' : '') +
+        (done
+          ? '<button class="cb" disabled style="padding:6px 8px;font-size:10px;background:#e5e7eb">✅ DONE</button>'
+          : '<button class="cb" onclick="claimTask(\''+t._id+'\','+coins+')" style="padding:6px 8px;background:var(--gold);font-size:10px">CLAIM</button>'
+        ) +
+      '</div>' +
+    '</div>';
+  });
 
-            await createOrFetchUser(user, startParam);
-            initRealtimeListeners();
-        }
+  quick.innerHTML = html.slice(0,3).join('');
+  full.innerHTML  = html.join('');
+}
 
-        async function createOrFetchUser(user, refBy) {
-            const userRef = db.collection('users').doc(user.id.toString());
-            const doc = await userRef.get();
+function filterTasks() {
+  var q = (document.getElementById('tsearch').value||'').toLowerCase();
+  document.querySelectorAll('#full-list .cc').forEach(function(card){
+    card.style.display = card.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
+  });
+}
 
-            if (!doc.exists) {
-                // Handle referral bonus
-                if (refBy && refBy !== user.id.toString()) {
-                    const referrerRef = db.collection('users').doc(refBy.toString());
-                    const referrerDoc = await referrerRef.get();
-                    if (referrerDoc.exists) {
-                        await referrerRef.update({
-                            reffer: firebase.firestore.FieldValue.increment(1),
-                            coins: firebase.firestore.FieldValue.increment(50)
-                        });
-                    }
-                }
+function openLink(e, url) {
+  if (tg && tg.openLink) { e.preventDefault(); tg.openLink(url); }
+}
 
-                const newHero = {
-                    id: user.id.toString(),
-                    name: user.first_name || "Hero",
-                    photoURL: user.photo_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`,
-                    coins: 0,
-                    reffer: 0,
-                    refferBy: refBy || null,
-                    tasksCompleted: 0,
-                    totalWithdrawals: 0,
-                    joinedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                await userRef.set(newHero);
-                userData = newHero;
-            } else {
-                userData = doc.data();
-            }
-            updateProfileUI();
-        }
+/* ── CLAIM TASK — Firestore transaction prevents double-claim ── */
+function claimTask(taskId, coins) {
+  if (!UID) return;
+  var claimId = UID + '_' + taskId;
+  var uref    = db.collection('users').doc(UID);
+  var cref    = db.collection('user_claims').doc(claimId);
 
-        function initRealtimeListeners() {
-            // User real-time listener
-            db.collection('users').doc(currentUser.id.toString()).onSnapshot(doc => {
-                if (doc.exists) {
-                    userData = doc.data();
-                    renderStats();
-                    updateRankUI(userData.coins || 0);
-                }
-            });
+  showToast("⚡ VERIFYING...");
 
-            // Tasks real-time listener
-            db.collection('tasks').orderBy('createdAt', 'desc').onSnapshot(async snap => {
-                allTasks = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(t => t.isActive !== false);
-                // Refresh claimed tasks before rendering
-                await refreshClaimedTasks();
-                renderTasksUI(allTasks);
-            });
+  db.runTransaction(function(tx) {
+    return tx.get(cref).then(function(cdoc) {
+      if (cdoc.exists) throw new Error("ALREADY CLAIMED!");
+      tx.set(cref, { userId:UID, taskId:taskId, coins:coins, claimedAt:FS.serverTimestamp() });
+      tx.update(uref, { coins:FS.increment(coins), tasksCompleted:FS.increment(1) });
+    });
+  }).then(function() {
+    showToast("💥 +" + coins + " COINS EARNED!");
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+  }).catch(function(e) {
+    showToast("❌ " + e.message);
+  });
+}
 
-            // Announcements
-            db.collection('announcements').orderBy('createdAt', 'desc').limit(1).onSnapshot(snap => {
-                if (!snap.empty) {
-                    const ann = snap.docs[0].data();
-                    document.getElementById('announcement-box').classList.remove('hidden');
-                    document.getElementById('announcement-text').innerText = "📢 " + ann.title;
-                }
-            });
+/* ── WITHDRAWAL ── */
+document.addEventListener('DOMContentLoaded', function() {
+  var wa = document.getElementById('wal-amt');
+  if (wa) wa.oninput = function() {
+    var v = parseInt(this.value)||0;
+    var el = document.getElementById('wal-usd');
+    if (el) el.innerText = '$' + (v/100).toFixed(2);
+  };
+});
 
-            // Withdrawal history real-time
-            db.collection('withdrawals')
-                .where('userId', '==', currentUser.id.toString())
-                .orderBy('createdAt', 'desc')
-                .limit(10)
-                .onSnapshot(snap => {
-                    renderWithdrawalHistory(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-                });
-        }
+function submitWithdraw() {
+  var addr = (document.getElementById('wal-addr').value||'').trim();
+  var amt  = parseInt(document.getElementById('wal-amt').value||'0');
+  var bal  = ME ? (ME.coins||0) : 0;
 
-        async function refreshClaimedTasks() {
-            const snap = await db.collection('user_claims')
-                .where('userId', '==', currentUser.id.toString()).get();
-            claimedTaskIds = new Set(snap.docs.map(d => d.data().taskId));
-        }
+  if (!addr||addr.length<5) return showToast("❌ ENTER VALID ADDRESS!");
+  if (isNaN(amt)||amt<500)  return showToast("❌ MINIMUM IS 500 COINS!");
+  if (bal < amt)            return showToast("❌ NOT ENOUGH COINS!");
 
-        // ==========================================
-        // UI RENDERING
-        // ==========================================
-        function renderStats() {
-            const coins = userData.coins || 0;
-            document.getElementById('stat-coins').innerText = coins;
-            document.getElementById('stat-reffer').innerText = userData.reffer || 0;
-            document.getElementById('stat-withdrawals').innerText = userData.totalWithdrawals || 0;
-            document.getElementById('stat-tasks').innerText = userData.tasksCompleted || 0;
-            document.getElementById('header-coins').innerText = coins;
-            document.getElementById('withdraw-balance').innerText = coins;
-            document.getElementById('profile-coins').innerText = coins;
-            document.getElementById('profile-ref-count').innerText = userData.reffer || 0;
-            document.getElementById('profile-missions').innerText = userData.tasksCompleted || 0;
-        }
+  showToast("⏳ SENDING...");
+  var batch = db.batch();
+  var wref  = db.collection('withdrawals').doc();
+  var uref  = db.collection('users').doc(UID);
 
-        function buildTaskCard(task, isDone) {
-            // Coin value — stored as 'reward' (coins, not dollars)
-            const coins = task.reward || task.coins || 0;
-            return `
-                <div class="comic-card p-4 flex justify-between items-center bg-white ${isDone ? 'task-done' : ''}">
-                    <div class="flex-1 pr-3 min-w-0">
-                        <h4 class="font-black text-sm uppercase truncate">${task.name}</h4>
-                        <p class="text-[10px] font-bold text-blue-500">${task.type || 'Task'} • +${coins} COINS</p>
-                    </div>
-                    <div class="flex gap-2 flex-shrink-0">
-                        ${task.link ? `<a href="${task.link}" target="_blank" class="btn-action bg-white px-2 py-1 text-[10px] no-underline text-black">OPEN</a>` : ''}
-                        ${isDone
-                            ? `<button class="btn-action bg-gray-200 px-2 py-1 text-[10px]" disabled>✅ DONE</button>`
-                            : `<button onclick="claimTask('${task.id}', ${coins})" class="btn-action bg-yellow-400 px-2 py-1 text-[10px]">CLAIM</button>`
-                        }
-                    </div>
-                </div>`;
-        }
+  batch.set(wref, {
+    userId: UID, userName: ME ? (ME.name||'Hero') : 'Hero',
+    usdcAddress: addr, amount: amt, status: 'pending',
+    createdAt: FS.serverTimestamp()
+  });
+  batch.update(uref, {
+    coins: FS.increment(-amt),
+    totalWithdrawals: FS.increment(1)
+  });
 
-        function renderTasksUI(tasks) {
-            const quickContainer = document.getElementById('quick-tasks');
-            const fullContainer = document.getElementById('full-task-list');
+  batch.commit().then(function() {
+    showToast("🚀 REQUEST SENT!");
+    document.getElementById('wal-addr').value = '';
+    document.getElementById('wal-amt').value  = '';
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+  }).catch(function(e){ showToast("❌ " + e.message); });
+}
 
-            if (tasks.length === 0) {
-                const empty = '<p class="text-center italic text-xs font-bold text-gray-400 py-4">No missions available yet.</p>';
-                quickContainer.innerHTML = empty;
-                fullContainer.innerHTML = empty;
-                return;
-            }
+function renderPayHistory(data) {
+  var el = document.getElementById('pay-hist');
+  if (!el) return;
+  if (!data.length) { el.innerHTML = '<p style="text-align:center;font-weight:700;color:#777;padding:16px">No payout history.</p>'; return; }
+  el.innerHTML = data.map(function(w) {
+    var d = w.createdAt && w.createdAt.toDate ? w.createdAt.toDate().toLocaleString() : 'Just now';
+    var bc = w.status==='approved'?'bapp':w.status==='rejected'?'brej':'bpend';
+    return '<div class="cc" style="padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">' +
+      '<div>' +
+        '<div style="font-weight:900;font-size:14px">-' + (w.amount||0) + ' 🪙</div>' +
+        '<div style="font-size:10px;color:#777;margin-top:2px">' + d + '</div>' +
+        '<div style="font-size:10px;color:#777;font-family:monospace;max-width:160px;overflow:hidden;text-overflow:ellipsis">' + esc(w.usdcAddress||'') + '</div>' +
+      '</div>' +
+      '<span class="' + bc + '">' + esc(w.status) + '</span>' +
+    '</div>';
+  }).join('');
+}
 
-            const html = tasks.map(t => buildTaskCard(t, claimedTaskIds.has(t.id)));
-            quickContainer.innerHTML = html.slice(0, 3).join('');
-            fullContainer.innerHTML = html.join('');
-        }
+/* ── UI HELPERS ── */
+function updateStats() {
+  if (!ME) return;
+  setText('hcoins', ME.coins||0);
+  setText('sc', ME.coins||0);
+  setText('sr', ME.reffer||0);
+  setText('sw', ME.totalWithdrawals||0);
+  setText('sm', ME.tasksCompleted||0);
+}
 
-        // ==========================================
-        // TASK CLAIM (with transaction)
-        // ==========================================
-        async function claimTask(taskId, coins) {
-            if (!currentUser) return;
-            const claimId = `${currentUser.id}_${taskId}`;
-            const userRef = db.collection('users').doc(currentUser.id.toString());
-            const claimRef = db.collection('user_claims').doc(claimId);
+function updateRankUI(coins) {
+  var rank = getRank(coins);
+  var next = RANKS[RANKS.indexOf(rank)+1];
+  setText('urank', rank.name);
+  setText('prank', rank.name);
+  if (next) {
+    var pct = ((coins-rank.min)/(next.min-rank.min))*100;
+    var bar = document.getElementById('rank-bar');
+    if (bar) bar.style.width = Math.min(pct,100)+'%';
+    setText('rank-next', 'Next: '+next.name);
+  } else {
+    var bar2 = document.getElementById('rank-bar');
+    if (bar2) bar2.style.width = '100%';
+    setText('rank-next', '⭐ MAX RANK!');
+  }
+}
 
-            try {
-                showToast("⚡ VERIFYING MISSION...");
-                await db.runTransaction(async (tx) => {
-                    const claimDoc = await tx.get(claimRef);
-                    if (claimDoc.exists) throw new Error("ALREADY CLAIMED!");
+function setAvatarAndRef() {
+  var av = (ME && ME.photoURL) || ("https://api.dicebear.com/7.x/avataaars/svg?seed=" + UID);
+  var avEl = document.getElementById('av');
+  var pavEl = document.getElementById('pav');
+  if (avEl) avEl.src = av;
+  if (pavEl) pavEl.src = av;
+  var ref = document.getElementById('ref-link');
+  if (ref) ref.value = "https://t.me/" + BOT + "?start=" + UID;
+}
 
-                    tx.set(claimRef, {
-                        userId: currentUser.id.toString(),
-                        taskId: taskId,
-                        coins: coins,
-                        claimedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    tx.update(userRef, {
-                        coins: firebase.firestore.FieldValue.increment(coins),
-                        tasksCompleted: firebase.firestore.FieldValue.increment(1)
-                    });
-                });
+function updateProfileUI() {
+  if (!ME) return;
+  setText('uname', ME.name||'Hero');
+  setText('uid-txt', 'ID: ' + (ME.id||UID));
+  setText('pname', ME.name||'Hero');
+  setText('pid', 'ID: ' + (ME.id||UID));
+  setText('pcoins', ME.coins||0);
+  setText('pref', ME.reffer||0);
+  setText('pmis', ME.tasksCompleted||0);
+  setText('prefby', ME.refferBy||'NONE');
+}
 
-                claimedTaskIds.add(taskId);
-                renderTasksUI(allTasks);
-                showToast(`💥 BOOM! +${coins} COINS EARNED!`);
-                if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            } catch (err) {
-                showToast(err.message || "ERROR! TRY AGAIN.");
-            }
-        }
+function setText(id, val) {
+  var el = document.getElementById(id);
+  if (el) el.innerText = val;
+}
 
-        // ==========================================
-        // WITHDRAWAL
-        // ==========================================
-        async function submitWithdrawal() {
-            const addr = document.getElementById('withdraw-address').value.trim();
-            const amt = parseInt(document.getElementById('withdraw-amount').value);
-            const currentCoins = userData.coins || 0;
+function goTab(name) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
+  document.querySelectorAll('.nav-i').forEach(function(n){ n.classList.remove('on'); });
+  document.getElementById('tab-'+name).classList.add('on');
+  document.getElementById('btn-'+name).classList.add('on');
+  if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+}
 
-            if (!addr || addr.length < 10) return showToast("❌ INVALID ADDRESS!");
-            if (isNaN(amt) || amt < 500) return showToast("❌ MIN PAYOUT IS 500 COINS!");
-            if (currentCoins < amt) return showToast("❌ NOT ENOUGH COINS!");
+function copyRef() {
+  var v = (document.getElementById('ref-link')||{}).value || ("https://t.me/"+BOT+"?start="+UID);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(v).then(function(){ showToast("✅ LINK COPIED!"); });
+  } else {
+    var el = document.getElementById('ref-link');
+    if (el) { el.select(); document.execCommand('copy'); }
+    showToast("✅ LINK COPIED!");
+  }
+}
 
-            try {
-                showToast("⏳ SENDING REQUEST...");
-                const batch = db.batch();
-                const wRef = db.collection('withdrawals').doc();
-                const uRef = db.collection('users').doc(currentUser.id.toString());
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.innerText = msg; t.style.display = 'block';
+  clearTimeout(_toastT);
+  _toastT = setTimeout(function(){ t.style.display='none'; }, 3000);
+}
 
-                batch.set(wRef, {
-                    userId: currentUser.id.toString(),
-                    userName: userData.name || 'Hero',
-                    usdcAddress: addr,
-                    amount: amt,
-                    status: "pending",
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                batch.update(uRef, {
-                    coins: firebase.firestore.FieldValue.increment(-amt),
-                    totalWithdrawals: firebase.firestore.FieldValue.increment(1)
-                });
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 
-                await batch.commit();
-                showToast("🚀 KABOOM! REQUEST SENT!");
-                document.getElementById('withdraw-address').value = "";
-                document.getElementById('withdraw-amount').value = "";
-                if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            } catch (e) {
-                showToast("❌ ERROR! TRY AGAIN.");
-                console.error(e);
-            }
-        }
-
-        function renderWithdrawalHistory(data) {
-            const container = document.getElementById('withdraw-history');
-            if (data.length === 0) {
-                container.innerHTML = '<p class="text-center italic text-xs font-bold text-gray-400">No payout history yet.</p>';
-                return;
-            }
-            container.innerHTML = data.map(w => {
-                const statusClass = w.status === 'approved' ? 'badge-approved' : w.status === 'rejected' ? 'badge-rejected' : 'badge-pending';
-                const date = w.createdAt?.toDate ? w.createdAt.toDate().toLocaleString() : 'Just now';
-                return `
-                    <div class="comic-card p-3 bg-white flex justify-between items-center">
-                        <div>
-                            <p class="font-black text-sm">-${w.amount} COINS</p>
-                            <p class="text-[9px] font-bold text-gray-400 mt-1">${date}</p>
-                            <p class="text-[9px] font-mono text-gray-400 truncate max-w-[180px]">${w.usdcAddress || ''}</p>
-                        </div>
-                        <span class="status-badge ${statusClass}">${w.status}</span>
-                    </div>`;
-            }).join('');
-        }
-
-        // ==========================================
-        // NAVIGATION & UTILS
-        // ==========================================
-        function switchTabs(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tabName).classList.add('active');
-            document.getElementById('btn-' + tabName).classList.add('active');
-            if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-        }
-
-        function updateProfileUI() {
-            const avatar = userData.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser?.id}`;
-            document.getElementById('user-avatar').src = avatar;
-            document.getElementById('profile-avatar-large').src = avatar;
-            document.getElementById('user-name-display').innerText = userData.name || 'Hero';
-            document.getElementById('profile-name').innerText = userData.name || 'Hero';
-            document.getElementById('user-id-display').innerText = "ID: " + (userData.id || '');
-            document.getElementById('profile-id').innerText = "ID: " + (userData.id || '');
-            document.getElementById('profile-ref-by').innerText = userData.refferBy || "NONE";
-            document.getElementById('ref-link-input').value = `https://t.me/${BOT_USERNAME}?start=${userData.id}`;
-            renderStats();
-            updateRankUI(userData.coins || 0);
-        }
-
-        function filterTasks() {
-            const query = document.getElementById('task-search').value.toLowerCase();
-            document.querySelectorAll('#full-task-list .comic-card').forEach(card => {
-                card.style.display = card.innerText.toLowerCase().includes(query) ? 'flex' : 'none';
-            });
-        }
-
-        let toastTimer = null;
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.style.display = 'block';
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 3000);
-        }
-
-        function copyReferralLink() {
-            const val = document.getElementById('ref-link-input').value;
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(val).then(() => showToast("✅ LINK COPIED!"));
-            } else {
-                const el = document.getElementById('ref-link-input');
-                el.select();
-                document.execCommand('copy');
-                showToast("✅ LINK COPIED!");
-            }
-            if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        }
-
-        // START
-        initApp();
-    </script>
+/* ── START ── */
+boot();
+</script>
 </body>
 </html>
