@@ -10,54 +10,32 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:var(--bg);background-image:radial-gradient(#ccc 1px,transparent 1px);background-size:20px 20px;color:var(--ink);overflow-x:hidden;min-height:100vh}
 .bf{font-family:'Bangers',cursive;letter-spacing:1px}
-/* COMIC CARD */
 .cc{background:var(--card);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);border-radius:0}
-/* BUTTON */
 .cb{border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-weight:900;cursor:pointer;text-transform:uppercase;transition:transform .1s,box-shadow .1s;display:inline-block;font-family:'Inter'}
 .cb:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
 .cb:disabled{opacity:.5;cursor:not-allowed}
-/* NAV */
 .nav{position:fixed;bottom:0;width:100%;background:var(--card);border-top:3px solid var(--ink);display:flex;justify-content:space-around;padding:8px 0 12px;z-index:1000}
 .nav-i{font-size:10px;font-weight:900;text-align:center;color:#777;cursor:pointer;padding:0 8px}
 .nav-i.on{color:var(--red)}
 .nav-ic{font-size:22px;display:block;margin-bottom:2px}
-/* TABS */
 .tab{display:none;padding:14px 14px 100px;animation:si .25s ease}
 .tab.on{display:block}
 @keyframes si{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-/* TOAST */
 #toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;padding:10px 20px;background:var(--gold);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-family:'Bangers';font-size:16px;display:none;white-space:nowrap;max-width:90vw}
-/* COIN PULSE */
 .cpulse{animation:cp 1.5s ease-in-out infinite alternate}
 @keyframes cp{from{box-shadow:0 0 4px var(--gold)}to{box-shadow:0 0 14px var(--gold),0 0 4px var(--ink)}}
-/* RANK BAR */
 .rb-out{background:#ddd;border:2px solid var(--ink);height:10px;overflow:hidden}
 .rb-in{background:var(--gold);height:100%;transition:width .6s}
-/* BADGES */
 .bpend{background:#f97316;color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border:2px solid var(--ink)}
 .bapp{background:var(--green);color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border:2px solid var(--ink)}
 .brej{background:var(--red);color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border:2px solid var(--ink)}
-/* TASK */
 .task-done{opacity:.5;pointer-events:none}
 .task-done .cb{background:#e5e7eb!important}
-/* LOADER */
 .spin{border:3px solid #ddd;border-top:3px solid var(--ink);border-radius:50%;width:28px;height:28px;animation:sp 1s linear infinite;margin:24px auto}
 @keyframes sp{to{transform:rotate(360deg)}}
-/* MODAL */
-.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:5000;align-items:center;justify-content:center;padding:16px}
-.mo.open{display:flex}
-.mo-box{background:var(--card);border:3px solid var(--ink);box-shadow:5px 5px 0 var(--red);width:100%;max-width:400px;max-height:88vh;overflow-y:auto}
-.mo-head{padding:14px 16px;border-bottom:3px solid var(--ink);display:flex;justify-content:space-between;align-items:center}
-.mo-head h3{font-family:'Bangers';font-size:22px;letter-spacing:2px}
-.mo-x{background:none;border:none;font-size:22px;cursor:pointer;line-height:1}
-.mo-body{padding:16px}
-.mo-foot{padding:12px 16px;border-top:3px solid var(--ink);display:flex;justify-content:flex-end;gap:8px}
 input,select,textarea{width:100%;padding:8px 10px;border:2px solid var(--ink);font-size:13px;font-weight:700;outline:none;font-family:'Inter';background:#fff;margin-bottom:10px}
 input:focus,select:focus,textarea:focus{border-color:var(--red)}
 .lbl{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:block;color:#555}
-/* REALTIME indicator */
-.rt-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:5px;animation:rtp 2s infinite}
-@keyframes rtp{0%,100%{opacity:1}50%{opacity:.2}}
 </style>
 </head>
 <body>
@@ -131,7 +109,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--red)}
     <label class="lbl">COINS TO WITHDRAW (min 500)</label>
     <input type="number" id="wal-amt" placeholder="500" min="500">
     <div style="font-size:12px;font-weight:700;color:#555;margin-bottom:10px">= <span id="wal-usd">$0.00</span> (100 coins = $1)</div>
-    <button class="cb" onclick="submitWithdraw()" style="width:100%;padding:12px;background:var(--gold);font-size:18px" class="bf">⚡ REQUEST PAYOUT</button>
+    <button class="cb" onclick="submitWithdraw()" style="width:100%;padding:12px;background:var(--gold);font-size:18px">⚡ REQUEST PAYOUT</button>
   </div>
   <div class="bf" style="font-size:18px;margin-bottom:8px">📋 Payout History</div>
   <div id="pay-hist"><div class="spin"></div></div>
@@ -165,12 +143,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--red)}
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 <script>
-/* ── CONFIG ── */
 var BOT = "SRX_2026_bot";
+var TOKEN = "8704816043:AAHNNljOcsYC4qTmruhp1OOMA0XKDvlus2s";
 var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 if (tg) { tg.ready(); tg.expand(); }
 
-/* ── FIREBASE ── */
 const firebaseConfig = {
   apiKey: "AIzaSyCv8HcH4-6VdYgCcdOZlR-MTL4HbL-Is7Y",
   authDomain: "gen-lang-client-0231834349.firebaseapp.com",
@@ -181,26 +158,19 @@ const firebaseConfig = {
   appId: "1:148097864437:web:a9d15cd9b249d8cbb52bbc"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-
 var db = firebase.firestore();
 var FS = firebase.firestore.FieldValue;
 
-/* Offline persistence */
-db.enablePersistence({synchronizeTabs:true}).catch(function(err){
-  console.log("Persistence error:", err.message);
-});
+db.enablePersistence({synchronizeTabs:true}).catch(function(err){ console.log("Persistence error:", err.message); });
 
-/* ── GLOBALS ── */
-var ME = null;        // current user object
-var UID = null;       // telegram id string
-var _claimed = {};    // { taskId: true } — in-memory claimed set
-var _tasks = [];      // latest tasks array
-var _listeners = {};  // unsubscribe functions
+var ME = null;
+var UID = null;
+var _claimed = {};
+var _tasks = [];
+var _listeners = {};
 var _toastT;
 
-/* ── RANKS ── */
 var RANKS = [
   {name:"Rookie Hero",     min:0,    max:499},
   {name:"Street Guardian", min:500,  max:1499},
@@ -210,7 +180,6 @@ var RANKS = [
 ];
 function getRank(c) { return RANKS.find(function(r){return c>=r.min&&c<=r.max;})||RANKS[0]; }
 
-/* ── INIT ── */
 function boot() {
   var tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
   var devUser = {id:99999, first_name:"DevHero", photo_url:""};
@@ -227,17 +196,18 @@ async function initUser(u, refBy) {
   var uref = db.collection('users').doc(UID);
   var snap = await uref.get();
   if (!snap.exists) {
+    // সঠিক রেফারেল ট্র্যাকিং লজিক (নিজে নিজেকে রেফার করা ব্লক করা হয়েছে)
     if (refBy && refBy !== UID) {
       var rref = db.collection('users').doc(refBy);
       var rsnap = await rref.get();
       if (rsnap.exists) {
-        rref.update({ reffer: FS.increment(1), coins: FS.increment(50) });
+        await rref.update({ reffer: FS.increment(1), coins: FS.increment(50) });
       }
     }
     var newU = {
       id: UID, name: u.first_name||"Hero",
       photoURL: u.photo_url || ("https://api.dicebear.com/7.x/avataaars/svg?seed=" + UID),
-      coins:0, reffer:0, refferBy: refBy||null,
+      coins:0, reffer:0, refferBy: (refBy && refBy !== UID) ? refBy : null,
       tasksCompleted:0, totalWithdrawals:0,
       joinedAt: FS.serverTimestamp()
     };
@@ -249,9 +219,7 @@ async function initUser(u, refBy) {
   setAvatarAndRef();
 }
 
-/* ── ATTACH ALL REAL-TIME LISTENERS ── */
 function attachListeners() {
-  /* 1. USER — real-time profile + stats */
   _listeners.user = db.collection('users').doc(UID).onSnapshot(function(snap) {
     if (!snap.exists) return;
     ME = snap.data();
@@ -262,29 +230,22 @@ function attachListeners() {
     if (wb) wb.innerText = ME.coins||0;
   });
 
-  /* 2. TASKS + CLAIMS ── */
   _listeners.tasks = db.collection('tasks').orderBy('createdAt','desc').onSnapshot(function(snap) {
     _tasks = snap.docs.map(function(d){ return Object.assign({_id:d.id}, d.data()); })
                       .filter(function(t){ return t.isActive !== false; });
     renderTasks();
-  }, function(error) { console.error("Tasks listener error:", error); });
+  });
 
   _listeners.claims = db.collection('user_claims').where('userId','==',UID).onSnapshot(function(snap) {
     _claimed = {};
     snap.docs.forEach(function(d){ _claimed[d.data().taskId] = true; });
     renderTasks();
-  }, function(error) { console.error("Claims listener error:", error); });
+  });
 
-  /* 3. WITHDRAWAL HISTORY ── */
-  _listeners.pays = db.collection('withdrawals')
-    .where('userId','==',UID)
-    .orderBy('createdAt','desc')
-    .limit(20)
-    .onSnapshot(function(snap) {
-      renderPayHistory(snap.docs.map(function(d){ return Object.assign({_id:d.id},d.data()); }));
-    }, function(error) { console.error("Withdrawals error:", error); });
+  _listeners.pays = db.collection('withdrawals').where('userId','==',UID).orderBy('createdAt','desc').limit(20).onSnapshot(function(snap) {
+    renderPayHistory(snap.docs.map(function(d){ return Object.assign({_id:d.id},d.data()); }));
+  });
 
-  /* 4. ANNOUNCEMENTS ── */
   _listeners.ann = db.collection('announcements').orderBy('createdAt','desc').limit(1).onSnapshot(function(snap) {
     if (!snap.empty) {
       var a = snap.docs[0].data();
@@ -294,7 +255,6 @@ function attachListeners() {
   });
 }
 
-/* ── RENDER TASKS ── */
 function renderTasks() {
   var quick = document.getElementById('quick-list');
   var full  = document.getElementById('full-list');
@@ -317,7 +277,7 @@ function renderTasks() {
         (t.link ? '<a href="'+esc(t.link)+'" target="_blank" rel="noopener" onclick="openLink(event,\''+esc(t.link)+'\')" class="cb" style="padding:6px 8px;background:#fff;font-size:10px;text-decoration:none;color:var(--ink)">OPEN</a>' : '') +
         (done
           ? '<button class="cb" disabled style="padding:6px 8px;font-size:10px;background:#e5e7eb">✅ DONE</button>'
-          : '<button class="cb" onclick="claimTask(\''+t._id+'\','+coins+')" style="padding:6px 8px;background:var(--gold);font-size:10px">CLAIM</button>'
+          : '<button class="cb" onclick="claimTask(\''+t._id+'\','+coins+',\''+esc(t.type||'')+'\',\''+esc(t.telegramChannelId||'')+'\')" style="padding:6px 8px;background:var(--gold);font-size:10px">CLAIM</button>'
         ) +
       '</div>' +
     '</div>';
@@ -327,25 +287,50 @@ function renderTasks() {
   full.innerHTML  = html.join('');
 }
 
-function filterTasks() {
-  var q = (document.getElementById('tsearch').value||'').toLowerCase();
-  document.querySelectorAll('#full-list .cc').forEach(function(card){
-    card.style.display = card.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
-  });
+// টেলিগ্রাম জয়েনিং অটোমেটিক এপিআই ভেরিফিকেশন লজিক
+async function checkTelegramMembership(channelId) {
+  if(!channelId) return false;
+  // হ্যান্ডেল ইউজারনেম ফরম্যাট (যদি @ দিয়ে শুরু হয়)
+  var cleanChannel = channelId.trim();
+  if(!cleanChannel.startsWith('@') && !cleanChannel.startsWith('-100')) {
+    cleanChannel = '@' + cleanChannel;
+  }
+  try {
+    var res = await fetch(`https://api.telegram.org/bot${TOKEN}/getChatMember?chat_id=${cleanChannel}&user_id=${UID}`);
+    var data = await res.json();
+    if(data.ok && data.result) {
+      var s = data.result.status;
+      return (s === 'member' || s === 'administrator' || s === 'creator');
+    }
+    return false;
+  } catch(e) {
+    console.error("Telegram API Error:", e);
+    return false;
+  }
 }
 
-function openLink(e, url) {
-  if (tg && tg.openLink) { e.preventDefault(); tg.openLink(url); }
-}
-
-/* ── CLAIM TASK ── */
-function claimTask(taskId, coins) {
+async function claimTask(taskId, coins, taskType, channelId) {
   if (!UID) return;
+
+  showToast("⚡ VERIFYING MISSION...");
+
+  // যদি টাস্ক টাইপ টেলিগ্রাম হয়, তবে মেম্বারশিপ চেক করবে
+  if(taskType.toLowerCase() === 'telegram') {
+    if(!channelId || channelId.trim() === "") {
+       showToast("❌ CHANNEL NOT CONFIGURED IN ADMIN PANEL!");
+       return;
+    }
+    var isMember = await checkTelegramMembership(channelId);
+    if(!isMember) {
+      showToast("❌ YOU HAVEN'T JOINED THE CHANNEL YET!");
+      if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+      return;
+    }
+  }
+
   var claimId = UID + '_' + taskId;
   var uref    = db.collection('users').doc(UID);
   var cref    = db.collection('user_claims').doc(claimId);
-
-  showToast("⚡ VERIFYING...");
 
   db.runTransaction(function(tx) {
     return tx.get(cref).then(function(cdoc) {
@@ -361,7 +346,17 @@ function claimTask(taskId, coins) {
   });
 }
 
-/* ── WITHDRAWAL ── */
+function filterTasks() {
+  var q = (document.getElementById('tsearch').value||'').toLowerCase();
+  document.querySelectorAll('#full-list .cc').forEach(function(card){
+    card.style.display = card.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
+  });
+}
+
+function openLink(e, url) {
+  if (tg && tg.openLink) { e.preventDefault(); tg.openLink(url); }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   var wa = document.getElementById('wal-amt');
   if (wa) wa.oninput = function() {
@@ -421,7 +416,6 @@ function renderPayHistory(data) {
   }).join('');
 }
 
-/* ── UI HELPERS ── */
 function updateStats() {
   if (!ME) return;
   setText('hcoins', ME.coins||0);
@@ -478,13 +472,10 @@ function setText(id, val) {
 function goTab(name) {
   document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
   document.querySelectorAll('.nav-i').forEach(function(n){ n.classList.remove('on'); });
-  
   var targetTab = document.getElementById('tab-'+name);
   var targetBtn = document.getElementById('btn-'+name);
-  
   if(targetTab) targetTab.classList.add('on');
   if(targetBtn) targetBtn.classList.add('on');
-  
   if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 }
 
@@ -511,7 +502,6 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-/* ── START ── */
 boot();
 </script>
 </body>
