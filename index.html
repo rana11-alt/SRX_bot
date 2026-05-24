@@ -63,7 +63,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--red)}
 <body>
 <div id="toast"></div>
 
-<!-- HOME TAB -->
 <div id="tab-home" class="tab on">
   <div class="cc p-4 mb-3" style="padding:14px;margin-bottom:12px;background:var(--gold)">
     <div style="display:flex;align-items:center;gap:10px">
@@ -88,7 +87,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--red)}
     <div class="rb-out"><div class="rb-in" id="rank-bar" style="width:0%"></div></div>
   </div>
 
-  <!-- Announcement -->
   <div id="ann-box" class="cc mb-3" style="display:none;padding:10px;background:#dbeafe;border-color:var(--blue);margin-bottom:12px">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
       <p id="ann-txt" style="font-weight:700;font-size:13px;flex:1;line-height:1.4"></p>
@@ -96,7 +94,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--red)}
     </div>
   </div>
 
-  <!-- Stats -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
     <div class="cc" style="padding:10px;background:#fef9c3"><div style="font-size:10px;font-weight:900;text-transform:uppercase">Coins</div><div id="sc" class="bf" style="font-size:26px">0</div></div>
     <div class="cc" style="padding:10px;background:#dcfce7"><div style="font-size:10px;font-weight:900;text-transform:uppercase">Referrals</div><div id="sr" class="bf" style="font-size:26px">0</div></div>
@@ -116,14 +113,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--red)}
   </div>
 </div>
 
-<!-- TASKS TAB -->
 <div id="tab-tasks" class="tab">
   <div class="bf" style="font-size:28px;text-align:center;margin-bottom:12px">⚡ HERO MISSIONS</div>
   <input type="text" id="tsearch" oninput="filterTasks()" placeholder="SEARCH MISSIONS..." style="margin-bottom:12px">
   <div id="full-list"><div class="spin"></div></div>
 </div>
 
-<!-- WALLET TAB -->
 <div id="tab-wallet" class="tab">
   <div class="bf" style="font-size:26px;margin-bottom:12px">💰 PAYOUT REQUEST</div>
   <div class="cc mb-3" style="padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;background:#fef9c3">
@@ -142,7 +137,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--red)}
   <div id="pay-hist"><div class="spin"></div></div>
 </div>
 
-<!-- PROFILE TAB -->
 <div id="tab-profile" class="tab">
   <div class="cc" style="padding:20px;text-align:center;margin-bottom:12px">
     <img id="pav" src="" style="width:80px;height:80px;border:4px solid var(--ink);border-radius:50%;background:#ddd;object-fit:cover;margin:0 auto 12px">
@@ -160,7 +154,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--red)}
   <button class="cb" onclick="location.reload()" style="width:100%;padding:12px;background:var(--card);font-size:16px">🔄 REFRESH DATA</button>
 </div>
 
-<!-- NAV -->
 <nav class="nav">
   <div class="nav-i on" id="btn-home" onclick="goTab('home')"><span class="nav-ic">🏠</span>HOME</div>
   <div class="nav-i" id="btn-tasks" onclick="goTab('tasks')"><span class="nav-ic">⚡</span>TASKS</div>
@@ -179,32 +172,25 @@ if (tg) { tg.ready(); tg.expand(); }
 
 /* ── FIREBASE ── */
 const firebaseConfig = {
-
   apiKey: "AIzaSyCv8HcH4-6VdYgCcdOZlR-MTL4HbL-Is7Y",
-
   authDomain: "gen-lang-client-0231834349.firebaseapp.com",
-
   databaseURL: "https://gen-lang-client-0231834349-default-rtdb.firebaseio.com",
-
   projectId: "gen-lang-client-0231834349",
-
   storageBucket: "gen-lang-client-0231834349.firebasestorage.app",
-
   messagingSenderId: "148097864437",
-
   appId: "1:148097864437:web:a9d15cd9b249d8cbb52bbc"
-
 };
 
-
-
-} catch(e){}
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
 var db = firebase.firestore();
 var FS = firebase.firestore.FieldValue;
 
 /* Offline persistence */
-db.enablePersistence({synchronizeTabs:true}).catch(function(){});
+db.enablePersistence({synchronizeTabs:true}).catch(function(err){
+  console.log("Persistence error:", err.message);
+});
 
 /* ── GLOBALS ── */
 var ME = null;        // current user object
@@ -265,7 +251,6 @@ async function initUser(u, refBy) {
 
 /* ── ATTACH ALL REAL-TIME LISTENERS ── */
 function attachListeners() {
-
   /* 1. USER — real-time profile + stats */
   _listeners.user = db.collection('users').doc(UID).onSnapshot(function(snap) {
     if (!snap.exists) return;
@@ -277,29 +262,29 @@ function attachListeners() {
     if (wb) wb.innerText = ME.coins||0;
   });
 
-  /* 2. TASKS + CLAIMS — both in parallel, re-render when either changes */
+  /* 2. TASKS + CLAIMS ── */
   _listeners.tasks = db.collection('tasks').orderBy('createdAt','desc').onSnapshot(function(snap) {
     _tasks = snap.docs.map(function(d){ return Object.assign({_id:d.id}, d.data()); })
                       .filter(function(t){ return t.isActive !== false; });
     renderTasks();
-  });
+  }, function(error) { console.error("Tasks listener error:", error); });
 
   _listeners.claims = db.collection('user_claims').where('userId','==',UID).onSnapshot(function(snap) {
     _claimed = {};
     snap.docs.forEach(function(d){ _claimed[d.data().taskId] = true; });
-    renderTasks(); // re-render with updated claimed state
-  });
+    renderTasks();
+  }, function(error) { console.error("Claims listener error:", error); });
 
-  /* 3. WITHDRAWAL HISTORY — real-time */
+  /* 3. WITHDRAWAL HISTORY ── */
   _listeners.pays = db.collection('withdrawals')
     .where('userId','==',UID)
     .orderBy('createdAt','desc')
     .limit(20)
     .onSnapshot(function(snap) {
       renderPayHistory(snap.docs.map(function(d){ return Object.assign({_id:d.id},d.data()); }));
-    });
+    }, function(error) { console.error("Withdrawals error:", error); });
 
-  /* 4. ANNOUNCEMENTS — latest one */
+  /* 4. ANNOUNCEMENTS ── */
   _listeners.ann = db.collection('announcements').orderBy('createdAt','desc').limit(1).onSnapshot(function(snap) {
     if (!snap.empty) {
       var a = snap.docs[0].data();
@@ -309,10 +294,7 @@ function attachListeners() {
   });
 }
 
-/* ── RENDER TASKS ──
-   Called whenever _tasks OR _claimed changes.
-   Both are in-memory — no extra Firestore reads.
-*/
+/* ── RENDER TASKS ── */
 function renderTasks() {
   var quick = document.getElementById('quick-list');
   var full  = document.getElementById('full-list');
@@ -356,7 +338,7 @@ function openLink(e, url) {
   if (tg && tg.openLink) { e.preventDefault(); tg.openLink(url); }
 }
 
-/* ── CLAIM TASK — Firestore transaction prevents double-claim ── */
+/* ── CLAIM TASK ── */
 function claimTask(taskId, coins) {
   if (!UID) return;
   var claimId = UID + '_' + taskId;
@@ -496,8 +478,13 @@ function setText(id, val) {
 function goTab(name) {
   document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
   document.querySelectorAll('.nav-i').forEach(function(n){ n.classList.remove('on'); });
-  document.getElementById('tab-'+name).classList.add('on');
-  document.getElementById('btn-'+name).classList.add('on');
+  
+  var targetTab = document.getElementById('tab-'+name);
+  var targetBtn = document.getElementById('btn-'+name);
+  
+  if(targetTab) targetTab.classList.add('on');
+  if(targetBtn) targetBtn.classList.add('on');
+  
   if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 }
 
