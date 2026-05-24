@@ -22,6 +22,76 @@ body{font-family:'Inter',sans-serif;background:var(--bg);background-image:radial
 .tab.on{display:block}
 @keyframes si{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 #toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;padding:10px 20px;background:var(--gold);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-family:'Bangers';font-size:16px;display:none;white-space:nowrap;max-width:90vw}
+
+/* উজ্জ্বল আলোতে ডিপিডিপি (Glow) করার অ্যানিমেশন */
+.balance-glow {
+  animation: bglow 1s ease-in-out infinite alternate;
+  border: 3px solid var(--ink) !important;
+}
+@keyframes bglow {
+  from {
+    box-shadow: 4px 4px 0 var(--ink), 0 0 4px #ffdd00;
+    background-color: #fff;
+  }
+  to {
+    box-shadow: 4px 4px 0 var(--ink), 0 0 16px #ffbc00, 0 0 25px #ffde03;
+    background-color: #fffbdf;
+  }
+}
+
+/* নোটিফিকেশন বক্স এন্ট্রি অ্যানিমেশন */
+.ann-animation {
+  animation: annShow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes annShow {
+  0% { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* টাস্ক কার্ড উজ্জ্বল আলো এবং স্লাইড অ্যানিমেশন */
+.task-card-glow {
+  animation: slideInTask 0.4s ease-out forwards;
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: all 0.3s ease;
+}
+.task-card-glow:not(.task-done):hover {
+  border-color: var(--blue);
+  box-shadow: 4px 4px 0 var(--blue), 0 0 15px rgba(30, 144, 255, 0.6);
+  transform: translateY(-2px);
+}
+@keyframes slideInTask {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* রাইট-মিডেল সাপোর্ট বাটন */
+.support-btn {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9999;
+  background: var(--red);
+  color: white;
+  padding: 12px 6px;
+  border: 3px solid var(--ink);
+  border-right: none;
+  box-shadow: -3px 3px 0 var(--ink);
+  font-family: 'Bangers', cursive;
+  font-size: 14px;
+  letter-spacing: 1px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.support-btn:active {
+  transform: translateY(-50%) translateX(2px);
+  box-shadow: -1px 1px 0 var(--ink);
+}
+
 .cpulse{animation:cp 1.5s ease-in-out infinite alternate}
 @keyframes cp{from{box-shadow:0 0 4px var(--gold)}to{box-shadow:0 0 14px var(--gold),0 0 4px var(--ink)}}
 .rb-out{background:#ddd;border:2px solid var(--ink);height:10px;overflow:hidden}
@@ -29,7 +99,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);background-image:radial
 .bpend{background:#f97316;color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border:2px solid var(--ink)}
 .bapp{background:var(--green);color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border:2px solid var(--ink)}
 .brej{background:var(--red);color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border:2px solid var(--ink)}
-.task-done{opacity:.5;pointer-events:none}
+.task-done { opacity:.5; pointer-events:none; box-shadow: 2px 2px 0 var(--ink) !important; animation: none !important; }
 .task-done .cb{background:#e5e7eb!important}
 .spin{border:3px solid #ddd;border-top:3px solid var(--ink);border-radius:50%;width:28px;height:28px;animation:sp 1s linear infinite;margin:24px auto}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -37,28 +107,229 @@ input,select,textarea{width:100%;padding:8px 10px;border:2px solid var(--ink);fo
 input:focus,select:focus,textarea:focus{border-color:var(--red)}
 .lbl{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:block;color:#555}
 
-/* কমিক্স গ্রিড লেআউট (পপ-আর্ট থিম ম্যাচিং) */
-.comics-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
-.comic-item-card { background:#fff; border:3px solid var(--ink); box-shadow:4px 4px 0 var(--ink); padding:8px; cursor:pointer; }
-.comic-item-card img { width:100%; height:160px; object-fit:cover; border:2px solid var(--ink); }
-.comic-item-card .c-title { font-weight:900; font-size:13px; text-transform:uppercase; margin-top:6px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+/* ==========================================================================
+   ইউনিক ও প্রিমিয়াম কমিক্স থিম (সাইবার-পপ কমিক স্টাইল)
+   ========================================================================== */
+.comics-grid { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 16px; 
+  margin-top: 15px; 
+}
 
-/* ফুলস্ক্রিন প্রিমিয়াম কমিক্স রিডার মোডাল */
-.comic-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:99999; overflow:hidden; }
-.modal-bg { position:absolute; width:100%; height:100%; background:rgba(0,0,0,0.95); }
-.close-modal { position:absolute; top:16px; right:16px; z-index:10005; background:var(--red); color:#fff; border:3px solid var(--ink); box-shadow:2px 2px 0 var(--ink); width:36px; height:36px; font-weight:900; cursor:pointer; }
-.slider-window { position:relative; width:92%; max-width:400px; height:74vh; margin:4vh auto 0; z-index:10000; overflow:hidden; border:3px solid var(--ink); background:#000; box-shadow:6px 6px 0 var(--ink); }
-.slides-wrapper { display:flex; width:100%; height:100%; transition:transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
-.comic-slide { min-width:100%; height:100%; display:flex; flex-direction:column; background:#05050a; position:relative; }
-.comic-slide img { width:100%; height:calc(100% - 90px); object-fit:contain; background:#000; }
-.comic-text-container { height:90px; background:#11121b; color:#fff; padding:12px; font-size:13px; text-align:center; line-height:1.5; border-top:3px solid var(--neon-glow); box-sizing:border-box; display:flex; align-items:center; justify-content:center; font-weight:500; text-shadow: 0 0 5px rgba(255,255,255,0.2); }
-.reader-nav-bar { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); width:92%; max-width:400px; display:flex; justify-content:space-between; align-items:center; z-index:10002; }
-.nav-circle-btn { background:var(--gold); color:var(--ink); border:3px solid var(--ink); box-shadow:2px 2px 0 var(--ink); width:46px; height:46px; font-weight:900; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-.page-counter { background:#fff; border:2px solid var(--ink); padding:4px 14px; font-size:12px; font-weight:900; }
+/* ইউনিক কমিক কার্ড ডিজাইন */
+.comic-item-card { 
+  background: #111; 
+  border: 3px solid var(--ink); 
+  box-shadow: 5px 5px 0 var(--ink); 
+  padding: 10px; 
+  cursor: pointer; 
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.comic-item-card::before {
+  content: "READ NOW";
+  position: absolute;
+  top: 12px;
+  right: -30px;
+  background: var(--gold);
+  color: #000;
+  font-family: 'Bangers', cursive;
+  font-size: 11px;
+  padding: 2px 30px;
+  transform: rotate(45deg);
+  z-index: 5;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.comic-item-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15), 5px 5px 0 var(--purple);
+  border-color: var(--purple);
+}
+.comic-item-card img { 
+  width: 100%; 
+  height: 190px; 
+  object-fit: cover; 
+  border: 2px solid var(--ink);
+  transition: filter 0.3s;
+}
+.comic-item-card:hover img {
+  filter: brightness(1.1);
+}
+.comic-item-card .c-title { 
+  font-family: 'Bangers', cursive;
+  font-size: 16px; 
+  letter-spacing: 0.5px;
+  color: #fff;
+  margin-top: 8px; 
+  text-align: center; 
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  white-space: nowrap;
+  background: linear-gradient(90deg, #ffde03, #ff5252);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ফুলস্ক্রিন সাইবারপঙ্ক রিডার মোডাল */
+.comic-modal { 
+  display: none; 
+  position: fixed; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  z-index: 99999; 
+  overflow: hidden; 
+}
+.modal-bg { 
+  position: absolute; 
+  width: 100%; 
+  height: 100%; 
+  background: radial-gradient(circle, #1a1525 0%, #0a0810 100%); 
+  backdrop-filter: blur(8px);
+}
+.close-modal { 
+  position: absolute; 
+  top: 20px; 
+  right: 20px; 
+  z-index: 10005; 
+  background: var(--red); 
+  color: #fff; 
+  border: 3px solid var(--ink); 
+  box-shadow: 3px 3px 0 var(--ink); 
+  width: 40px; 
+  height: 40px; 
+  font-size: 18px;
+  font-weight: 900; 
+  cursor: pointer; 
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+.close-modal:hover {
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* উন্নত স্লাইডার উইন্ডো ও নিওন গ্লো */
+.slider-window { 
+  position: relative; 
+  width: 92%; 
+  max-width: 420px; 
+  height: 72vh; 
+  margin: 5vh auto 0; 
+  z-index: 10000; 
+  overflow: hidden; 
+  border: 4px solid #fff; 
+  background: #000; 
+  box-shadow: 0 0 30px var(--neon-glow);
+  transition: box-shadow 0.3s ease;
+}
+.slides-wrapper { 
+  display: flex; 
+  width: 100%; 
+  height: 100%; 
+  transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1); 
+}
+.comic-slide { 
+  min-width: 100%; 
+  height: 100%; 
+  display: flex; 
+  flex-direction: column; 
+  background: #000; 
+  position: relative; 
+}
+.comic-slide img { 
+  width: 100%; 
+  height: calc(100% - 95px); 
+  object-fit: contain; 
+  background: #050508; 
+}
+
+/* ইউনিক কমিক ডায়ালগ বক্স থিম */
+.comic-text-container { 
+  height: 95px; 
+  background: linear-gradient(135deg, #131520 0%, #0d0e15 100%); 
+  color: #fff; 
+  padding: 12px 18px; 
+  font-size: 13px; 
+  text-align: center; 
+  line-height: 1.5; 
+  border-top: 4px solid var(--neon-glow); 
+  box-sizing: border-box; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  font-weight: 600; 
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.3px;
+  position: relative;
+}
+.comic-text-container::before {
+  content: "♦ STORY ♦";
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  background: var(--neon-glow);
+  color: #000;
+  font-size: 8px;
+  font-weight: 900;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+/* প্রিমিয়াম বটম নেভিগেশন বার */
+.reader-nav-bar { 
+  position: absolute; 
+  bottom: 25px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  width: 92%; 
+  max-width: 420px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  z-index: 10002; 
+}
+.nav-circle-btn { 
+  background: #fff; 
+  color: var(--ink); 
+  border: 3px solid var(--ink); 
+  box-shadow: 3px 3px 0 var(--ink); 
+  width: 50px; 
+  height: 50px; 
+  font-weight: 900; 
+  font-size: 22px; 
+  cursor: pointer; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  transition: all 0.2s;
+}
+.nav-circle-btn:hover {
+  background: var(--gold);
+  transform: translateY(-2px);
+}
+.page-counter { 
+  background: #111; 
+  color: #fff;
+  border: 3px solid var(--neon-glow); 
+  padding: 6px 18px; 
+  font-size: 13px; 
+  font-weight: 900; 
+  font-family: 'Bangers', cursive;
+  letter-spacing: 1px;
+  box-shadow: 0 0 10px var(--neon-glow);
+}
 </style>
 </head>
 <body>
 <div id="toast"></div>
+
+<a href="https://t.me/wait_for_end_404" target="_blank" class="support-btn">💬 SUPPORT</a>
 
 <div id="tab-home" class="tab on">
   <div class="cc p-4 mb-3" style="padding:14px;margin-bottom:12px;background:var(--gold)">
@@ -69,7 +340,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--red)}
         <div id="uid-txt" style="font-size:10px;font-weight:900;color:#555">ID: ----</div>
         <div id="urank" style="font-size:10px;font-weight:900;color:var(--red);text-transform:uppercase;margin-top:2px">Rookie Hero</div>
       </div>
-      <div class="cc cpulse" style="padding:8px 12px;text-align:center;background:#fff;flex-shrink:0">
+      <div class="balance-glow" style="padding:8px 12px;text-align:center;flex-shrink:0">
         <div id="hcoins" class="bf" style="font-size:22px;line-height:1">0</div>
         <div style="font-size:9px;font-weight:900">COINS</div>
       </div>
@@ -84,7 +355,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--red)}
     <div class="rb-out"><div class="rb-in" id="rank-bar" style="width:0%"></div></div>
   </div>
 
-  <div id="ann-box" class="cc mb-3" style="display:none;padding:10px;background:#dbeafe;border-color:var(--blue);margin-bottom:12px">
+  <div id="ann-box" class="cc mb-3 ann-animation" style="display:none;padding:10px;background:#dbeafe;border-color:var(--blue);margin-bottom:12px">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
       <p id="ann-txt" style="font-weight:700;font-size:13px;flex:1;line-height:1.4"></p>
       <button onclick="document.getElementById('ann-box').style.display='none'" style="background:var(--ink);color:#fff;border:none;padding:2px 8px;cursor:pointer;font-size:11px;flex-shrink:0">✕</button>
@@ -123,7 +394,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--red)}
 
 <div id="tab-wallet" class="tab">
   <div class="bf" style="font-size:26px;margin-bottom:12px">💰 PAYOUT REQUEST</div>
-  <div class="cc mb-3" style="padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;background:#fef9c3">
+  <div class="cc mb-3 balance-glow" style="padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;">
     <div><div style="font-size:10px;font-weight:900;text-transform:uppercase">Your Coins</div><div id="wal-bal" class="bf" style="font-size:28px">0</div></div>
     <div style="text-align:right"><div style="font-size:10px;font-weight:900;text-transform:uppercase">Min. Payout</div><div class="bf" style="font-size:20px;color:var(--red)">500 🪙</div></div>
   </div>
@@ -206,7 +477,7 @@ var ME = null;
 var UID = null;
 var _claimed = {};
 var _tasks = [];
-var _comics = []; // কমিক্স ডেটা স্টোর করার ভ্যারিয়েবল
+var _comics = [];
 var _listeners = {};
 var _toastT;
 
@@ -239,7 +510,7 @@ async function initUser(u, refBy) {
       var rref = db.collection('users').doc(refBy);
       var rsnap = await rref.get();
       if (rsnap.exists) {
-        await rref.update({ reffer: FS.increment(1), coins: FS.increment(50) });
+        await rref.update({ reffer: FS.increment(1), coins: FS.increment(100) });
       }
     }
     var newU = {
@@ -293,12 +564,15 @@ function attachListeners() {
   _listeners.ann = db.collection('announcements').orderBy('createdAt','desc').limit(1).onSnapshot(function(snap) {
     if (!snap.empty) {
       var a = snap.docs[0].data();
+      var ab = document.getElementById('ann-box');
       document.getElementById('ann-txt').innerText = "📢 " + (a.title||'');
-      document.getElementById('ann-box').style.display = 'block';
+      ab.style.display = 'block';
+      ab.classList.remove('ann-animation');
+      void ab.offsetWidth; 
+      ab.classList.add('ann-animation');
     }
   });
 
-  // ফায়ারবেস থেকে কমিক্স ডেটা রিয়েলটাইম রিড লিসেনার
   db.collection('comics').orderBy('createdAt', 'desc').onSnapshot(function(snap) {
     _comics = snap.docs.map(function(d) { return Object.assign({_id: d.id}, d.data()); });
     renderComicsTab();
@@ -352,10 +626,10 @@ function renderTasks() {
     quick.innerHTML = e; full.innerHTML = e; return;
   }
 
-  var html = _tasks.map(function(t) {
+  var html = _tasks.map(function(t, index) {
     var done = !!_claimed[t._id];
     var coins = t.reward || t.coins || 0;
-    return '<div class="cc '+(done?'task-done':'')+'" style="padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px">' +
+    return '<div class="task-card-glow '+(done?'task-done':'')+'" style="padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;animation-delay:'+(index*0.05)+'s">' +
       '<div style="flex:1;min-width:0">' +
         '<div style="font-weight:900;font-size:14px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(t.name||'Task') + '</div>' +
         '<div style="font-size:10px;font-weight:700;color:var(--blue);margin-top:2px">' + esc(t.type||'Task') + ' • +' + coins + ' COINS</div>' +
@@ -374,7 +648,6 @@ function renderTasks() {
   full.innerHTML  = html.join('');
 }
 
-/* কমিক্স ট্যাব রেন্ডার ফাংশন */
 function renderComicsTab() {
   var container = document.getElementById('comics-list-container');
   if(!container) return;
@@ -398,7 +671,6 @@ function renderComicsTab() {
   container.innerHTML = gridHtml;
 }
 
-/* হরিজন্টাল স্লাইডার কমিক রিডার লজিক */
 var activeComicObj = null;
 var activeSlideIdx = 0;
 
@@ -411,12 +683,15 @@ function openComicReader(index) {
     return;
   }
 
-  // এডমিন থেকে সেট করা গ্লোয়িং কালার সিএসএস রুট ভ্যারিয়েবলে পুশ করা
   var glowColor = activeComicObj.theme_glow_color || '#00ffc8';
   document.documentElement.style.setProperty('--neon-glow', glowColor);
+  
+  // ডাইনামিক্যালি স্লাইডারের বক্স গ্লো পরিবর্তন করা হচ্ছে
+  var win = document.querySelector('.slider-window');
+  if(win) win.style.boxShadow = `0 0 30px ${glowColor}`;
 
   var wrapper = document.getElementById('comicSlidesWrapper');
-  wrapper.innerHTML = ''; // উইন্ডো ক্লিয়ার
+  wrapper.innerHTML = '';
 
   activeComicObj.pages.forEach(function(page) {
     var slide = document.createElement('div');
@@ -456,7 +731,6 @@ function comicSlidePrev() {
   }
 }
 
-/* অন্যান্য সাধারণ ফাংশনসমূহ */
 async function checkTelegramMembership(channelId) {
   if(!channelId) return false;
   var cleanChannel = channelId.trim();
@@ -514,7 +788,7 @@ async function claimTask(taskId, coins, taskType, channelId) {
 
 function filterTasks() {
   var q = (document.getElementById('tsearch').value||'').toLowerCase();
-  document.querySelectorAll('#full-list .cc').forEach(function(card){
+  document.querySelectorAll('#full-list .task-card-glow').forEach(function(card){
     card.style.display = card.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
   });
 }
@@ -592,7 +866,6 @@ function renderPayHistory(arr) {
   }).join('');
 }
 
-var _toastT;
 function showToast(msg) {
   var t = document.getElementById('toast');
   if (!t) return;
