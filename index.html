@@ -6,7 +6,7 @@
 <title>INFINITE HEROES</title>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-:root{--gold:#FFDE03;--red:#E63946;--blue:#1E90FF;--green:#22c55e;--bg:#f0f0f0;--card:#fff;--ink:#000}
+:root{--gold:#FFDE03;--red:#E63946;--blue:#1E90FF;--green:#22c55e;--bg:#f0f0f0;--card:#fff;--ink:#000;--purple:#a855f7;--neon-glow:#00ffc8}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:var(--bg);background-image:radial-gradient(#ccc 1px,transparent 1px);background-size:20px 20px;color:var(--ink);overflow-x:hidden;min-height:100vh}
 .bf{font-family:'Bangers',cursive;letter-spacing:1px}
@@ -36,6 +36,25 @@ body{font-family:'Inter',sans-serif;background:var(--bg);background-image:radial
 input,select,textarea{width:100%;padding:8px 10px;border:2px solid var(--ink);font-size:13px;font-weight:700;outline:none;font-family:'Inter';background:#fff;margin-bottom:10px}
 input:focus,select:focus,textarea:focus{border-color:var(--red)}
 .lbl{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:block;color:#555}
+
+/* কমিক্স গ্রিড লেআউট (পপ-আর্ট থিম ম্যাচিং) */
+.comics-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
+.comic-item-card { background:#fff; border:3px solid var(--ink); box-shadow:4px 4px 0 var(--ink); padding:8px; cursor:pointer; }
+.comic-item-card img { width:100%; height:160px; object-fit:cover; border:2px solid var(--ink); }
+.comic-item-card .c-title { font-weight:900; font-size:13px; text-transform:uppercase; margin-top:6px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* ফুলস্ক্রিন প্রিমিয়াম কমিক্স রিডার মোডাল */
+.comic-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:99999; overflow:hidden; }
+.modal-bg { position:absolute; width:100%; height:100%; background:rgba(0,0,0,0.95); }
+.close-modal { position:absolute; top:16px; right:16px; z-index:10005; background:var(--red); color:#fff; border:3px solid var(--ink); box-shadow:2px 2px 0 var(--ink); width:36px; height:36px; font-weight:900; cursor:pointer; }
+.slider-window { position:relative; width:92%; max-width:400px; height:74vh; margin:4vh auto 0; z-index:10000; overflow:hidden; border:3px solid var(--ink); background:#000; box-shadow:6px 6px 0 var(--ink); }
+.slides-wrapper { display:flex; width:100%; height:100%; transition:transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+.comic-slide { min-width:100%; height:100%; display:flex; flex-direction:column; background:#05050a; position:relative; }
+.comic-slide img { width:100%; height:calc(100% - 90px); object-fit:contain; background:#000; }
+.comic-text-container { height:90px; background:#11121b; color:#fff; padding:12px; font-size:13px; text-align:center; line-height:1.5; border-top:3px solid var(--neon-glow); box-sizing:border-box; display:flex; align-items:center; justify-content:center; font-weight:500; text-shadow: 0 0 5px rgba(255,255,255,0.2); }
+.reader-nav-bar { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); width:92%; max-width:400px; display:flex; justify-content:space-between; align-items:center; z-index:10002; }
+.nav-circle-btn { background:var(--gold); color:var(--ink); border:3px solid var(--ink); box-shadow:2px 2px 0 var(--ink); width:46px; height:46px; font-weight:900; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.page-counter { background:#fff; border:2px solid var(--ink); padding:4px 14px; font-size:12px; font-weight:900; }
 </style>
 </head>
 <body>
@@ -97,6 +116,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--red)}
   <div id="full-list"><div class="spin"></div></div>
 </div>
 
+<div id="tab-comics" class="tab">
+  <div class="bf" style="font-size:28px;text-align:center;margin-bottom:12px">📚 HERO COMICS</div>
+  <div id="comics-list-container"><div class="spin"></div></div>
+</div>
+
 <div id="tab-wallet" class="tab">
   <div class="bf" style="font-size:26px;margin-bottom:12px">💰 PAYOUT REQUEST</div>
   <div class="cc mb-3" style="padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;background:#fef9c3">
@@ -132,9 +156,23 @@ input:focus,select:focus,textarea:focus{border-color:var(--red)}
   <button class="cb" onclick="location.reload()" style="width:100%;padding:12px;background:var(--card);font-size:16px">🔄 REFRESH DATA</button>
 </div>
 
+<div id="comicReaderModal" class="comic-modal">
+  <div class="modal-bg"></div>
+  <button class="close-modal" onclick="closeComicReader()">✕</button>
+  <div class="slider-window">
+    <div class="slides-wrapper" id="comicSlidesWrapper"></div>
+  </div>
+  <div class="reader-nav-bar">
+    <button class="nav-circle-btn" onclick="comicSlidePrev()">←</button>
+    <span id="comicPageCounter" class="page-counter">1 / 1</span>
+    <button class="nav-circle-btn" onclick="comicSlideNext()">→</button>
+  </div>
+</div>
+
 <nav class="nav">
   <div class="nav-i on" id="btn-home" onclick="goTab('home')"><span class="nav-ic">🏠</span>HOME</div>
   <div class="nav-i" id="btn-tasks" onclick="goTab('tasks')"><span class="nav-ic">⚡</span>TASKS</div>
+  <div class="nav-i" id="btn-comics" onclick="goTab('comics')"><span class="nav-ic">📚</span>COMICS</div>
   <div class="nav-i" id="btn-wallet" onclick="goTab('wallet')"><span class="nav-ic">💰</span>WALLET</div>
   <div class="nav-i" id="btn-profile" onclick="goTab('profile')"><span class="nav-ic">👤</span>PROFILE</div>
 </nav>
@@ -168,6 +206,7 @@ var ME = null;
 var UID = null;
 var _claimed = {};
 var _tasks = [];
+var _comics = []; // কমিক্স ডেটা স্টোর করার ভ্যারিয়েবল
 var _listeners = {};
 var _toastT;
 
@@ -196,7 +235,6 @@ async function initUser(u, refBy) {
   var uref = db.collection('users').doc(UID);
   var snap = await uref.get();
   if (!snap.exists) {
-    // সঠিক রেফারেল ট্র্যাকিং লজিক (নিজে নিজেকে রেফার করা ব্লক করা হয়েছে)
     if (refBy && refBy !== UID) {
       var rref = db.collection('users').doc(refBy);
       var rsnap = await rref.get();
@@ -217,6 +255,12 @@ async function initUser(u, refBy) {
     ME = snap.data();
   }
   setAvatarAndRef();
+}
+
+function setAvatarAndRef() {
+  var av = document.getElementById('av'); if(av) av.src = ME.photoURL;
+  var pav = document.getElementById('pav'); if(pav) pav.src = ME.photoURL;
+  var rl = document.getElementById('ref-link'); if(rl) rl.value = "https://t.me/" + BOT + "?start=" + UID;
 }
 
 function attachListeners() {
@@ -253,6 +297,49 @@ function attachListeners() {
       document.getElementById('ann-box').style.display = 'block';
     }
   });
+
+  // ফায়ারবেস থেকে কমিক্স ডেটা রিয়েলটাইম রিড লিসেনার
+  db.collection('comics').orderBy('createdAt', 'desc').onSnapshot(function(snap) {
+    _comics = snap.docs.map(function(d) { return Object.assign({_id: d.id}, d.data()); });
+    renderComicsTab();
+  });
+}
+
+function updateStats() {
+  var sc = document.getElementById('sc'); if(sc) sc.innerText = ME.coins||0;
+  var hc = document.getElementById('hcoins'); if(hc) hc.innerText = ME.coins||0;
+  var sr = document.getElementById('sr'); if(sr) sr.innerText = ME.reffer||0;
+  var sw = document.getElementById('sw'); if(sw) sw.innerText = ME.totalWithdrawals||0;
+  var sm = document.getElementById('sm'); if(sm) sm.innerText = ME.tasksCompleted||0;
+}
+
+function updateRankUI(c) {
+  var r = getRank(c);
+  var un = document.getElementById('uname'); if(un) un.innerText = esc(ME.name);
+  var ui = document.getElementById('uid-txt'); if(ui) ui.innerText = "ID: " + ME.id;
+  var ur = document.getElementById('urank'); if(ur) ur.innerText = r.name;
+  
+  var nxt = RANKS[RANKS.indexOf(r)+1];
+  var rb = document.getElementById('rank-bar');
+  var rn = document.getElementById('rank-next');
+  if(nxt) {
+    var pct = ((c - r.min) / (nxt.min - r.min)) * 100;
+    if(rb) rb.style.width = Math.min(pct, 100) + "%";
+    if(rn) rn.innerText = c + " / " + nxt.min + " COINS TO " + nxt.name.toUpperCase();
+  } else {
+    if(rb) rb.style.width = "100%";
+    if(rn) rn.innerText = "MAX RANK ACHIEVED!";
+  }
+}
+
+function updateProfileUI() {
+  var pn = document.getElementById('pname'); if(pn) pn.innerText = esc(ME.name);
+  var pi = document.getElementById('pid'); if(pi) pi.innerText = "ID: " + ME.id;
+  var pr = document.getElementById('prank'); if(pr) pr.innerText = getRank(ME.coins||0).name;
+  var pc = document.getElementById('pcoins'); if(pc) pc.innerText = ME.coins||0;
+  var pf = document.getElementById('pref'); if(pf) pf.innerText = ME.reffer||0;
+  var pm = document.getElementById('pmis'); if(pm) pm.innerText = ME.tasksCompleted||0;
+  var pb = document.getElementById('prefby'); if(pb) pb.innerText = ME.refferBy || "NONE";
 }
 
 function renderTasks() {
@@ -287,10 +374,91 @@ function renderTasks() {
   full.innerHTML  = html.join('');
 }
 
-// টেলিগ্রাম জয়েনিং অটোমেটিক এপিআই ভেরিফিকেশন লজিক
+/* কমিক্স ট্যাব রেন্ডার ফাংশন */
+function renderComicsTab() {
+  var container = document.getElementById('comics-list-container');
+  if(!container) return;
+
+  if(!_comics.length) {
+    container.innerHTML = '<p style="text-align:center;font-weight:700;color:#777;padding:24px">No comics available yet.</p>';
+    return;
+  }
+
+  var gridHtml = '<div class="comics-grid">';
+  gridHtml += _comics.map(function(c, idx) {
+    return `
+      <div class="comic-item-card" onclick="openComicReader(${idx})">
+        <img src="${esc(c.cover_image)}" alt="Cover">
+        <div class="c-title">${esc(c.title)}</div>
+      </div>
+    `;
+  }).join('');
+  gridHtml += '</div>';
+
+  container.innerHTML = gridHtml;
+}
+
+/* হরিজন্টাল স্লাইডার কমিক রিডার লজিক */
+var activeComicObj = null;
+var activeSlideIdx = 0;
+
+function openComicReader(index) {
+  activeComicObj = _comics[index];
+  activeSlideIdx = 0;
+
+  if(!activeComicObj.pages || !activeComicObj.pages.length) {
+    showToast("❌ THIS COMIC BOOK HAS NO PAGES!");
+    return;
+  }
+
+  // এডমিন থেকে সেট করা গ্লোয়িং কালার সিএসএস রুট ভ্যারিয়েবলে পুশ করা
+  var glowColor = activeComicObj.theme_glow_color || '#00ffc8';
+  document.documentElement.style.setProperty('--neon-glow', glowColor);
+
+  var wrapper = document.getElementById('comicSlidesWrapper');
+  wrapper.innerHTML = ''; // উইন্ডো ক্লিয়ার
+
+  activeComicObj.pages.forEach(function(page) {
+    var slide = document.createElement('div');
+    slide.className = 'comic-slide';
+    slide.innerHTML = `
+      <img src="${esc(page.img)}" alt="Page">
+      <div class="comic-text-container">${esc(page.txt || '')}</div>
+    `;
+    wrapper.appendChild(slide);
+  });
+
+  document.getElementById('comicReaderModal').style.display = 'block';
+  updateComicSliderView();
+}
+
+function closeComicReader() {
+  document.getElementById('comicReaderModal').style.display = 'none';
+}
+
+function updateComicSliderView() {
+  var wrapper = document.getElementById('comicSlidesWrapper');
+  wrapper.style.transform = `translateX(-${activeSlideIdx * 100}%)`;
+  document.getElementById('comicPageCounter').innerText = `${activeSlideIdx + 1} / ${activeComicObj.pages.length}`;
+}
+
+function comicSlideNext() {
+  if (activeSlideIdx < activeComicObj.pages.length - 1) {
+    activeSlideIdx++;
+    updateComicSliderView();
+  }
+}
+
+function comicSlidePrev() {
+  if (activeSlideIdx > 0) {
+    activeSlideIdx--;
+    updateComicSliderView();
+  }
+}
+
+/* অন্যান্য সাধারণ ফাংশনসমূহ */
 async function checkTelegramMembership(channelId) {
   if(!channelId) return false;
-  // হ্যান্ডেল ইউজারনেম ফরম্যাট (যদি @ দিয়ে শুরু হয়)
   var cleanChannel = channelId.trim();
   if(!cleanChannel.startsWith('@') && !cleanChannel.startsWith('-100')) {
     cleanChannel = '@' + cleanChannel;
@@ -311,10 +479,8 @@ async function checkTelegramMembership(channelId) {
 
 async function claimTask(taskId, coins, taskType, channelId) {
   if (!UID) return;
-
   showToast("⚡ VERIFYING MISSION...");
 
-  // যদি টাস্ক টাইপ টেলিগ্রাম হয়, তবে মেম্বারশিপ চেক করবে
   if(taskType.toLowerCase() === 'telegram') {
     if(!channelId || channelId.trim() === "") {
        showToast("❌ CHANNEL NOT CONFIGURED IN ADMIN PANEL!");
@@ -357,14 +523,26 @@ function openLink(e, url) {
   if (tg && tg.openLink) { e.preventDefault(); tg.openLink(url); }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-  var wa = document.getElementById('wal-amt');
-  if (wa) wa.oninput = function() {
-    var v = parseInt(this.value)||0;
-    var el = document.getElementById('wal-usd');
-    if (el) el.innerText = '$' + (v/100).toFixed(2);
-  };
-});
+function goTab(id) {
+  document.querySelectorAll('.tab').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nav-i').forEach(b => b.classList.remove('on'));
+  document.getElementById('tab-' + id).classList.add('on');
+  document.getElementById('btn-' + id).classList.add('on');
+}
+
+function copyRef() {
+  var copyText = document.getElementById("ref-link");
+  if(!copyText) return;
+  copyText.select();
+  copyText.setSelectionRange(0, 99999);
+  try {
+    navigator.clipboard.writeText(copyText.value);
+    showToast("🔗 INVITE LINK COPIED!");
+    if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+  } catch (err) {
+    showToast("❌ COPY FAILED");
+  }
+}
 
 function submitWithdraw() {
   var addr = (document.getElementById('wal-addr').value||'').trim();
@@ -375,132 +553,68 @@ function submitWithdraw() {
   if (isNaN(amt)||amt<500)  return showToast("❌ MINIMUM IS 500 COINS!");
   if (bal < amt)            return showToast("❌ NOT ENOUGH COINS!");
 
-  showToast("⏳ SENDING...");
-  var batch = db.batch();
-  var wref  = db.collection('withdrawals').doc();
-  var uref  = db.collection('users').doc(UID);
-
-  batch.set(wref, {
-    userId: UID, userName: ME ? (ME.name||'Hero') : 'Hero',
-    usdcAddress: addr, amount: amt, status: 'pending',
+  showToast("⏳ SENDING REQUEST...");
+  
+  db.collection('withdrawals').add({
+    userId: UID,
+    userName: ME.name || 'Hero',
+    usdcAddress: addr,
+    amount: amt,
+    status: 'pending',
     createdAt: FS.serverTimestamp()
-  });
-  batch.update(uref, {
-    coins: FS.increment(-amt),
-    totalWithdrawals: FS.increment(1)
-  });
-
-  batch.commit().then(function() {
-    showToast("🚀 REQUEST SENT!");
+  }).then(function() {
+    db.collection('users').doc(UID).update({
+      coins: FS.increment(-amt),
+      totalWithdrawals: FS.increment(1)
+    });
+    showToast("✅ WITHDRAWAL REQUEST SENT!");
     document.getElementById('wal-addr').value = '';
-    document.getElementById('wal-amt').value  = '';
-    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-  }).catch(function(e){ showToast("❌ " + e.message); });
+    document.getElementById('wal-amt').value = '';
+  }).catch(e => showToast("❌ FAILED: " + e.message));
 }
 
-function renderPayHistory(data) {
+function renderPayHistory(arr) {
   var el = document.getElementById('pay-hist');
-  if (!el) return;
-  if (!data.length) { el.innerHTML = '<p style="text-align:center;font-weight:700;color:#777;padding:16px">No payout history.</p>'; return; }
-  el.innerHTML = data.map(function(w) {
-    var d = w.createdAt && w.createdAt.toDate ? w.createdAt.toDate().toLocaleString() : 'Just now';
-    var bc = w.status==='approved'?'bapp':w.status==='rejected'?'brej':'bpend';
-    return '<div class="cc" style="padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">' +
-      '<div>' +
-        '<div style="font-weight:900;font-size:14px">-' + (w.amount||0) + ' 🪙</div>' +
-        '<div style="font-size:10px;color:#777;margin-top:2px">' + d + '</div>' +
-        '<div style="font-size:10px;color:#777;font-family:monospace;max-width:160px;overflow:hidden;text-overflow:ellipsis">' + esc(w.usdcAddress||'') + '</div>' +
-      '</div>' +
-      '<span class="' + bc + '">' + esc(w.status) + '</span>' +
-    '</div>';
+  if(!el) return;
+  if(!arr.length) { el.innerHTML = '<p style="padding:10px;color:#777;font-weight:700;">No history found.</p>'; return; }
+  
+  el.innerHTML = arr.map(w => {
+    var sCls = w.status === 'approved' ? 'bapp' : (w.status === 'rejected' ? 'brej' : 'bpend');
+    return `
+      <div class="cc" style="padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-weight:900;font-size:14px;color:var(--red);">${w.amount} 🪙</div>
+          <div style="font-size:9px;color:#666;font-family:monospace;max-width:180px;overflow:hidden;text-overflow:ellipsis;">${esc(w.usdcAddress)}</div>
+        </div>
+        <span class="${sCls}">${w.status.toUpperCase()}</span>
+      </div>
+    `;
   }).join('');
 }
 
-function updateStats() {
-  if (!ME) return;
-  setText('hcoins', ME.coins||0);
-  setText('sc', ME.coins||0);
-  setText('sr', ME.reffer||0);
-  setText('sw', ME.totalWithdrawals||0);
-  setText('sm', ME.tasksCompleted||0);
-}
-
-function updateRankUI(coins) {
-  var rank = getRank(coins);
-  var next = RANKS[RANKS.indexOf(rank)+1];
-  setText('urank', rank.name);
-  setText('prank', rank.name);
-  if (next) {
-    var pct = ((coins-rank.min)/(next.min-rank.min))*100;
-    var bar = document.getElementById('rank-bar');
-    if (bar) bar.style.width = Math.min(pct,100)+'%';
-    setText('rank-next', 'Next: '+next.name);
-  } else {
-    var bar2 = document.getElementById('rank-bar');
-    if (bar2) bar2.style.width = '100%';
-    setText('rank-next', '⭐ MAX RANK!');
-  }
-}
-
-function setAvatarAndRef() {
-  var av = (ME && ME.photoURL) || ("https://api.dicebear.com/7.x/avataaars/svg?seed=" + UID);
-  var avEl = document.getElementById('av');
-  var pavEl = document.getElementById('pav');
-  if (avEl) avEl.src = av;
-  if (pavEl) pavEl.src = av;
-  var ref = document.getElementById('ref-link');
-  if (ref) ref.value = "https://t.me/" + BOT + "?start=" + UID;
-}
-
-function updateProfileUI() {
-  if (!ME) return;
-  setText('uname', ME.name||'Hero');
-  setText('uid-txt', 'ID: ' + (ME.id||UID));
-  setText('pname', ME.name||'Hero');
-  setText('pid', 'ID: ' + (ME.id||UID));
-  setText('pcoins', ME.coins||0);
-  setText('pref', ME.reffer||0);
-  setText('pmis', ME.tasksCompleted||0);
-  setText('prefby', ME.refferBy||'NONE');
-}
-
-function setText(id, val) {
-  var el = document.getElementById(id);
-  if (el) el.innerText = val;
-}
-
-function goTab(name) {
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); });
-  document.querySelectorAll('.nav-i').forEach(function(n){ n.classList.remove('on'); });
-  var targetTab = document.getElementById('tab-'+name);
-  var targetBtn = document.getElementById('btn-'+name);
-  if(targetTab) targetTab.classList.add('on');
-  if(targetBtn) targetBtn.classList.add('on');
-  if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-}
-
-function copyRef() {
-  var v = (document.getElementById('ref-link')||{}).value || ("https://t.me/"+BOT+"?start="+UID);
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(v).then(function(){ showToast("✅ LINK COPIED!"); });
-  } else {
-    var el = document.getElementById('ref-link');
-    if (el) { el.select(); document.execCommand('copy'); }
-    showToast("✅ LINK COPIED!");
-  }
-}
-
+var _toastT;
 function showToast(msg) {
   var t = document.getElementById('toast');
   if (!t) return;
   t.innerText = msg; t.style.display = 'block';
   clearTimeout(_toastT);
-  _toastT = setTimeout(function(){ t.style.display='none'; }, 3000);
+  _toastT = setTimeout(function(){ t.style.display='none'; }, 3500);
 }
 
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  var wa = document.getElementById('wal-amt');
+  if (wa) {
+    wa.oninput = function() {
+      var v = parseInt(this.value)||0;
+      var el = document.getElementById('wal-usd');
+      if (el) el.innerText = '$' + (v/100).toFixed(2);
+    };
+  }
+});
 
 boot();
 </script>
