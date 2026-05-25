@@ -1,793 +1,842 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>INFINITE HEROES - SRX PROTOCOL</title>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;700;900&family=Orbitron:wght@700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --gold:#FFDE03;
-  --red:#E63946;
-  --blue:#1E90FF;
-  --green:#22c55e;
-  /* স্ক্রিনশট অনুযায়ী ডার্ক প্রিমিয়াম গেম ব্যাকগ্রাউন্ড কালার */
-  --bg:#0b0c16; 
-  --card:#141726;
-  --border-ink:#000;
-  --purple:#a855f7;
-  --neon-glow:#00ffc8;
-  --text-light:#fff;
-  --comic-orange: #ff6b35; 
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:'Inter',sans-serif;
-  background: var(--bg);
-  /* কমিক স্টাইল সূক্ষ্ম ডট গ্রিড ব্যাকগ্রাউন্ড এফেক্ট */
-  background-image: radial-gradient(rgba(255, 222, 3, 0.03) 1.5px, transparent 1.5px), radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 24px 24px;
-  background-position: 0 0, 12px 12px;
-  color:var(--text-light);
-  overflow-x:hidden;
-  min-height:100vh;
-}
-.bf{font-family:'Bangers',cursive;letter-spacing:1px}
-.cc{background:var(--card);border:3px solid var(--border-ink);box-shadow:4px 4px 0 var(--border-ink);border-radius:0;color:var(--text-light)}
-.cb{border:3px solid var(--border-ink);box-shadow:3px 3px 0 var(--border-ink);font-weight:900;cursor:pointer;text-transform:uppercase;transition:transform .1s,box-shadow .1s;display:inline-block;font-family:'Inter'}
-.cb:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--border-ink)}
-.cb:disabled{opacity:.5;cursor:not-allowed}
-.nav{position:fixed;bottom:0;width:100%;background:var(--card);border-top:3px solid var(--border-ink);display:flex;justify-content:space-around;padding:8px 0 12px;z-index:1000}
-.nav-i{font-size:10px;font-weight:900;text-align:center;color:#888;cursor:pointer;padding:0 8px}
-.nav-i.on{color:var(--gold)}
-.nav-ic{font-size:22px;display:block;margin-bottom:2px}
-.tab{display:none;padding:14px 14px 100px;animation:si .25s ease}
-.tab.on{display:block}
-@keyframes si{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-#toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:999999;padding:12px 24px;background:var(--red);color:#fff;border:3px solid var(--border-ink);box-shadow:4px 4px 0 var(--border-ink);font-family:'Bangers';font-size:18px;letter-spacing:1px;display:none;white-space:nowrap;max-width:90vw;text-align:center}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>INFINITE HEROES - SRX PROTOCOL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;700;900&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFDE03;
+            --red: #E63946;
+            --blue: #1E90FF;
+            --green: #22c55e;
+            --bg: #0b0c16;
+            --card: #141726;
+            --border-ink: #000;
+            --purple: #a855f7;
+            --neon-glow: #00ffc8;
+            --text-light: #fff;
+            --comic-orange: #ff6b35;
+        }
 
-.balance-glow { animation: bglow 1s ease-in-out infinite alternate; border: 3px solid var(--border-ink) !important;}
-@keyframes bglow {
-  from { box-shadow: 4px 4px 0 var(--border-ink), 0 0 4px var(--gold); background-color: var(--card); }
-  to { box-shadow: 4px 4px 0 var(--border-ink), 0 0 16px var(--gold); background-color: #1a1b2d; }
-}
-.ann-animation { animation: annShow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-@keyframes annShow { 0% { transform: scale(0.7); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-.task-card-glow { animation: slideInTask 0.4s ease-out forwards; border: 3px solid var(--border-ink); box-shadow: 4px 4px 0 var(--border-ink); transition: all 0.3s ease; background: var(--card); }
-.task-card-glow:not(.task-done):hover { border-color: var(--blue); box-shadow: 4px 4px 0 var(--blue), 0 0 15px rgba(30, 144, 255, 0.6); transform: translateY(-2px); }
-@keyframes slideInTask { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(rgba(255, 222, 3, 0.03) 1.5px, transparent 1.5px), radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+            color: var(--text-light);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
 
-.support-btn { position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 9999; background: var(--red); color: white; padding: 12px 6px; border: 3px solid var(--border-ink); border-right: none; box-shadow: -3px 3px 0 var(--border-ink); font-family: 'Bangers', cursive; font-size: 14px; letter-spacing: 1px; writing-mode: vertical-rl; text-orientation: mixed; cursor: pointer; text-decoration: none; transition: all 0.2s; }
-.support-btn:active { transform: translateY(-50%) translateX(2px); box-shadow: -1px 1px 0 var(--border-ink); }
+        .bf { font-family: 'Bangers', cursive; letter-spacing: 1px; }
+        
+        .cc {
+            background: var(--card);
+            border: 3px solid var(--border-ink);
+            box-shadow: 4px 4px 0 var(--border-ink);
+            border-radius: 0;
+            color: var(--text-light);
+        }
 
-.rb-out{background:#111;border:2px solid var(--border-ink);height:12px;overflow:hidden;border-radius:10px}
-.rb-in{background:linear-gradient(90deg, var(--comic-orange), var(--gold));height:100%;transition:width .6s}
-.bpend{background:#f97316;color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border:2px solid var(--border-ink)}
-.bapp{background:var(--green);color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border:2px solid var(--border-ink)}
-.brej{background:var(--red);color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border:2px solid var(--border-ink)}
-.task-done { opacity:.4; pointer-events:none; box-shadow: 2px 2px 0 var(--border-ink) !important; animation: none !important; }
-.task-done .cb{background:#333!important; color:#777!important}
-.spin{border:3px solid #333;border-top:3px solid var(--gold);border-radius:50%;width:28px;height:28px;animation:sp 1s linear infinite;margin:24px auto}
-@keyframes sp{to{transform:rotate(360deg)}}
-input,select,textarea{width:100%;padding:8px 10px;border:2px solid var(--border-ink);font-size:13px;font-weight:700;outline:none;font-family:'Inter';background:#191d32;color:#fff;margin-bottom:10px}
-input:focus,select:focus,textarea:focus{border-color:var(--gold)}
-.lbl{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:block;color:#aaa}
+        .cb {
+            border: 3px solid var(--border-ink);
+            box-shadow: 3px 3px 0 var(--border-ink);
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: transform .1s, box-shadow .1s;
+            display: inline-block;
+            font-family: 'Inter';
+        }
 
-.comics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 15px; }
-.comic-item-card { background: #1a1429; border: 3px solid var(--border-ink); box-shadow: 5px 5px 0 var(--border-ink); padding: 8px; cursor: pointer; position: relative; overflow: hidden; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.comic-item-card::before { content: "POW! READ"; position: absolute; top: 12px; right: -28px; background: var(--comic-orange); color: #000; font-family: 'Bangers', cursive; font-size: 11px; font-weight: bold; padding: 2px 28px; transform: rotate(45deg); z-index: 5; border-bottom: 2px solid var(--border-ink); }
-.comic-item-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 5px 5px 0 var(--neon-glow); border-color: var(--neon-glow); }
-.comic-item-card img { width: 100%; height: 190px; object-fit: cover; border: 3px solid var(--border-ink); background: #000; filter: contrast(1.1); }
-.comic-item-card .c-title { font-family: 'Bangers', cursive; font-size: 16px; letter-spacing: 0.8px; margin-top: 10px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--gold); text-shadow: 1px 1px 0px #000; }
+        .cb:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--border-ink); }
+        .cb:disabled { opacity: .5; cursor: not-allowed; }
 
-.comic-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; overflow: hidden; }
-.modal-bg { position: absolute; width: 100%; height: 100%; background: rgba(10, 11, 16, 0.98); background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 15px 15px; backdrop-filter: blur(4px); }
-.close-modal { position: absolute; top: 20px; right: 20px; z-index: 10005; background: var(--red); color: #fff; border: 3px solid var(--border-ink); box-shadow: 3px 3px 0 var(--border-ink); width: 42px; height: 42px; font-size: 20px; font-family: 'Bangers'; cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
-.close-modal:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--border-ink); }
+        .nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--card);
+            border-top: 3px solid var(--border-ink);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 12px;
+            z-index: 1000;
+        }
 
-.slider-window { position: relative; width: 92%; max-width: 420px; height: 72vh; margin: 6vh auto 0; z-index: 10000; overflow: hidden; border: 4px solid var(--border-ink); background: #000; box-shadow: 8px 8px 0 var(--border-ink); }
-.slides-wrapper { display: flex; width: 100%; height: 100%; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15); }
-.comic-slide { min-width: 100%; height: 100%; display: flex; flex-direction: column; background: #000; position: relative; justify-content: space-between; }
-.comic-slide img { width: 100%; height: calc(100% - 110px); object-fit: contain; background: #050508; padding: 5px; }
+        .nav-i { font-size: 10px; font-weight: 900; text-align: center; color: #888; cursor: pointer; padding: 0 8px; }
+        .nav-i.on { color: var(--gold); }
+        .nav-ic { font-size: 22px; display: block; margin-bottom: 2px; }
 
-.comic-text-container { height: 110px; background: var(--gold); color: #000; padding: 16px; font-size: 14px; text-align: center; line-height: 1.4; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-weight: 800; position: relative; border-top: 4px solid var(--border-ink); font-family: 'Inter', sans-serif; }
-.comic-text-container::before { content: "BOOM! PANEL STORY"; position: absolute; top: -14px; left: 15px; background: var(--comic-orange); color: #fff; font-size: 10px; font-family: 'Bangers'; padding: 2px 10px; border: 3px solid var(--border-ink); box-shadow: 2px 2px 0 var(--border-ink); text-transform: uppercase; transform: rotate(-2deg); }
+        .tab { display: none; padding: 14px 14px 100px; animation: si .25s ease; }
+        .tab.on { display: block; }
 
-.reader-nav-bar { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; display: flex; justify-content: space-between; align-items: center; z-index: 10002; }
-.nav-circle-btn { background: var(--comic-orange); color: #fff; border: 3px solid var(--border-ink); box-shadow: 3px 3px 0 var(--border-ink); width: 52px; height: 48px; font-family: 'Bangers'; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
-.nav-circle-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--border-ink); }
-.page-counter { background: #fff; color: #000; border: 3px solid var(--border-ink); box-shadow: 3px 3px 0 var(--border-ink); padding: 8px 22px; font-size: 16px; font-weight: 900; font-family: 'Bangers', cursive; letter-spacing: 1px; }
+        @keyframes si { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-.crypto-box { background: #16192b; border: 2px solid #282d47; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 3px 3px 0 var(--border-ink); }
-.crypto-info { display: flex; align-items: center; gap: 10px; }
-.crypto-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color:#000; }
-.wd-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-.btn-deposit { background: var(--green); color: #000; padding: 10px; font-size: 14px; text-align: center; }
-.btn-withdraw { background: var(--gold); color: #000; padding: 10px; font-size: 14px; text-align: center; }
+        #toast {
+            position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+            z-index: 999999; padding: 12px 24px; background: var(--red); color: #fff;
+            border: 3px solid var(--border-ink); box-shadow: 4px 4px 0 var(--border-ink);
+            font-family: 'Bangers'; font-size: 18px; letter-spacing: 1px; display: none;
+            white-space: nowrap; max-width: 90vw; text-align: center;
+        }
 
-.lock-field { opacity: 0.65; position: relative; border-color: var(--red) !important; background: #221727 !important; }
-.alert-text { font-family: 'Bangers', cursive; font-size: 11px; color: var(--red); letter-spacing: 0.8px; display: flex; align-items: center; gap: 4px; margin-top: 3px; }
+        .balance-glow { animation: bglow 1s ease-in-out infinite alternate; border: 3px solid var(--border-ink) !important; }
+        @keyframes bglow {
+            from { box-shadow: 4px 4px 0 var(--border-ink), 0 0 4px var(--gold); background-color: var(--card); }
+            to { box-shadow: 4px 4px 0 var(--border-ink), 0 0 16px var(--gold); background-color: #1a1b2d; }
+        }
 
-.custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999999; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); }
-.modal-content { background: var(--card); border: 4px solid var(--border-ink); width: 90%; max-width: 400px; margin: 15vh auto; padding: 20px; position: relative; box-shadow: 0 0 20px var(--gold); }
+        .ann-animation { animation: annShow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes annShow { 0% { transform: scale(0.7); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-.ref-history-list { background: #0d0f1a; max-height: 200px; overflow-y: auto; border: 2px solid var(--border-ink); }
-.ref-history-item { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #1a1e33; font-size: 12px; }
-.ref-history-item:last-child { border-bottom: none; }
-</style>
+        .task-card-glow { animation: slideInTask 0.4s ease-out forwards; border: 3px solid var(--border-ink); box-shadow: 4px 4px 0 var(--border-ink); transition: all 0.3s ease; background: var(--card); }
+        .task-card-glow:not(.task-done):hover { border-color: var(--blue); box-shadow: 4px 4px 0 var(--blue), 0 0 15px rgba(30, 144, 255, 0.6); transform: translateY(-2px); }
+        @keyframes slideInTask { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+
+        .support-btn {
+            position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 9999;
+            background: var(--red); color: white; padding: 12px 6px; border: 3px solid var(--border-ink);
+            border-right: none; box-shadow: -3px 3px 0 var(--border-ink); font-family: 'Bangers', cursive;
+            font-size: 14px; letter-spacing: 1px; writing-mode: vertical-rl; text-orientation: mixed;
+            cursor: pointer; text-decoration: none; transition: all 0.2s;
+        }
+        .support-btn:active { transform: translateY(-50%) translateX(2px); box-shadow: -1px 1px 0 var(--border-ink); }
+
+        .rb-out { background: #111; border: 2px solid var(--border-ink); height: 12px; overflow: hidden; border-radius: 10px; }
+        .rb-in { background: linear-gradient(90deg, var(--comic-orange), var(--gold)); height: 100%; transition: width .6s; }
+        
+        .bpend { background: #f97316; color: #fff; font-size: 10px; font-weight: 900; padding: 2px 8px; border: 2px solid var(--border-ink); }
+        .bapp { background: var(--green); color: #fff; font-size: 10px; font-weight: 900; padding: 2px 8px; border: 2px solid var(--border-ink); }
+        .brej { background: var(--red); color: #fff; font-size: 10px; font-weight: 900; padding: 2px 8px; border: 2px solid var(--border-ink); }
+        
+        .task-done { opacity: .4; pointer-events: none; box-shadow: 2px 2px 0 var(--border-ink) !important; animation: none !important; }
+        .task-done .cb { background: #333 !important; color: #777 !important; }
+        
+        .spin { border: 3px solid #333; border-top: 3px solid var(--gold); border-radius: 50%; width: 28px; height: 28px; animation: sp 1s linear infinite; margin: 24px auto; }
+        @keyframes sp { to { transform: rotate(360deg); } }
+
+        input, select, textarea { width: 100%; padding: 8px 10px; border: 2px solid var(--border-ink); font-size: 13px; font-weight: 700; outline: none; font-family: 'Inter'; background: #191d32; color: #fff; margin-bottom: 10px; }
+        input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+        .lbl { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; display: block; color: #aaa; }
+
+        .comics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 15px; }
+        .comic-item-card { background: #1a1429; border: 3px solid var(--border-ink); box-shadow: 5px 5px 0 var(--border-ink); padding: 8px; cursor: pointer; position: relative; overflow: hidden; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .comic-item-card::before { content: "POW! READ"; position: absolute; top: 12px; right: -28px; background: var(--comic-orange); color: #000; font-family: 'Bangers', cursive; font-size: 11px; font-weight: bold; padding: 2px 28px; transform: rotate(45deg); z-index: 5; border-bottom: 2px solid var(--border-ink); }
+        .comic-item-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 5px 5px 0 var(--neon-glow); border-color: var(--neon-glow); }
+        .comic-item-card img { width: 100%; height: 190px; object-fit: cover; border: 3px solid var(--border-ink); background: #000; filter: contrast(1.1); }
+        .comic-item-card .c-title { font-family: 'Bangers', cursive; font-size: 16px; letter-spacing: 0.8px; margin-top: 10px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--gold); text-shadow: 1px 1px 0px #000; }
+
+        .comic-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; overflow: hidden; }
+        .modal-bg { position: absolute; width: 100%; height: 100%; background: rgba(10, 11, 16, 0.98); background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 15px 15px; backdrop-filter: blur(4px); }
+        .close-modal { position: absolute; top: 20px; right: 20px; z-index: 10005; background: var(--red); color: #fff; border: 3px solid var(--border-ink); box-shadow: 3px 3px 0 var(--border-ink); width: 42px; height: 42px; font-size: 20px; font-family: 'Bangers'; cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
+        .close-modal:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--border-ink); }
+
+        .slider-window { position: relative; width: 92%; max-width: 420px; height: 72vh; margin: 6vh auto 0; z-index: 10000; overflow: hidden; border: 4px solid var(--border-ink); background: #000; box-shadow: 8px 8px 0 var(--border-ink); }
+        .slides-wrapper { display: flex; width: 100%; height: 100%; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15); }
+        .comic-slide { min-width: 100%; height: 100%; display: flex; flex-direction: column; background: #000; position: relative; justify-content: space-between; }
+        .comic-slide img { width: 100%; height: calc(100% - 110px); object-fit: contain; background: #050508; padding: 5px; }
+        
+        .comic-text-container { height: 110px; background: var(--gold); color: #000; padding: 16px; font-size: 14px; text-align: center; line-height: 1.4; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-weight: 800; position: relative; border-top: 4px solid var(--border-ink); }
+        .comic-text-container::before { content: "BOOM! PANEL STORY"; position: absolute; top: -14px; left: 15px; background: var(--comic-orange); color: #fff; font-size: 10px; font-family: 'Bangers'; padding: 2px 10px; border: 3px solid var(--border-ink); box-shadow: 2px 2px 0 var(--border-ink); text-transform: uppercase; transform: rotate(-2deg); }
+
+        .reader-nav-bar { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 420px; display: flex; justify-content: space-between; align-items: center; z-index: 10002; }
+        .nav-circle-btn { background: var(--comic-orange); color: #fff; border: 3px solid var(--border-ink); box-shadow: 3px 3px 0 var(--border-ink); width: 52px; height: 48px; font-family: 'Bangers'; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
+        .nav-circle-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--border-ink); }
+        .page-counter { background: #fff; color: #000; border: 3px solid var(--border-ink); box-shadow: 3px 3px 0 var(--border-ink); padding: 8px 22px; font-size: 16px; font-weight: 900; font-family: 'Bangers', cursive; letter-spacing: 1px; }
+
+        .crypto-box { background: #16192b; border: 2px solid #282d47; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 3px 3px 0 var(--border-ink); }
+        .crypto-info { display: flex; align-items: center; gap: 10px; }
+        .crypto-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: #000; }
+        .wd-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+        .btn-deposit { background: var(--green); color: #000; padding: 10px; font-size: 14px; text-align: center; }
+        .btn-withdraw { background: var(--gold); color: #000; padding: 10px; font-size: 14px; text-align: center; }
+        
+        .lock-field { opacity: 0.65; position: relative; border-color: var(--red) !important; background: #221727 !important; }
+        .alert-text { font-family: 'Bangers', cursive; font-size: 11px; color: var(--red); letter-spacing: 0.8px; display: flex; align-items: center; gap: 4px; margin-top: 3px; }
+
+        .custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999999; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); }
+        .modal-content { background: var(--card); border: 4px solid var(--border-ink); width: 90%; max-width: 400px; margin: 15vh auto; padding: 20px; position: relative; box-shadow: 0 0 20px var(--gold); }
+        
+        .ref-history-list { background: #0d0f1a; max-height: 200px; overflow-y: auto; border: 2px solid var(--border-ink); }
+        .ref-history-item { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #1a1e33; font-size: 12px; }
+        .ref-history-item:last-child { border-bottom: none; }
+    </style>
 </head>
 <body>
-<div id="toast"></div>
 
-<a href="https://t.me/wait_for_end_404" target="_blank" class="support-btn">💬 SUPPORT</a>
+    <div id="toast"></div>
+    <a href="https://t.me/wait_for_end_404" target="_blank" class="support-btn">💬 SUPPORT</a>
 
-<div id="tab-home" class="tab on">
-  <div class="cc p-4 mb-3" style="padding:14px;margin-bottom:12px;background:var(--gold);color:#000">
-    <div style="display:flex;align-items:center;gap:10px">
-      <img id="av" src="" style="width:50px;height:50px;border:3px solid var(--border-ink);border-radius:50%;background:#ddd;object-fit:cover;flex-shrink:0">
-      <div style="flex:1;min-width:0">
-        <div id="uname" class="bf" style="font-size:22px;line-height:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">LOADING...</div>
-        <div id="uid-txt" style="font-size:10px;font-weight:900;color:#222">ID: ----</div>
-        <div id="urank" style="font-size:10px;font-weight:900;color:var(--red);text-transform:uppercase;margin-top:2px">Rookie Hero</div>
-      </div>
-      <div class="balance-glow" style="padding:8px 12px;text-align:center;flex-shrink:0;color:#fff">
-        <div id="hcoins" class="bf" style="font-size:22px;line-height:1;color:var(--gold)">0</div>
-        <div style="font-size:9px;font-weight:900;letter-spacing:1px">SRX TOKEN</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="cc mb-3" style="padding:10px;margin-bottom:12px">
-    <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-      <span style="font-size:10px;font-weight:900;text-transform:uppercase;color:#aaa">RANK PROGRESS</span>
-      <span id="rank-next" style="font-size:10px;font-weight:700;color:#777"></span>
-    </div>
-    <div class="rb-out"><div class="rb-in" id="rank-bar" style="width:0%"></div></div>
-  </div>
-
-  <div id="ann-box" class="cc mb-3 ann-animation" style="display:none;padding:10px;background:#1a2436;border-color:var(--blue);margin-bottom:12px">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
-      <p id="ann-txt" style="font-weight:700;font-size:13px;flex:1;line-height:1.4;color:#60a5fa"></p>
-      <button onclick="document.getElementById('ann-box').style.display='none'" style="background:var(--border-ink);color:#fff;border:none;padding:2px 8px;cursor:pointer;font-size:11px;flex-shrink:0">✕</button>
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-    <div class="cc" style="padding:10px;background:#16153b"><div style="font-size:10px;font-weight:900;text-transform:uppercase;color:var(--gold)">SRX Balance</div><div id="sc" class="bf" style="font-size:26px">0</div></div>
-    <div class="cc" style="padding:10px;background:#053d2e"><div style="font-size:10px;font-weight:900;text-transform:uppercase;color:var(--green)">Referrals</div><div id="sr" class="bf" style="font-size:26px">0</div></div>
-    <div class="cc" style="padding:10px;background:#5c1461"><div style="font-size:10px;font-weight:900;text-transform:uppercase;color:#f472b6">Withdrawals</div><div id="sw" class="bf" style="font-size:26px">0</div></div>
-    <div class="cc" style="padding:10px;background:#240b30"><div style="font-size:10px;font-weight:900;text-transform:uppercase;color:#c084fc">Missions Done</div><div id="sm" class="bf" style="font-size:26px">0</div></div>
-  </div>
-
-  <div class="bf" style="font-size:20px;margin-bottom:8px;color:var(--gold)">⚡ Quick Missions</div>
-  <div id="quick-list"><div class="spin"></div></div>
-
-  <div style="margin-top:14px">
-    <div class="bf" style="font-size:18px;margin-bottom:6px">🔗 Your Invite Link</div>
-    <div class="cc" style="padding:8px;display:flex;align-items:center;gap:8px">
-      <input type="text" id="ref-link" readonly style="flex:1;font-size:10px;font-weight:700;border:none;outline:none;background:transparent;min-width:0;margin:0;color:#fff">
-      <button class="cb" onclick="copyRef()" style="padding:6px 12px;background:var(--gold);color:#000;font-size:11px;flex-shrink:0">COPY</button>
-    </div>
-  </div>
-</div>
-
-<div id="tab-tasks" class="tab">
-  <div class="bf" style="font-size:28px;text-align:center;margin-bottom:12px;color:var(--gold)">⚡ HERO MISSIONS</div>
-  <input type="text" id="tsearch" oninput="filterTasks()" placeholder="SEARCH MISSIONS..." style="margin-bottom:12px">
-  <div id="full-list"><div class="spin"></div></div>
-</div>
-
-<div id="tab-comics" class="tab">
-  <div class="bf" style="font-size:28px;text-align:center;margin-bottom:12px;color:var(--gold)">📚 HERO COMICS</div>
-  <div id="comics-list-container"><div class="spin"></div></div>
-</div>
-
-<div id="tab-wallet" class="tab">
-  <div class="bf" style="font-size:26px;margin-bottom:12px;color:var(--gold)">💰 CRYPTO WALLET</div>
-  
-  <div class="wd-actions">
-    <button class="cb btn-deposit" onclick="openDepositModal()">📥 DEPOSIT</button>
-    <button class="cb btn-withdraw" onclick="document.getElementById('wd-form').scrollIntoView({behavior:'smooth'})">📤 WITHDRAW</button>
-  </div>
-
-  <div class="crypto-box">
-    <div class="crypto-info">
-      <div class="crypto-icon" style="background:#ffde03">S</div>
-      <div>
-        <div style="font-weight:900;font-size:14px">SRX Token</div>
-        <div style="font-size:10px;color:#aaa">Available Native Asset</div>
-      </div>
-    </div>
-    <div style="text-align:right"><div id="crypto-srx" class="bf" style="font-size:20px;color:var(--gold)">0</div></div>
-  </div>
-
-  <div class="crypto-box lock-field">
-    <div class="crypto-info">
-      <div class="crypto-icon" style="background:#26a17b;color:#fff">U</div>
-      <div>
-        <div style="font-weight:900;font-size:14px; display:flex; align-items:center; gap:5px;">
-          USDT Balance 🔒
+    <div id="tab-home" class="tab on">
+        <div class="cc p-4 mb-3" style="padding:14px;margin-bottom:12px;background:var(--gold);color:#000">
+            <div style="display:flex;align-items:center;gap:10px">
+                <img id="av" src="" style="width:50px;height:50px;border:3px solid var(--border-ink);border-radius:50%;background:#ddd;object-fit:cover;flex-shrink:0">
+                <div style="flex:1;min-width:0">
+                    <div id="uname" class="bf" style="font-size:22px;line-height:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">LOADING...</div>
+                    <div id="uid-txt" style="font-size:10px;font-weight:900;color:#222">ID: ----</div>
+                    <div id="urank" style="font-size:10px;font-weight:900;color:var(--red);text-transform:uppercase;margin-top:2px">Rookie Hero</div>
+                </div>
+                <div class="balance-glow" style="padding:8px 12px;text-align:center;flex-shrink:0;color:#fff">
+                    <div id="hcoins" class="bf" style="font-size:22px;line-height:1;color:var(--gold)">0</div>
+                    <div style="font-size:9px;font-weight:900;letter-spacing:1px">SRX TOKEN</div>
+                </div>
+            </div>
         </div>
-        <div style="font-size:10px;color:#aaa">Withdrawable (Tokens Value)</div>
-        <div class="alert-text">⚠️ WITHDRAW NOT AVAILABLE</div>
-      </div>
-    </div>
-    <div style="text-align:right">
-      <div id="crypto-usdt" class="bf" style="font-size:20px;color:var(--green)">$1.00</div>
-    </div>
-  </div>
 
-  <div class="crypto-box">
-    <div class="crypto-info">
-      <div class="crypto-icon" style="background:#f3ba2f">B</div>
-      <div>
-        <div style="font-weight:900;font-size:14px">BNB</div>
-        <div style="font-size:10px;color:#aaa">Smart Chain</div>
-      </div>
-    </div>
-    <div style="text-align:right"><div class="bf" style="font-size:20px;color:#f3ba2f">0.0000</div></div>
-  </div>
-
-  <div id="wd-form" class="cc" style="padding:14px;margin-top:15px;margin-bottom:14px">
-    <div class="bf" style="font-size:18px;margin-bottom:10px;color:var(--gold)">⚡ WITHDRAW SRX</div>
-    <label class="lbl">RECIPIENT ADDRESS (USDT BEP20 / SRX Wallet)</label>
-    <input type="text" id="wal-addr" placeholder="0x... Enter Wallet Address">
-    <label class="lbl">SRX AMOUNT (Min. 500 SRX)</label>
-    <input type="number" id="wal-amt" placeholder="500" min="500">
-    <div style="font-size:12px;font-weight:700;color:#aaa;margin-bottom:10px">Withdrawable Value: <span id="wal-usd" style="color:var(--green)">$0.00</span></div>
-    <button class="cb" onclick="submitWithdraw()" style="width:100%;padding:12px;background:var(--gold);color:#000;font-size:16px">EXECUTE WITHDRAWAL</button>
-  </div>
-
-  <div class="bf" style="font-size:18px;margin-bottom:8px;color:var(--gold)">📋 Transaction History</div>
-  <div id="pay-hist"><div class="spin"></div></div>
-</div>
-
-<div id="depositModal" class="custom-modal">
-  <div class="modal-content">
-    <button class="close-modal" onclick="closeDepositModal()" style="top:-15px; right:-15px; width:30px; height:30px; font-size:14px">✕</button>
-    <div class="bf" style="font-size:24px; color:var(--gold); margin-bottom:12px; text-align:center;">📥 CRYPTO DEPOSIT</div>
-    
-    <div id="dep-step-1">
-      <label class="lbl">ENTER DEPOSIT AMOUNT (USD / USDT)</label>
-      <input type="number" id="dep-amount" placeholder="Min. $5" min="1">
-      <button class="cb" onclick="nextDepositStep()" style="width:100%; padding:10px; background:var(--gold); color:#000;">NEXT STEP →</button>
-    </div>
-
-    <div id="dep-step-2" style="display:none;">
-      <p style="font-size:12px; margin-bottom:8px; color:#aaa;">Please send exactly <b id="show-dep-amt" style="color:var(--green)">$0</b> USDT to the admin address below:</p>
-      
-      <label class="lbl">USDT BEP20 DEPOSIT ADDRESS</label>
-      <div style="display:flex; gap:6px; margin-bottom:12px;">
-         <input type="text" id="admin-usdt-addr" readonly style="margin:0; font-size:11px;">
-         <button class="cb" onclick="copyAdminAddress()" style="background:#fff; color:#000; padding:0 8px; font-size:11px;">COPY</button>
-      </div>
-
-      <label class="lbl">ENTER TRANSACTION ID / TXID / HASH</label>
-      <input type="text" id="dep-txid" placeholder="Paste your transfer transaction hash">
-      <button class="cb" onclick="submitDepositTx()" style="width:100%; padding:10px; background:var(--green); color:#000;">SUBMIT DEPOSIT</button>
-    </div>
-  </div>
-</div>
-
-<div id="tab-profile" class="tab">
-  <div class="cc" style="padding:20px;text-align:center;margin-bottom:12px">
-    <img id="pav" src="" style="width:80px;height:80px;border:4px solid var(--border-ink);border-radius:50%;background:#ddd;object-fit:cover;margin:0 auto 12px">
-    <div id="pname" class="bf" style="font-size:28px"></div>
-    <div id="pid" style="font-size:11px;font-weight:900;color:#777;margin-bottom:4px"></div>
-    <div id="prank" style="font-size:11px;font-weight:900;color:var(--red);text-transform:uppercase;margin-bottom:14px"></div>
-    <div style="text-align:left;border-top:3px solid var(--border-ink);padding-top:12px">
-      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:8px"><span>SRX Balance</span><span id="pcoins" style="color:var(--gold)">0 SRX</span></div>
-      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:8px"><span>Referrals</span><span id="pref" style="color:var(--green)">0</span></div>
-      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:8px"><span>Missions Done</span><span id="pmis">0</span></div>
-      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:12px"><span>Referred By</span><span id="prefby" style="color:var(--blue)">None</span></div>
-    </div>
-
-    <div style="text-align:left;margin-top:10px;">
-      <div class="bf" style="font-size:16px;color:var(--gold);margin-bottom:6px;border-top:1px dashed #333;padding-top:8px">👥 REFERRAL HISTORY</div>
-      <div class="ref-history-list" id="referral-history-box">
-         <p style="padding:10px;color:#777;font-size:11px;text-align:center;">No referrals yet</p>
-      </div>
-    </div>
-  </div>
-  <button class="cb" onclick="copyRef()" style="width:100%;padding:12px;background:var(--gold);color:#000;font-size:16px;margin-bottom:10px">📤 SHARE INVITE LINK</button>
-  <button class="cb" onclick="location.reload()" style="width:100%;padding:12px;background:#222;color:#fff;font-size:16px">🔄 REFRESH DATA</button>
-</div>
-
-<div id="comicReaderModal" class="comic-modal">
-  <div class="modal-bg"></div>
-  <button class="close-modal" onclick="closeComicReader()">✕</button>
-  <div class="slider-window">
-    <div class="slides-wrapper" id="comicSlidesWrapper"></div>
-  </div>
-  <div class="reader-nav-bar">
-    <button class="nav-circle-btn" onclick="comicSlidePrev()">←</button>
-    <span id="comicPageCounter" class="page-counter">1 / 1</span>
-    <button class="nav-circle-btn" onclick="comicSlideNext()">→</button>
-  </div>
-</div>
-
-<nav class="nav">
-  <div class="nav-i on" id="btn-home" onclick="goTab('home')"><span class="nav-ic">🏠</span>HOME</div>
-  <div class="nav-i" id="btn-tasks" onclick="goTab('tasks')"><span class="nav-ic">⚡</span>TASKS</div>
-  <div class="nav-i" id="btn-comics" onclick="goTab('comics')"><span class="nav-ic">📚</span>COMICS</div>
-  <div class="nav-i" id="btn-wallet" onclick="goTab('wallet')"><span class="nav-ic">💰</span>WALLET</div>
-  <div class="nav-i" id="btn-profile" onclick="goTab('profile')"><span class="nav-ic">👤</span>PROFILE</div>
-</nav>
-
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-<script>
-var BOT = "SRX_2026_bot";
-var TOKEN = "8704816043:AAHNNljOcsYC4qTmruhp1OOMA0XKDvlus2s";
-var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-if (tg) { tg.ready(); tg.expand(); }
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCv8HcH4-6VdYgCcdOZlR-MTL4HbL-Is7Y",
-  authDomain: "gen-lang-client-0231834349.firebaseapp.com",
-  databaseURL: "https://gen-lang-client-0231834349-default-rtdb.firebaseio.com",
-  projectId: "gen-lang-client-0231834349",
-  storageBucket: "gen-lang-client-0231834349.firebasestorage.app",
-  messagingSenderId: "148097864437",
-  appId: "1:148097864437:web:a9d15cd9b249d8cbb52bbc"
-};
-
-firebase.initializeApp(firebaseConfig);
-var db = firebase.firestore();
-var FS = firebase.firestore.FieldValue;
-
-var ME = null;
-var UID = null;
-var _claimed = {};
-var _tasks = [];
-var _comics = [];
-var _listeners = {};
-var _toastT;
-var ADMIN_USDT_WALLET = "0xLoadingAdminWalletFromFirebaseConfig...";
-
-var RANKS = [
-  {name:"Rookie Hero",     min:0,    max:499},
-  {name:"Street Guardian", min:500,  max:1499},
-  {name:"City Defender",   min:1500, max:3999},
-  {name:"Elite Avenger",   min:4000, max:9999},
-  {name:"Infinite Hero",   min:10000,max:Infinity}
-];
-function getRank(c) { return RANKS.find(function(r){return c>=r.min&&c<=r.max;})||RANKS[0]; }
-
-function boot() {
-  var tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
-  var devUser = {id:99999, first_name:"DevHero", photo_url:""};
-  var u = tgUser || devUser;
-  UID = String(u.id);
-  var refBy = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? String(tg.initDataUnsafe.start_param) : null;
-
-  initUser(u, refBy).then(function() {
-    attachListeners();
-    fetchAdminConfig();
-  }).catch(function(e){ showToast("❌ " + e.message); });
-}
-
-async function initUser(u, refBy) {
-  var uref = db.collection('users').doc(UID);
-  var snap = await uref.get();
-  if (!snap.exists) {
-    if (refBy && refBy !== UID) {
-      var rref = db.collection('users').doc(refBy);
-      var rsnap = await rref.get();
-      if (rsnap.exists) {
-        await rref.update({ reffer: FS.increment(1), coins: FS.increment(100) });
-      }
-    }
-    
-    var newU = {
-      id: UID, name: u.first_name||"Hero",
-      photoURL: u.photo_url || ("https://api.dicebear.com/7.x/avataaars/svg?seed=" + UID),
-      coins: 0, 
-      lockedUSDT: 1.00, 
-      reffer: 0, refferBy: (refBy && refBy !== UID) ? refBy : null,
-      tasksCompleted: 0, totalWithdrawals: 0,
-      joinedAt: FS.serverTimestamp()
-    };
-    await uref.set(newU);
-    ME = newU;
-  } else {
-    ME = snap.data();
-    if (ME.lockedUSDT === undefined) {
-      await uref.update({ lockedUSDT: 1.00 });
-      ME.lockedUSDT = 1.00;
-    }
-  }
-  setAvatarAndRef();
-}
-
-function setAvatarAndRef() {
-  var av = document.getElementById('av'); if(av) av.src = ME.photoURL;
-  var pav = document.getElementById('pav'); if(pav) pav.src = ME.photoURL;
-  var rl = document.getElementById('ref-link'); if(rl) rl.value = "https://t.me/" + BOT + "?start=" + UID;
-}
-
-function fetchAdminConfig() {
-  db.collection('settings').doc('admin_config').onSnapshot(function(snap) {
-    if(snap.exists && snap.data().usdt_address) {
-      ADMIN_USDT_WALLET = snap.data().usdt_address;
-    } else {
-      ADMIN_USDT_WALLET = "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X"; 
-    }
-    document.getElementById('admin-usdt-addr').value = ADMIN_USDT_WALLET;
-  });
-}
-
-function attachListeners() {
-  _listeners.user = db.collection('users').doc(UID).onSnapshot(function(snap) {
-    if (!snap.exists) return;
-    ME = snap.data();
-    updateStats();
-    updateRankUI(ME.coins||0);
-    updateProfileUI();
-    
-    if (document.getElementById('crypto-srx')) document.getElementById('crypto-srx').innerText = ME.coins||0;
-    
-    var totalUSDTWithBonus = ((ME.coins||0)/100) + (ME.lockedUSDT || 1.00);
-    if (document.getElementById('crypto-usdt')) document.getElementById('crypto-usdt').innerText = '$' + totalUSDTWithBonus.toFixed(2);
-  });
-
-  _listeners.tasks = db.collection('tasks').orderBy('createdAt','desc').onSnapshot(function(snap) {
-    _tasks = snap.docs.map(function(d){ return Object.assign({_id:d.id}, d.data()); })
-                      .filter(function(t){ return t.isActive !== false; });
-    renderTasks();
-  });
-
-  _listeners.claims = db.collection('user_claims').where('userId','==',UID).onSnapshot(function(snap) {
-    _claimed = {};
-    snap.docs.forEach(function(d){ _claimed[d.data().taskId] = true; });
-    renderTasks();
-  });
-
-  _listeners.pays = db.collection('withdrawals').where('userId','==',UID).orderBy('createdAt','desc').limit(20).onSnapshot(function(snap) {
-    renderPayHistory(snap.docs.map(function(d){ return Object.assign({_id:d.id},d.data()); }));
-  });
-
-  db.collection('users').where('refferBy', '==', UID).onSnapshot(function(snap) {
-    var refBox = document.getElementById('referral-history-box');
-    if(!refBox) return;
-    if(snap.empty) {
-      refBox.innerHTML = '<p style="padding:10px;color:#777;font-size:11px;text-align:center;">No referrals found</p>';
-      return;
-    }
-    refBox.innerHTML = snap.docs.map(function(doc) {
-      var d = doc.data();
-      return `
-        <div class="ref-history-item">
-          <span style="color:#fff;font-weight:700;">👤 ${esc(d.name)}</span>
-          <span style="color:var(--gold); font-weight:bold;">⚡ ${d.tasksCompleted || 0} Done</span>
+        <div class="cc mb-3" style="padding:10px;margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:10px;font-weight:900;text-transform:uppercase;color:#aaa">RANK PROGRESS</span>
+                <span id="rank-next" style="font-size:10px;font-weight:700;color:#777"></span>
+            </div>
+            <div class="rb-out"><div class="rb-in" id="rank-bar" style="width:0%"></div></div>
         </div>
-      `;
-    }).join('');
-  });
 
-  _listeners.ann = db.collection('announcements').orderBy('createdAt','desc').limit(1).onSnapshot(function(snap) {
-    if (!snap.empty) {
-      var a = snap.docs[0].data();
-      var ab = document.getElementById('ann-box');
-      document.getElementById('ann-txt').innerText = "📢 " + (a.title||'');
-      ab.style.display = 'block';
-      ab.classList.remove('ann-animation');
-      void ab.offsetWidth; 
-      ab.classList.add('ann-animation');
-    }
-  });
-
-  db.collection('comics').orderBy('createdAt', 'desc').onSnapshot(function(snap) {
-    _comics = snap.docs.map(function(d) { return Object.assign({_id: d.id}, d.data()); });
-    renderComicsTab();
-  });
-}
-
-function updateStats() {
-  if(document.getElementById('sc')) document.getElementById('sc').innerText = ME.coins||0;
-  if(document.getElementById('hcoins')) document.getElementById('hcoins').innerText = ME.coins||0;
-  if(document.getElementById('sr')) document.getElementById('sr').innerText = ME.reffer||0;
-  if(document.getElementById('sw')) document.getElementById('sw').innerText = ME.totalWithdrawals||0;
-  if(document.getElementById('sm')) document.getElementById('sm').innerText = ME.tasksCompleted||0;
-}
-
-function updateRankUI(c) {
-  var r = getRank(c);
-  if(document.getElementById('uname')) document.getElementById('uname').innerText = esc(ME.name);
-  if(document.getElementById('uid-txt')) document.getElementById('uid-txt').innerText = "ID: " + ME.id;
-  if(document.getElementById('urank')) document.getElementById('urank').innerText = r.name;
-  
-  var nxt = RANKS[RANKS.indexOf(r)+1];
-  var rb = document.getElementById('rank-bar');
-  var rn = document.getElementById('rank-next');
-  if(nxt) {
-    var pct = ((c - r.min) / (nxt.min - r.min)) * 100;
-    if(rb) rb.style.width = Math.min(pct, 100) + "%";
-    if(rn) rn.innerText = c + " / " + nxt.min + " SRX TO " + nxt.name.toUpperCase();
-  } else {
-    if(rb) rb.style.width = "100%";
-    if(rn) rn.innerText = "MAX HERO RANK!";
-  }
-}
-
-function updateProfileUI() {
-  if(document.getElementById('pname')) document.getElementById('pname').innerText = esc(ME.name);
-  if(document.getElementById('pid')) document.getElementById('pid').innerText = "ID: " + ME.id;
-  if(document.getElementById('prank')) document.getElementById('prank').innerText = getRank(ME.coins||0).name;
-  if(document.getElementById('pcoins')) document.getElementById('pcoins').innerText = ME.coins + " SRX";
-  if(document.getElementById('pref')) document.getElementById('pref').innerText = ME.reffer||0;
-  if(document.getElementById('pmis')) document.getElementById('pmis').innerText = ME.tasksCompleted||0;
-  if(document.getElementById('prefby')) document.getElementById('prefby').innerText = ME.refferBy || "NONE";
-}
-
-function openDepositModal() {
-  document.getElementById('dep-step-1').style.display = 'block';
-  document.getElementById('dep-step-2').style.display = 'none';
-  document.getElementById('dep-amount').value = '';
-  document.getElementById('dep-txid').value = '';
-  document.getElementById('depositModal').style.display = 'block';
-}
-function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
-
-function nextDepositStep() {
-  var amt = parseFloat(document.getElementById('dep-amount').value || '0');
-  if(isNaN(amt) || amt <= 0) {
-    return showToast("❌ ENTER A VALID DEPOSIT AMOUNT!");
-  }
-  document.getElementById('show-dep-amt').innerText = "$" + amt.toFixed(2);
-  document.getElementById('dep-step-1').style.display = 'none';
-  document.getElementById('dep-step-2').style.display = 'block';
-}
-
-function copyAdminAddress() {
-  var addrInput = document.getElementById("admin-usdt-addr");
-  addrInput.select();
-  try {
-    navigator.clipboard.writeText(addrInput.value);
-    showToast("🔗 ADMIN DEPOSIT ADDRESS COPIED!");
-  } catch(e) { showToast("❌ COPY FAILED"); }
-}
-
-function submitDepositTx() {
-  var txid = document.getElementById('dep-txid').value.trim();
-  var amt = parseFloat(document.getElementById('dep-amount').value || '0');
-  if(txid.length < 8) return showToast("❌ ENTER VALID TRANSACTION HASH / ID!");
-  
-  showToast("⏳ UPLOADING TRANSACTION TO ADMIN...");
-  db.collection('deposits').add({
-    userId: UID,
-    userName: ME.name || 'Hero',
-    amountUSD: amt,
-    txid: txid,
-    status: 'pending',
-    createdAt: FS.serverTimestamp()
-  }).then(function() {
-    showToast("✅ DEPOSIT SUBMITTED! WAITING FOR ADMIN APPROVAL.");
-    closeDepositModal();
-  }).catch(e => showToast("❌ FIRESTORE ERROR: " + e.message));
-}
-
-function renderTasks() {
-  var quick = document.getElementById('quick-list');
-  var full  = document.getElementById('full-list');
-  if (!quick || !full) return;
-  if (!_tasks.length) {
-    var e = '<p style="text-align:center;font-weight:700;color:#777;padding:24px">No missions yet.</p>';
-    quick.innerHTML = e; full.innerHTML = e; return;
-  }
-  var html = _tasks.map(function(t, index) {
-    var done = !!_claimed[t._id];
-    var coins = t.reward || t.coins || 0;
-    return '<div class="task-card-glow '+(done?'task-done':'')+'" style="padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;animation-delay:'+(index*0.05)+'s">' +
-      '<div style="flex:1;min-width:0">' +
-        '<div style="font-weight:900;font-size:14px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff">' + esc(t.name||'Task') + '</div>' +
-        '<div style="font-size:10px;font-weight:700;color:var(--blue);margin-top:2px">' + esc(t.type||'Task') + ' • +' + coins + ' SRX</div>' +
-      '</div>' +
-      '<div style="display:flex;gap:6px;flex-shrink:0">' +
-        (t.link ? '<a href="'+esc(t.link)+'" target="_blank" rel="noopener" onclick="openLink(event,\''+esc(t.link)+'\')" class="cb" style="padding:6px 8px;background:#fff;font-size:10px;text-decoration:none;color:#000">OPEN</a>' : '') +
-        (done
-          ? '<button class="cb" disabled style="padding:6px 8px;font-size:10px;">✅ DONE</button>'
-          : '<button class="cb" onclick="claimTask(\''+t._id+'\','+coins+',\''+esc(t.type||'')+'\',\''+esc(t.telegramChannelId||'')+'\')" style="padding:6px 8px;background:var(--gold);color:#000;font-size:10px">CLAIM</button>'
-        ) +
-      '</div>' +
-    '</div>';
-  });
-  quick.innerHTML = html.slice(0,3).join('');
-  full.innerHTML  = html.join('');
-}
-
-function renderComicsTab() {
-  var container = document.getElementById('comics-list-container');
-  if(!container) return;
-  if(!_comics.length) {
-    container.innerHTML = '<p style="text-align:center;font-weight:700;color:#777;padding:24px">No comics available yet.</p>';
-    return;
-  }
-  var gridHtml = '<div class="comics-grid">';
-  gridHtml += _comics.map(function(c, idx) {
-    return `
-      <div class="comic-item-card" onclick="openComicReader(${idx})">
-        <img src="${esc(c.cover_image)}" alt="Cover">
-        <div class="c-title">${esc(c.title)}</div>
-      </div>
-    `;
-  }).join('');
-  gridHtml += '</div>';
-  container.innerHTML = gridHtml;
-}
-
-var activeComicObj = null;
-var activeSlideIdx = 0;
-
-function openComicReader(index) {
-  activeComicObj = _comics[index];
-  activeSlideIdx = 0;
-  if(!activeComicObj.pages || !activeComicObj.pages.length) {
-    showToast("❌ THIS COMIC BOOK HAS NO PAGES!");
-    return;
-  }
-
-  var wrapper = document.getElementById('comicSlidesWrapper');
-  wrapper.innerHTML = '';
-  activeComicObj.pages.forEach(function(page) {
-    var slide = document.createElement('div');
-    slide.className = 'comic-slide';
-    slide.innerHTML = `
-      <img src="${esc(page.img)}" alt="Page">
-      <div class="comic-text-container">${esc(page.txt || '')}</div>
-    `;
-    wrapper.appendChild(slide);
-  });
-  document.getElementById('comicReaderModal').style.display = 'block';
-  updateComicSliderView();
-}
-
-function closeComicReader() { document.getElementById('comicReaderModal').style.display = 'none'; }
-function updateComicSliderView() {
-  var wrapper = document.getElementById('comicSlidesWrapper');
-  wrapper.style.transform = `translateX(-${activeSlideIdx * 100}%)`;
-  document.getElementById('comicPageCounter').innerText = `${activeSlideIdx + 1} / ${activeComicObj.pages.length}`;
-}
-function comicSlideNext() { if (activeSlideIdx < activeComicObj.pages.length - 1) { activeSlideIdx++; updateComicSliderView(); } }
-function comicSlidePrev() { if (activeSlideIdx > 0) { activeSlideIdx--; updateComicSliderView(); } }
-
-async function checkTelegramMembership(channelId) {
-  if(!channelId) return false;
-  var cleanChannel = channelId.trim();
-  if(!cleanChannel.startsWith('@') && !cleanChannel.startsWith('-100')) { cleanChannel = '@' + cleanChannel; }
-  try {
-    var res = await fetch(`https://api.telegram.org/bot${TOKEN}/getChatMember?chat_id=${cleanChannel}&user_id=${UID}`);
-    var data = await res.json();
-    return (data.ok && data.result && (data.result.status === 'member' || data.result.status === 'administrator' || data.result.status === 'creator'));
-  } catch(e) { return false; }
-}
-
-async function claimTask(taskId, coins, taskType, channelId) {
-  if (!UID) return;
-  showToast("⚡ VERIFYING MISSION...");
-  if(taskType.toLowerCase() === 'telegram') {
-    if(!channelId || channelId.trim() === "") { showToast("❌ CHANNEL NOT CONFIGURED!"); return; }
-    var isMember = await checkTelegramMembership(channelId);
-    if(!isMember) {
-      showToast("❌ YOU HAVEN'T JOINED THE CHANNEL YET!");
-      if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-      return;
-    }
-  }
-
-  var claimId = UID + '_' + taskId;
-  var uref    = db.collection('users').doc(UID);
-  var cref    = db.collection('user_claims').doc(claimId);
-
-  db.runTransaction(function(tx) {
-    return tx.get(cref).then(function(cdoc) {
-      if (cdoc.exists) throw new Error("ALREADY CLAIMED!");
-      tx.set(cref, { userId:UID, taskId:taskId, coins:coins, claimedAt:FS.serverTimestamp() });
-      tx.update(uref, { coins:FS.increment(coins), tasksCompleted:FS.increment(1) });
-    });
-  }).then(function() {
-    showToast("💥 +" + coins + " SRX EARNED!");
-    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-  }).catch(function(e) { showToast("❌ " + e.message); });
-}
-
-function filterTasks() {
-  var q = (document.getElementById('tsearch').value||'').toLowerCase();
-  document.querySelectorAll('#full-list .task-card-glow').forEach(function(card){
-    card.style.display = card.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
-  });
-}
-function openLink(e, url) { if (tg && tg.openLink) { e.preventDefault(); tg.openLink(url); } }
-function goTab(id) {
-  document.querySelectorAll('.tab').forEach(p => p.classList.remove('on'));
-  document.querySelectorAll('.nav-i').forEach(b => b.classList.remove('on'));
-  document.getElementById('tab-' + id).classList.add('on');
-  document.getElementById('btn-' + id).classList.add('on');
-}
-
-function copyRef() {
-  var copyText = document.getElementById("ref-link");
-  if(!copyText) return;
-  copyText.select();
-  try {
-    navigator.clipboard.writeText(copyText.value);
-    showToast("🔗 INVITE LINK COPIED!");
-    if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-  } catch (err) { showToast("❌ COPY FAILED"); }
-}
-
-function submitWithdraw() {
-  var addr = (document.getElementById('wal-addr').value||'').trim();
-  var amt  = parseInt(document.getElementById('wal-amt').value||'0');
-  var totalBal  = ME ? (ME.coins||0) : 0;
-  
-  if (addr.length < 5) return showToast("❌ ENTER VALID CRYPTO ADDRESS!");
-  if (isNaN(amt) || amt < 500) return showToast("❌ MINIMUM IS 500 SRX!");
-  if (totalBal < amt) return showToast("❌ NOT ENOUGH SRX BALANCE TO WITHDRAW!");
-
-  showToast("⏳ PROCESSING ON-CHAIN REQUEST...");
-  
-  db.collection('withdrawals').add({
-    userId: UID,
-    userName: ME.name || 'Hero',
-    usdcAddress: addr,
-    amount: amt,
-    status: 'pending',
-    createdAt: FS.serverTimestamp()
-  }).then(function() {
-    db.collection('users').doc(UID).update({
-      coins: FS.increment(-amt),
-      totalWithdrawals: FS.increment(1)
-    });
-    showToast("✅ SRX WITHDRAWAL ORDERED!");
-    document.getElementById('wal-addr').value = '';
-    document.getElementById('wal-amt').value = '';
-  }).catch(e => showToast("❌ FAILED: " + e.message));
-}
-
-function renderPayHistory(arr) {
-  var el = document.getElementById('pay-hist');
-  if(!el) return;
-  if(!arr.length) { el.innerHTML = '<p style="padding:10px;color:#777;font-weight:700;">No transactions found.</p>'; return; }
-  el.innerHTML = arr.map(w => {
-    var sCls = w.status === 'approved' ? 'bapp' : (w.status === 'rejected' ? 'brej' : 'bpend');
-    return `
-      <div class="cc" style="padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;background:#16192b;border-color:#282d47">
-        <div>
-          <div style="font-weight:900;font-size:14px;color:var(--gold);">${w.amount} SRX</div>
-          <div style="font-size:9px;color:#aaa;font-family:monospace;max-width:180px;overflow:hidden;text-overflow:ellipsis;">${esc(w.usdcAddress)}</div>
+        <div id="ann-box" class="cc mb-3 ann-animation" style="display:none;padding:10px;background:#1a2436;border-color:var(--blue);margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+                <p id="ann-txt" style="font-weight:700;font-size:13px;flex:1;line-height:1.4;color:#60a5fa"></p>
+                <button onclick="document.getElementById('ann-box').style.display='none'" style="background:var(--border-ink);color:#fff;border:none;padding:2px 8px;cursor:pointer;font-size:11px;flex-shrink:0">✕</button>
+            </div>
         </div>
-        <span class="${sCls}">${w.status.toUpperCase()}</span>
-      </div>
-    `;
-  }).join('');
-}
 
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  if (!t) return;
-  t.innerText = msg; t.style.display = 'block';
-  clearTimeout(_toastT);
-  _toastT = setTimeout(function(){ t.style.display='none'; }, 3500);
-}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+            <div class="cc" style="padding:10px;background:#16153b"><div style="font-size:10px;font-weight:900;text-transform:uppercase;color:var(--gold)">SRX Balance</div><div id="sc" class="bf" style="font-size:26px">0</div></div>
+            <div class="cc" style="padding:10px;background:#053d2e"><div style="font-size:10px;font-weight:900;text-transform:uppercase;color:var(--green)">Referrals</div><div id="sr" class="bf" style="font-size:26px">0</div></div>
+            <div class="cc" style="padding:10px;background:#5c1461"><div style="font-size:10px;font-weight:900;text-transform:uppercase;color:#f472b6">Withdrawals</div><div id="sw" class="bf" style="font-size:26px">0</div></div>
+            <div class="cc" style="padding:10px;background:#240b30"><div style="font-size:10px;font-weight:900;text-transform:uppercase;color:#c084fc">Missions Done</div><div id="sm" class="bf" style="font-size:26px">0</div></div>
+        </div>
 
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
+        <div class="bf" style="font-size:20px;margin-bottom:8px;color:var(--gold)">⚡ Quick Missions</div>
+        <div id="quick-list"><div class="spin"></div></div>
 
-document.addEventListener('DOMContentLoaded', function() {
-  var wa = document.getElementById('wal-amt');
-  if (wa) {
-    wa.oninput = function() {
-      var v = parseInt(this.value)||0;
-      var el = document.getElementById('wal-usd');
-      if (el) el.innerText = '$' + (v/100).toFixed(2);
-    };
-  }
-});
+        <div style="margin-top:14px">
+            <div class="bf" style="font-size:18px;margin-bottom:6px">🔗 Your Invite Link</div>
+            <div class="cc" style="padding:8px;display:flex;align-items:center;gap:8px">
+                <input type="text" id="ref-link" readonly style="flex:1;font-size:10px;font-weight:700;border:none;outline:none;background:transparent;min-width:0;margin:0;color:#fff">
+                <button class="cb" onclick="copyRef()" style="padding:6px 12px;background:var(--gold);color:#000;font-size:11px;flex-shrink:0">COPY</button>
+            </div>
+        </div>
+    </div>
 
-boot();
-</script>
+    <div id="tab-tasks" class="tab">
+        <div class="bf" style="font-size:28px;text-align:center;margin-bottom:12px;color:var(--gold)">⚡ HERO MISSIONS</div>
+        <input type="text" id="tsearch" oninput="filterTasks()" placeholder="SEARCH MISSIONS...">
+        <div id="full-list"><div class="spin"></div></div>
+    </div>
+
+    <div id="tab-comics" class="tab">
+        <div class="bf" style="font-size:28px;text-align:center;margin-bottom:12px;color:var(--gold)">📚 HERO COMICS</div>
+        <div id="comics-list-container"><div class="spin"></div></div>
+    </div>
+
+    <div id="tab-wallet" class="tab">
+        <div class="bf" style="font-size:26px;margin-bottom:12px;color:var(--gold)">💰 CRYPTO WALLET</div>
+        <div class="wd-actions">
+            <button class="cb btn-deposit" onclick="openDepositModal()">📥 DEPOSIT</button>
+            <button class="cb btn-withdraw" onclick="document.getElementById('wd-form').scrollIntoView({behavior:'smooth'})">📤 WITHDRAW</button>
+        </div>
+
+        <div class="crypto-box">
+            <div class="crypto-info">
+                <div class="crypto-icon" style="background:#ffde03">S</div>
+                <div>
+                    <div style="font-weight:900;font-size:14px">SRX Token</div>
+                    <div style="font-size:10px;color:#aaa">Available Native Asset</div>
+                </div>
+            </div>
+            <div style="text-align:right"><div id="crypto-srx" class="bf" style="font-size:20px;color:var(--gold)">0</div></div>
+        </div>
+
+        <div class="crypto-box lock-field">
+            <div class="crypto-info">
+                <div class="crypto-icon" style="background:#26a17b;color:#fff">U</div>
+                <div>
+                    <div style="font-weight:900;font-size:14px; display:flex; align-items:center; gap:5px;">USDT Balance 🔒</div>
+                    <div style="font-size:10px;color:#aaa">Withdrawable (Tokens Value)</div>
+                    <div class="alert-text">⚠️ WITHDRAW NOT AVAILABLE</div>
+                </div>
+            </div>
+            <div style="text-align:right"><div id="crypto-usdt" class="bf" style="font-size:20px;color:var(--green)">$1.00</div></div>
+        </div>
+
+        <div class="crypto-box">
+            <div class="crypto-info">
+                <div class="crypto-icon" style="background:#f3ba2f">B</div>
+                <div>
+                    <div style="font-weight:900;font-size:14px">BNB</div>
+                    <div style="font-size:10px;color:#aaa">Smart Chain</div>
+                </div>
+            </div>
+            <div style="text-align:right"><div class="bf" style="font-size:20px;color:#f3ba2f">0.0000</div></div>
+        </div>
+
+        <div id="wd-form" class="cc" style="padding:14px;margin-top:15px;margin-bottom:14px">
+            <div class="bf" style="font-size:18px;margin-bottom:10px;color:var(--gold)">⚡ WITHDRAW SRX</div>
+            <label class="lbl">RECIPIENT ADDRESS (USDT BEP20 / SRX Wallet)</label>
+            <input type="text" id="wal-addr" placeholder="0x... Enter Wallet Address">
+            <label class="lbl">SRX AMOUNT (Min. 500 SRX)</label>
+            <input type="number" id="wal-amt" placeholder="500" min="500">
+            <div style="font-size:12px;font-weight:700;color:#aaa;margin-bottom:10px">Withdrawable Value: <span id="wal-usd" style="color:var(--green)">$0.00</span></div>
+            <button class="cb" onclick="submitWithdraw()" style="width:100%;padding:12px;background:var(--gold);color:#000;font-size:16px">EXECUTE WITHDRAWAL</button>
+        </div>
+
+        <div class="bf" style="font-size:18px;margin-bottom:8px;color:var(--gold)">📋 Transaction History</div>
+        <div id="pay-hist"><div class="spin"></div></div>
+    </div>
+
+    <div id="depositModal" class="custom-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeDepositModal()" style="top:-15px; right:-15px; width:30px; height:30px; font-size:14px">✕</button>
+            <div class="bf" style="font-size:24px; color:var(--gold); margin-bottom:12px; text-align:center;">📥 CRYPTO DEPOSIT</div>
+            <div id="dep-step-1">
+                <label class="lbl">ENTER DEPOSIT AMOUNT (USD / USDT)</label>
+                <input type="number" id="dep-amount" placeholder="Min. $5" min="5">
+                <button class="cb" onclick="nextDepositStep()" style="width:100%; padding:10px; background:var(--gold); color:#000;">NEXT STEP →</button>
+            </div>
+            <div id="dep-step-2" style="display:none;">
+                <p style="font-size:12px; margin-bottom:8px; color:#aaa;">Please send exactly <b id="show-dep-amt" style="color:var(--green)">$0</b> USDT to the admin address below:</p>
+                <label class="lbl">USDT BEP20 DEPOSIT ADDRESS</label>
+                <div style="display:flex; gap:6px; margin-bottom:12px;">
+                    <input type="text" id="admin-usdt-addr" readonly style="margin:0; font-size:11px;">
+                    <button class="cb" onclick="copyAdminAddress()" style="background:#fff; color:#000; padding:0 8px; font-size:11px;">COPY</button>
+                </div>
+                <label class="lbl">ENTER TRANSACTION ID / TXID / HASH</label>
+                <input type="text" id="dep-txid" placeholder="Paste your transfer transaction hash">
+                <button class="cb" onclick="submitDepositTx()" style="width:100%; padding:10px; background:var(--green); color:#000;">SUBMIT DEPOSIT</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-profile" class="tab">
+        <div class="cc" style="padding:20px;text-align:center;margin-bottom:12px">
+            <img id="pav" src="" style="width:80px;height:80px;border:4px solid var(--border-ink);border-radius:50%;background:#ddd;object-fit:cover;margin:0 auto 12px">
+            <div id="pname" class="bf" style="font-size:28px"></div>
+            <div id="pid" style="font-size:11px;font-weight:900;color:#777;margin-bottom:4px"></div>
+            <div id="prank" style="font-size:11px;font-weight:900;color:var(--red);text-transform:uppercase;margin-bottom:14px"></div>
+            
+            <div style="text-align:left;border-top:3px solid var(--border-ink);padding-top:12px">
+                <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:8px"><span>SRX Balance</span><span id="pcoins" style="color:var(--gold)">0 SRX</span></div>
+                <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:8px"><span>Referrals</span><span id="pref" style="color:var(--green)">0</span></div>
+                <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:8px"><span>Missions Done</span><span id="pmis">0</span></div>
+                <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:12px"><span>Referred By</span><span id="prefby" style="color:var(--blue)">None</span></div>
+            </div>
+
+            <div style="text-align:left;margin-top:10px;">
+                <div class="bf" style="font-size:16px;color:var(--gold);margin-bottom:6px;border-top:1px dashed #333;padding-top:8px">👥 REFERRAL HISTORY</div>
+                <div class="ref-history-list" id="referral-history-box">
+                    <p style="padding:10px;color:#777;font-size:11px;text-align:center;">No referrals yet</p>
+                </div>
+            </div>
+        </div>
+        <button class="cb" onclick="copyRef()" style="width:100%;padding:12px;background:var(--gold);color:#000;font-size:16px;margin-bottom:10px">📤 SHARE INVITE LINK</button>
+        <button class="cb" onclick="location.reload()" style="width:100%;padding:12px;background:#222;color:#fff;font-size:16px">🔄 REFRESH DATA</button>
+    </div>
+
+    <div id="comicReaderModal" class="comic-modal">
+        <div class="modal-bg"></div>
+        <button class="close-modal" onclick="closeComicReader()">✕</button>
+        <div class="slider-window">
+            <div class="slides-wrapper" id="comicSlidesWrapper"></div>
+        </div>
+        <div class="reader-nav-bar">
+            <button class="nav-circle-btn" onclick="comicSlidePrev()">←</button>
+            <span id="comicPageCounter" class="page-counter">1 / 1</span>
+            <button class="nav-circle-btn" onclick="comicSlideNext()">→</button>
+        </div>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-i on" id="btn-home" onclick="goTab('home')"><span class="nav-ic">🏠</span>HOME</div>
+        <div class="nav-i" id="btn-tasks" onclick="goTab('tasks')"><span class="nav-ic">⚡</span>TASKS</div>
+        <div class="nav-i" id="btn-comics" onclick="goTab('comics')"><span class="nav-ic">📚</span>COMICS</div>
+        <div class="nav-i" id="btn-wallet" onclick="goTab('wallet')"><span class="nav-ic">💰</span>WALLET</div>
+        <div class="nav-i" id="btn-profile" onclick="goTab('profile')"><span class="nav-ic">👤</span>PROFILE</div>
+    </nav>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        var BOT = "SRX_2026_bot";
+        var TOKEN = "8704816043:AAHNNljOcsYC4qTmruhp1OOMA0XKDvlus2s"; 
+        var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+        
+        if (tg) {
+            tg.ready();
+            tg.expand();
+        }
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCv8HcH4-6VdYgCcdOZlR-MTL4HbL-Is7Y",
+            authDomain: "gen-lang-client-0231834349.firebaseapp.com",
+            databaseURL: "https://gen-lang-client-0231834349-default-rtdb.firebaseio.com",
+            projectId: "gen-lang-client-0231834349",
+            storageBucket: "gen-lang-client-0231834349.firebasestorage.app",
+            messagingSenderId: "148097864437",
+            appId: "1:148097864437:web:a9d15cd9b249d8cbb52bbc"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.firestore();
+        var FS = firebase.firestore.FieldValue;
+        
+        var ME = null;
+        var UID = null;
+        var _claimed = {};
+        var _tasks = [];
+        var _comics = [];
+        var _listeners = {};
+        var _toastT;
+        var ADMIN_USDT_WALLET = "0xLoadingAdminWalletFromFirebaseConfig...";
+
+        var RANKS = [
+            {name:"Rookie Hero", min:0, max:499},
+            {name:"Street Guardian", min:500, max:1499},
+            {name:"City Defender", min:1500, max:3999},
+            {name:"Elite Avenger", min:4000, max:9999},
+            {name:"Infinite Hero", min:10000, max:Infinity}
+        ];
+
+        function getRank(c) {
+            return RANKS.find(function(r){ return c >= r.min && c <= r.max; }) || RANKS[0];
+        }
+
+        function boot() {
+            var tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
+            var devUser = {id:99999, first_name:"DevHero", photo_url:""};
+            var u = tgUser || devUser;
+            UID = String(u.id);
+            
+            var refBy = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? String(tg.initDataUnsafe.start_param) : null;
+            
+            initUser(u, refBy).then(function() {
+                attachListeners();
+                fetchAdminConfig();
+            }).catch(function(e){
+                showToast("❌ " + e.message);
+            });
+        }
+
+        async function initUser(u, refBy) {
+            var uref = db.collection('users').doc(UID);
+            var snap = await uref.get();
+            if (!snap.exists) {
+                if (refBy && refBy !== UID) {
+                    var rref = db.collection('users').doc(refBy);
+                    var rsnap = await rref.get();
+                    if (rsnap.exists) {
+                        await rref.update({
+                            reffer: FS.increment(1),
+                            coins: FS.increment(100)
+                        });
+                    }
+                }
+                var newU = {
+                    id: UID,
+                    name: u.first_name || "Hero",
+                    photoURL: u.photo_url || ("https://api.dicebear.com/7.x/avataaars/svg?seed=" + UID),
+                    coins: 0,
+                    lockedUSDT: 1.00,
+                    reffer: 0,
+                    refferBy: (refBy && refBy !== UID) ? refBy : null,
+                    tasksCompleted: 0,
+                    totalWithdrawals: 0,
+                    joinedAt: FS.serverTimestamp()
+                };
+                await uref.set(newU);
+                ME = newU;
+            } else {
+                ME = snap.data();
+                if (ME.lockedUSDT === undefined) {
+                    await uref.update({ lockedUSDT: 1.00 });
+                    ME.lockedUSDT = 1.00;
+                }
+            }
+            setAvatarAndRef();
+        }
+
+        function setAvatarAndRef() {
+            var av = document.getElementById('av'); if(av) av.src = ME.photoURL;
+            var pav = document.getElementById('pav'); if(pav) pav.src = ME.photoURL;
+            var rl = document.getElementById('ref-link'); if(rl) rl.value = "https://t.me/" + BOT + "?start=" + UID;
+        }
+
+        function fetchAdminConfig() {
+            db.collection('settings').doc('admin_config').onSnapshot(function(snap) {
+                if(snap.exists && snap.data().usdt_address) {
+                    ADMIN_USDT_WALLET = snap.data().usdt_address;
+                } else {
+                    ADMIN_USDT_WALLET = "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X";
+                }
+                var el = document.getElementById('admin-usdt-addr');
+                if(el) el.value = ADMIN_USDT_WALLET;
+            });
+        }
+
+        function attachListeners() {
+            _listeners.user = db.collection('users').doc(UID).onSnapshot(function(snap) {
+                if (!snap.exists) return;
+                ME = snap.data();
+                updateStats();
+                updateRankUI(ME.coins || 0);
+                updateProfileUI();
+                if (document.getElementById('crypto-srx')) document.getElementById('crypto-srx').innerText = ME.coins || 0;
+                
+                var totalUSDTWithBonus = ((ME.coins || 0) / 100) + (ME.lockedUSDT || 1.00);
+                if (document.getElementById('crypto-usdt')) document.getElementById('crypto-usdt').innerText = '$' + totalUSDTWithBonus.toFixed(2);
+            });
+
+            _listeners.tasks = db.collection('tasks').orderBy('createdAt','desc').onSnapshot(function(snap) {
+                _tasks = snap.docs.map(function(d){ return Object.assign({_id:d.id}, d.data()); }).filter(function(t){ return t.isActive !== false; });
+                renderTasks();
+            });
+
+            _listeners.claims = db.collection('user_claims').where('userId','==',UID).onSnapshot(function(snap) {
+                _claimed = {};
+                snap.docs.forEach(function(d){ _claimed[d.data().taskId] = true; });
+                renderTasks();
+            });
+
+            _listeners.pays = db.collection('withdrawals').where('userId','==',UID).orderBy('createdAt','desc').limit(20).onSnapshot(function(snap) {
+                renderPayHistory(snap.docs.map(function(d){ return Object.assign({_id:d.id}, d.data()); }));
+            });
+
+            db.collection('users').where('refferBy', '==', UID).onSnapshot(function(snap) {
+                var refBox = document.getElementById('referral-history-box');
+                if(!refBox) return;
+                if(snap.empty) {
+                    refBox.innerHTML = '<p style="padding:10px;color:#777;font-size:11px;text-align:center;">No referrals found</p>';
+                    return;
+                }
+                refBox.innerHTML = snap.docs.map(function(doc) {
+                    var d = doc.data();
+                    return `<div class="ref-history-item"><span style="color:#fff;font-weight:700;">👤 ${esc(d.name)}</span><span style="color:var(--gold); font-weight:bold;">⚡ ${d.tasksCompleted || 0} Done</span></div>`;
+                }).join('');
+            });
+
+            _listeners.ann = db.collection('announcements').orderBy('createdAt','desc').limit(1).onSnapshot(function(snap) {
+                if (!snap.empty) {
+                    var a = snap.docs[0].data();
+                    var ab = document.getElementById('ann-box');
+                    var txt = document.getElementById('ann-txt');
+                    if(txt) txt.innerText = "📢 " + (a.title || '');
+                    if(ab) {
+                        ab.style.display = 'block';
+                        ab.classList.remove('ann-animation');
+                        void ab.offsetWidth;
+                        ab.classList.add('ann-animation');
+                    }
+                }
+            });
+
+            db.collection('comics').orderBy('createdAt', 'desc').onSnapshot(function(snap) {
+                _comics = snap.docs.map(function(d) { return Object.assign({_id: d.id}, d.data()); });
+                renderComicsTab();
+            });
+        }
+
+        function updateStats() {
+            if(document.getElementById('sc')) document.getElementById('sc').innerText = ME.coins || 0;
+            if(document.getElementById('hcoins')) document.getElementById('hcoins').innerText = ME.coins || 0;
+            if(document.getElementById('sr')) document.getElementById('sr').innerText = ME.reffer || 0;
+            if(document.getElementById('sw')) document.getElementById('sw').innerText = ME.totalWithdrawals || 0;
+            if(document.getElementById('sm')) document.getElementById('sm').innerText = ME.tasksCompleted || 0;
+        }
+
+        function updateRankUI(c) {
+            var r = getRank(c);
+            if(document.getElementById('uname')) document.getElementById('uname').innerText = esc(ME.name);
+            if(document.getElementById('uid-txt')) document.getElementById('uid-txt').innerText = "ID: " + ME.id;
+            if(document.getElementById('urank')) document.getElementById('urank').innerText = r.name;
+            
+            var nxt = RANKS[RANKS.indexOf(r)+1];
+            var rb = document.getElementById('rank-bar');
+            var rn = document.getElementById('rank-next');
+            if(nxt) {
+                var pct = ((c - r.min) / (nxt.min - r.min)) * 100;
+                if(rb) rb.style.width = Math.min(pct, 100) + "%";
+                if(rn) rn.innerText = c + " / " + nxt.min + " SRX TO " + nxt.name.toUpperCase();
+            } else {
+                if(rb) rb.style.width = "100%";
+                if(rn) rn.innerText = "MAX HERO RANK!";
+            }
+        }
+
+        function updateProfileUI() {
+            if(document.getElementById('pname')) document.getElementById('pname').innerText = esc(ME.name);
+            if(document.getElementById('pid')) document.getElementById('pid').innerText = "ID: " + ME.id;
+            if(document.getElementById('prank')) document.getElementById('prank').innerText = getRank(ME.coins || 0).name;
+            if(document.getElementById('pcoins')) document.getElementById('pcoins').innerText = (ME.coins || 0) + " SRX";
+            if(document.getElementById('pref')) document.getElementById('pref').innerText = ME.reffer || 0;
+            if(document.getElementById('pmis')) document.getElementById('pmis').innerText = ME.tasksCompleted || 0;
+            if(document.getElementById('prefby')) document.getElementById('prefby').innerText = ME.refferBy || "NONE";
+        }
+
+        function openDepositModal() {
+            document.getElementById('dep-step-1').style.display = 'block';
+            document.getElementById('dep-step-2').style.display = 'none';
+            document.getElementById('dep-amount').value = '';
+            document.getElementById('dep-txid').value = '';
+            document.getElementById('depositModal').style.display = 'block';
+        }
+
+        function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
+
+        function nextDepositStep() {
+            var amt = parseFloat(document.getElementById('dep-amount').value || '0');
+            if(isNaN(amt) || amt < 5) { return showToast("❌ MINIMUM DEPOSIT IS $5!"); }
+            document.getElementById('show-dep-amt').innerText = "$" + amt.toFixed(2);
+            document.getElementById('dep-step-1').style.display = 'none';
+            document.getElementById('dep-step-2').style.display = 'block';
+        }
+
+        function copyAdminAddress() {
+            var addrInput = document.getElementById("admin-usdt-addr");
+            if(!addrInput) return;
+            addrInput.select();
+            try {
+                navigator.clipboard.writeText(addrInput.value);
+                showToast("🔗 ADMIN DEPOSIT ADDRESS COPIED!");
+            } catch(e) { showToast("❌ COPY FAILED"); }
+        }
+
+        function submitDepositTx() {
+            var txid = document.getElementById('dep-txid').value.trim();
+            var amt = parseFloat(document.getElementById('dep-amount').value || '0');
+            if(txid.length < 8) return showToast("❌ ENTER VALID TRANSACTION HASH / ID!");
+            
+            showToast("⏳ UPLOADING TRANSACTION TO ADMIN...");
+            db.collection('deposits').add({
+                userId: UID,
+                userName: ME.name || 'Hero',
+                amountUSD: amt,
+                txid: txid,
+                status: 'pending',
+                createdAt: FS.serverTimestamp()
+            }).then(function() {
+                showToast("✅ DEPOSIT SUBMITTED! WAITING FOR APPROVAL.");
+                closeDepositModal();
+            }).catch(e => showToast("❌ FIRESTORE ERROR: " + e.message));
+        }
+
+        function renderTasks() {
+            var quick = document.getElementById('quick-list');
+            var full = document.getElementById('full-list');
+            if (!quick || !full) return;
+            if (!_tasks.length) {
+                var e = '<p style="text-align:center;font-weight:700;color:#777;padding:24px">No missions yet.</p>';
+                quick.innerHTML = e; full.innerHTML = e; return;
+            }
+            var html = _tasks.map(function(t, index) {
+                var done = !!_claimed[t._id];
+                var coins = t.reward || t.coins || 0;
+                return '<div class="task-card-glow '+(done?'task-done':'')+'" style="padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;animation-delay:'+(index*0.05)+'s">' +
+                    '<div style="flex:1;min-width:0">' +
+                    '<div style="font-weight:900;font-size:14px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff">' + esc(t.name||'Task') + '</div>' +
+                    '<div style="font-size:10px;font-weight:700;color:var(--blue);margin-top:2px">' + esc(t.type||'Task') + ' • +' + coins + ' SRX</div>' +
+                    '</div>' +
+                    '<div style="display:flex;gap:6px;flex-shrink:0">' +
+                    (t.link ? '<a href="'+esc(t.link)+'" target="_blank" rel="noopener" onclick="openLink(event,\''+esc(t.link)+'\')" class="cb" style="padding:6px 8px;background:#fff;font-size:10px;text-decoration:none;color:#000">OPEN</a>' : '') +
+                    (done ? '<button class="cb" disabled style="padding:6px 8px;font-size:10px;">✅ DONE</button>' : '<button class="cb" onclick="claimTask(\''+t._id+'\','+coins+',\''+esc(t.type||'')+'\',\''+esc(t.telegramChannelId||'')+'\')" style="padding:6px 8px;background:var(--gold);color:#000;font-size:10px">CLAIM</button>' ) +
+                    '</div>' +
+                    '</div>';
+            });
+            quick.innerHTML = html.slice(0,3).join('');
+            full.innerHTML = html.join('');
+        }
+
+        function renderComicsTab() {
+            var container = document.getElementById('comics-list-container');
+            if(!container) return;
+            if(!_comics.length) {
+                container.innerHTML = '<p style="text-align:center;font-weight:700;color:#777;padding:24px">No comics available yet.</p>';
+                return;
+            }
+            var gridHtml = '<div class="comics-grid">' + _comics.map(function(c, idx) {
+                return `<div class="comic-item-card" onclick="openComicReader(${idx})"><img src="${esc(c.cover_image)}" alt="Cover"><div class="c-title">${esc(c.title)}</div></div>`;
+            }).join('') + '</div>';
+            container.innerHTML = gridHtml;
+        }
+
+        var activeComicObj = null;
+        var activeSlideIdx = 0;
+
+        function openComicReader(index) {
+            activeComicObj = _comics[index];
+            activeSlideIdx = 0;
+            if(!activeComicObj.pages || !activeComicObj.pages.length) {
+                showToast("❌ THIS COMIC BOOK HAS NO PAGES!"); return;
+            }
+            var wrapper = document.getElementById('comicSlidesWrapper');
+            wrapper.innerHTML = '';
+            activeComicObj.pages.forEach(function(page) {
+                var slide = document.createElement('div');
+                slide.className = 'comic-slide';
+                slide.innerHTML = `<img src="${esc(page.img)}" alt="Page"><div class="comic-text-container">${esc(page.txt || '')}</div>`;
+                wrapper.appendChild(slide);
+            });
+            document.getElementById('comicReaderModal').style.display = 'block';
+            updateComicSliderView();
+        }
+
+        function closeComicReader() { document.getElementById('comicReaderModal').style.display = 'none'; }
+
+        function updateComicSliderView() {
+            var wrapper = document.getElementById('comicSlidesWrapper');
+            wrapper.style.transform = `translateX(-${activeSlideIdx * 100}%)`;
+            document.getElementById('comicPageCounter').innerText = `${activeSlideIdx + 1} / ${activeComicObj.pages.length}`;
+        }
+
+        function comicSlideNext() { if (activeSlideIdx < activeComicObj.pages.length - 1) { activeSlideIdx++; updateComicSliderView(); } }
+        function comicSlidePrev() { if (activeSlideIdx > 0) { activeSlideIdx--; updateComicSliderView(); } }
+
+        async function checkTelegramMembership(channelId) {
+            if(!channelId) return false;
+            var cleanChannel = channelId.trim();
+            if(!cleanChannel.startsWith('@') && !cleanChannel.startsWith('-100')) { cleanChannel = '@' + cleanChannel; }
+            try {
+                var res = await fetch(`https://api.telegram.org/bot${TOKEN}/getChatMember?chat_id=${cleanChannel}&user_id=${UID}`);
+                var data = await res.json();
+                return (data.ok && data.result && (data.result.status === 'member' || data.result.status === 'administrator' || data.result.status === 'creator'));
+            } catch(e) { return false; }
+        }
+
+        async function claimTask(taskId, coins, taskType, channelId) {
+            if (!UID) return;
+            showToast("⚡ VERIFYING MISSION...");
+            
+            if(taskType.toLowerCase() === 'telegram') {
+                if(!channelId || channelId.trim() === "") {
+                    showToast("❌ CHANNEL NOT CONFIGURED!"); return;
+                }
+                var isMember = await checkTelegramMembership(channelId);
+                if(!isMember) {
+                    showToast("❌ YOU HAVEN'T JOINED THE CHANNEL YET!");
+                    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                    return;
+                }
+            }
+
+            var claimId = UID + '_' + taskId;
+            var uref = db.collection('users').doc(UID);
+            var cref = db.collection('user_claims').doc(claimId);
+
+            db.runTransaction(function(tx) {
+                return tx.get(cref).then(function(cdoc) {
+                    if (cdoc.exists) throw new Error("ALREADY CLAIMED!");
+                    tx.set(cref, { userId:UID, taskId:taskId, coins:coins, claimedAt:FS.serverTimestamp() });
+                    tx.update(uref, { coins:FS.increment(coins), tasksCompleted:FS.increment(1) });
+                });
+            }).then(function() {
+                showToast("💥 +" + coins + " SRX EARNED!");
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            }).catch(function(e) { showToast("❌ " + e.message); });
+        }
+
+        function filterTasks() {
+            var q = (document.getElementById('tsearch').value || '').toLowerCase();
+            document.querySelectorAll('#full-list .task-card-glow').forEach(function(card){
+                card.style.display = card.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
+            });
+        }
+
+        function openLink(e, url) { if (tg && tg.openLink) { e.preventDefault(); tg.openLink(url); } }
+
+        function goTab(id) {
+            document.querySelectorAll('.tab').forEach(p => p.classList.remove('on'));
+            document.querySelectorAll('.nav-i').forEach(b => b.classList.remove('on'));
+            document.getElementById('tab-' + id).classList.add('on');
+            document.getElementById('btn-' + id).classList.add('on');
+        }
+
+        function copyRef() {
+            var copyText = document.getElementById("ref-link");
+            if(!copyText) return;
+            copyText.select();
+            try {
+                navigator.clipboard.writeText(copyText.value);
+                showToast("🔗 INVITE LINK COPIED!");
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            } catch (err) { showToast("❌ COPY FAILED"); }
+        }
+
+        function submitWithdraw() {
+            var addr = (document.getElementById('wal-addr').value || '').trim();
+            var amt = parseInt(document.getElementById('wal-amt').value || '0');
+            var totalBal = ME ? (ME.coins || 0) : 0;
+
+            if (addr.length < 5) return showToast("❌ ENTER VALID CRYPTO ADDRESS!");
+            if (isNaN(amt) || amt < 500) return showToast("❌ MINIMUM IS 500 SRX!");
+            if (totalBal < amt) return showToast("❌ NOT ENOUGH SRX BALANCE!");
+
+            showToast("⏳ PROCESSING ON-CHAIN REQUEST...");
+            
+            var uref = db.collection('users').doc(UID);
+            
+            db.runTransaction(function(transaction) {
+                return transaction.get(uref).then(function(userDoc) {
+                    if (!userDoc.exists) throw new Error("User does not exist!");
+                    var currentCoins = userDoc.data().coins || 0;
+                    if (currentCoins < amt) throw new Error("Insufficient balance!");
+                    
+                    var wref = db.collection('withdrawals').doc();
+                    transaction.set(wref, {
+                        userId: UID,
+                        userName: ME.name || 'Hero',
+                        usdcAddress: addr,
+                        amount: amt,
+                        status: 'pending',
+                        createdAt: FS.serverTimestamp()
+                    });
+                    
+                    transaction.update(uref, {
+                        coins: FS.increment(-amt),
+                        totalWithdrawals: FS.increment(1)
+                    });
+                });
+            }).then(function() {
+                showToast("✅ SRX WITHDRAWAL ORDERED!");
+                document.getElementById('wal-addr').value = '';
+                document.getElementById('wal-amt').value = '';
+                if(document.getElementById('wal-usd')) document.getElementById('wal-usd').innerText = '$0.00';
+            }).catch(e => showToast("❌ FAILED: " + e.message));
+        }
+
+        function renderPayHistory(arr) {
+            var el = document.getElementById('pay-hist'); if(!el) return;
+            if(!arr.length) { el.innerHTML = '<p style="padding:10px;color:#777;font-weight:700;">No transactions found.</p>'; return; }
+            el.innerHTML = arr.map(w => {
+                var sCls = w.status === 'approved' ? 'bapp' : (w.status === 'rejected' ? 'brej' : 'bpend');
+                return `<div class="cc" style="padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;background:#16192b;border-color:#282d47"><div><div style="font-weight:900;font-size:14px;color:var(--gold);">${w.amount} SRX</div><div style="font-size:9px;color:#aaa;font-family:monospace;max-width:180px;overflow:hidden;text-overflow:ellipsis;">${esc(w.usdcAddress)}</div></div><span class="${sCls}">${w.status.toUpperCase()}</span></div>`;
+            }).join('');
+        }
+
+        function showToast(msg) {
+            var t = document.getElementById('toast'); if (!t) return;
+            t.innerText = msg; t.style.display = 'block';
+            clearTimeout(_toastT);
+            _toastT = setTimeout(function(){ t.style.display='none'; }, 3500);
+        }
+
+        function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var wa = document.getElementById('wal-amt');
+            if (wa) {
+                wa.oninput = function() {
+                    var v = parseInt(this.value) || 0;
+                    var el = document.getElementById('wal-usd');
+                    if (el) el.innerText = '$' + (v / 100).toFixed(2);
+                };
+            }
+            boot();
+        });
+    </script>
 </body>
 </html>
