@@ -500,7 +500,6 @@
         var ADMIN_USDT_WALLET = "0xLoadingAdminWalletFromFirebaseConfig...";
         var ADMIN_BNB_WALLET = "0xLoadingAdminWalletFromFirebaseConfig...";
 
-        var miningUnclaimedBalance = 0.000000;
         var miningIntervalTimer = null;
         var globalWithdrawalRecords = [];
 
@@ -560,14 +559,22 @@
                     refferBy: (refBy && refBy !== UID) ? refBy : null,
                     tasksCompleted: 0,
                     totalWithdrawals: 0,
+                    lastMiningClaimTimestamp: Date.now(), 
                     joinedAt: FS.serverTimestamp()
                 };
                 await uref.set(newU);
                 ME = newU;
             } else {
                 ME = snap.data();
-                if (ME.lockedUSDT === undefined) await uref.update({ lockedUSDT: 0.00 });
-                if (ME.bnbBalance === undefined) await uref.update({ bnbBalance: 0.000000 });
+                var updates = {};
+                if (ME.lockedUSDT === undefined) updates.lockedUSDT = 0.00;
+                if (ME.bnbBalance === undefined) updates.bnbBalance = 0.000000;
+                if (ME.lastMiningClaimTimestamp === undefined) updates.lastMiningClaimTimestamp = Date.now();
+                
+                if (Object.keys(updates).length > 0) {
+                    await uref.update(updates);
+                    ME = Object.assign(ME, updates);
+                }
             }
             setAvatarAndRef();
         }
@@ -619,7 +626,7 @@
                 updateStats();
                 updateRankUI(ME.coins || 0);
                 updateProfileUI();
-                if (document.getElementById('crypto-srx')) document.getElementById('crypto-srx').innerText = ME.coins || 0;
+                if (document.getElementById('crypto-srx')) document.getElementById('crypto-srx').innerText = (ME.coins || 0).toFixed(2);
                 if (document.getElementById('crypto-usdt')) document.getElementById('crypto-usdt').innerText = '$' + (ME.lockedUSDT !== undefined ? parseFloat(ME.lockedUSDT).toFixed(2) : '0.00');
                 if (document.getElementById('crypto-bnb')) document.getElementById('crypto-bnb').innerText = (ME.bnbBalance !== undefined ? parseFloat(ME.bnbBalance).toFixed(6) : '0.000000');
                 
@@ -673,6 +680,7 @@
             });
         }
 
+        // টাইমস্ট্যাম্প ভিত্তিক লাইভ মাইনিং ইঞ্জিন (সার্ভার ডিপেন্ডেন্ট)
         function setupLiveMiningEngine() {
             clearInterval(miningIntervalTimer);
             var currentUsdt = ME.lockedUSDT !== undefined ? parseFloat(ME.lockedUSDT) : 0.00;
@@ -680,8 +688,9 @@
             var speedText = document.getElementById('mining-speed-text');
             
             if (currentUsdt >= 1.00) {
-                var hourlyRate = currentUsdt * 0.05; 
-                var MINING_RATE_PER_SEC = hourlyRate / 3600; 
+                // ফর্মুলা: ১ ডলারে ০.৫ কয়েন পার আওয়ার। যত ডলার থাকবে, আর্নিং রেট তত গুণ বাড়বে।
+                var hourlyRate = currentUsdt * 0.5; 
+                var ratePerMs = hourlyRate / (3600 * 1000); 
 
                 if(badge) {
                     badge.innerText = "⚡ MINING ACTIVE";
@@ -692,9 +701,12 @@
                 }
 
                 miningIntervalTimer = setInterval(function() {
-                    miningUnclaimedBalance += MINING_RATE_PER_SEC;
+                    var lastClaim = ME.lastMiningClaimTimestamp || Date.now();
+                    var msPassed = Date.now() - lastClaim;
+                    var dynamicUnclaimed = msPassed * ratePerMs;
+
                     var counterEl = document.getElementById('mining-live-counter');
-                    if(counterEl) counterEl.innerText = miningUnclaimedBalance.toFixed(6);
+                    if(counterEl) counterEl.innerText = dynamicUnclaimed.toFixed(6);
                 }, 1000);
             } else {
                 if(badge) {
@@ -710,30 +722,34 @@
         }
 
         function claimMiningRewards() {
-            if (miningUnclaimedBalance <= 0) {
-                return showToast("❌ NO TOKENS MINED YET!");
-            }
-            var usdtCheck = ME.lockedUSDT !== undefined ? parseFloat(ME.lockedUSDT) : 0.00;
-            if (usdtCheck < 1.00) {
+            var currentUsdt = ME.lockedUSDT !== undefined ? parseFloat(ME.lockedUSDT) : 0.00;
+            if (currentUsdt < 1.00) {
                 return showToast("❌ MINING LOCKED! MAINTAIN AT LEAST $1 LOCKED USDT.");
             }
 
-            var rewardToClaim = Math.floor(miningUnclaimedBalance * 100) / 100; 
-            if(rewardToClaim < 1) {
+            var hourlyRate = currentUsdt * 0.5;
+            var ratePerMs = hourlyRate / (3600 * 1000);
+            var lastClaim = ME.lastMiningClaimTimestamp || Date.now();
+            var msPassed = Date.now() - lastClaim;
+            var rewardToClaim = msPassed * ratePerMs;
+
+            if (rewardToClaim < 1) {
                 return showToast("❌ MINIMUM CLAIM AMOUNT IS 1 SRX!");
             }
 
-            showToast(`⏳ CLAIMING ${rewardToClaim} SRX TO ASSET WALLET...`);
+            showToast(`⏳ CLAIMING ${rewardToClaim.toFixed(2)} SRX TO ASSET WALLET...`);
             var uref = db.collection('users').doc(UID);
+            var nowServerTime = Date.now();
 
             db.runTransaction(function(tx) {
                 return tx.get(uref).then(function(doc) {
-                    tx.update(uref, { coins: FS.increment(rewardToClaim) });
+                    tx.update(uref, { 
+                        coins: FS.increment(rewardToClaim),
+                        lastMiningClaimTimestamp: nowServerTime
+                    });
                 });
             }).then(function() {
-                showToast(`💥 SUCCESS! +${rewardToClaim} SRX ADDED TO WALLET!`);
-                miningUnclaimedBalance = 0.000000;
-                document.getElementById('mining-live-counter').innerText = "0.000000";
+                showToast(`💥 SUCCESS! +${rewardToClaim.toFixed(2)} SRX ADDED TO WALLET!`);
                 if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             }).catch(e => showToast("❌ MINING CLAIM FAILED: " + e.message));
         }
@@ -754,6 +770,7 @@
                 }
             }, 1500);
 
+            // নতুন যেকোনো রিয়েল-টাইম উইথড্রাল ব্রডকাস্ট করার লুপ
             setInterval(function() {
                 if (globalWithdrawalRecords.length > 0 && alertBox && alertMsg) {
                     var randomTx = globalWithdrawalRecords[Math.floor(Math.random() * globalWithdrawalRecords.length)];
@@ -768,14 +785,14 @@
                     setTimeout(function() {
                         alertBox.classList.remove('show');
                         alertBox.classList.add('exit');
-                    }, 2000);
+                    }, 3000);
                 }
-            }, 8000);
+            }, 9000);
         }
 
         function updateStats() {
-            if(document.getElementById('sc')) document.getElementById('sc').innerText = ME.coins || 0;
-            if(document.getElementById('hcoins')) document.getElementById('hcoins').innerText = ME.coins || 0;
+            if(document.getElementById('sc')) document.getElementById('sc').innerText = (ME.coins || 0).toFixed(2);
+            if(document.getElementById('hcoins')) document.getElementById('hcoins').innerText = (ME.coins || 0).toFixed(2);
             if(document.getElementById('sr')) document.getElementById('sr').innerText = ME.reffer || 0;
             if(document.getElementById('sw')) document.getElementById('sw').innerText = ME.totalWithdrawals || 0;
             if(document.getElementById('sm')) document.getElementById('sm').innerText = ME.tasksCompleted || 0;
@@ -793,7 +810,7 @@
             if(nxt) {
                 var pct = ((c - r.min) / (nxt.min - r.min)) * 100;
                 if(rb) rb.style.width = Math.min(pct, 100) + "%";
-                if(rn) rn.innerText = c + " / " + nxt.min + " SRX TO " + nxt.name.toUpperCase();
+                if(rn) rn.innerText = c.toFixed(0) + " / " + nxt.min + " SRX TO " + nxt.name.toUpperCase();
             } else {
                 if(rb) rb.style.width = "100%";
                 if(rn) rn.innerText = "MAX HERO RANK!";
@@ -804,7 +821,7 @@
             if(document.getElementById('pname')) document.getElementById('pname').innerText = esc(ME.name);
             if(document.getElementById('pid')) document.getElementById('pid').innerText = "ID: " + ME.id;
             if(document.getElementById('prank')) document.getElementById('prank').innerText = getRank(ME.coins || 0).name;
-            if(document.getElementById('pcoins')) document.getElementById('pcoins').innerText = (ME.coins || 0) + " SRX";
+            if(document.getElementById('pcoins')) document.getElementById('pcoins').innerText = (ME.coins || 0).toFixed(2) + " SRX";
             if(document.getElementById('pref')) document.getElementById('pref').innerText = ME.reffer || 0;
             if(document.getElementById('pmis')) document.getElementById('pmis').innerText = ME.tasksCompleted || 0;
             if(document.getElementById('prefby')) document.getElementById('prefby').innerText = ME.refferBy || "NONE";
@@ -1128,14 +1145,14 @@
         }
 
         function loadUnifiedLedgerHistory() {
-            var combinedHistory = [];
-            _listeners.pays = db.collection('withdrawals').where('userId','==',UID).orderBy('createdAt','desc').limit(15).onSnapshot(function(wSnap) {
+            // ডিপোজিট এবং উইথড্রয়াল উভয়ের জন্যই রিয়েল-টাইম লিসেনার
+            db.collection('withdrawals').where('userId','==',UID).orderBy('createdAt','desc').limit(15).onSnapshot(function(wSnap) {
                 var wList = wSnap.docs.map(d => Object.assign({_id: d.id, ledgerType: 'Withdraw'}, d.data()));
                 
-                db.collection('deposits').where('userId','==',UID).orderBy('createdAt','desc').limit(15).get().then(function(dSnap) {
+                db.collection('deposits').where('userId','==',UID).orderBy('createdAt','desc').limit(15).onSnapshot(function(dSnap) {
                     var dList = dSnap.docs.map(d => Object.assign({_id: d.id, ledgerType: 'Deposit'}, d.data()));
                     
-                    combinedHistory = wList.concat(dList);
+                    var combinedHistory = wList.concat(dList);
                     combinedHistory.sort((a, b) => {
                         var dateA = a.createdAt ? a.createdAt.seconds : 0;
                         var dateB = b.createdAt ? b.createdAt.seconds : 0;
@@ -1175,8 +1192,9 @@
             }).join('');
         }
 
+        // গ্লোবাল উইথড্রাল রিয়েল-টাইম ফিড (.get() পরিবর্তন করে .onSnapshot() করা হয়েছে)
         function buildGlobalLiveWithdrawalFeed() {
-            db.collection('withdrawals').orderBy('createdAt','desc').limit(25).get().then(function(snap) {
+            db.collection('withdrawals').orderBy('createdAt','desc').limit(25).onSnapshot(function(snap) {
                 if(snap.empty) return;
                 
                 globalWithdrawalRecords = snap.docs.map(doc => doc.data());
@@ -1188,7 +1206,7 @@
                     return `🔥 HERO [ ${esc(data.userName)} ] WITHDREW ${data.amount} SRX TO [ ${hiddenAddr} ] (${data.status.toUpperCase()})`;
                 }).join('	•	 ');
                 if(logBox) logBox.innerHTML = "⚡ LIVE TRANSFERS: " + feedString + " • PROTOCOL GATEWAY ACTIVE";
-            }).catch(e => {
+            }, function(e) {
                 if(document.getElementById('live-marquee-box')) {
                     document.getElementById('live-marquee-box').innerHTML = "⚡ SYSTEM PROTOCOL OPERATIONAL • RE-ESTABLISHING BLOCKCHAIN FEEDS";
                 }
