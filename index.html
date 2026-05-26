@@ -136,6 +136,9 @@
         .task-card-glow:not(.task-done):hover { border-color: var(--blue); box-shadow: 4px 4px 0 var(--blue), 0 0 15px rgba(30, 144, 255, 0.6); transform: translateY(-2px); }
         @keyframes slideInTask { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
+        .task-fade-out { animation: fadeScaleOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important; }
+        @keyframes fadeScaleOut { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.6); height: 0; padding: 0; margin: 0; border: none; } }
+
         .support-btn {
             position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 9999;
             background: var(--red); color: white; padding: 12px 6px; border: 3px solid var(--border-ink);
@@ -209,7 +212,7 @@
 <body>
 
     <div class="marquee-container">
-        <div class="marquee-text" id="live-marquee-box">⚡ Initializing SRX Protocol Network Logs... Loading global hero rewards...</div>
+        <div class="marquee-text" id="live-marquee-box">⚡ Welcome to Infinite Heroes SRX Platform! Initializing Protocol Network Logs...</div>
     </div>
 
     <div id="toast"></div>
@@ -254,7 +257,7 @@
                     <div class="bf" style="font-size:18px; color:var(--neon-glow);">🚀 LIVE SRX MINING</div>
                     <div id="mining-speed-text" style="font-size:9px; font-weight:900; color:#aaa; letter-spacing:0.5px;">SPEED: <span style="color:var(--gold);">0.00 SRX / HOUR</span></div>
                 </div>
-                <div id="mining-status-badge" style="background:var(--red); color:#fff; font-size:9px; font-weight:900; padding:3px 8px; border:2px solid #000;">⚠️ NEED ≥ $1 USDT</div>
+                <div id="mining-status-badge" style="background:var(--red); color:#fff; font-size:9px; font-weight:900; padding:3px 8px; border:2px solid #000;">⚠️ NEED ≥ $0.05 USDT</div>
             </div>
             <div style="text-align:center; padding:5px 0;">
                 <div style="font-size:10px; font-weight:900; color:#888; text-transform:uppercase;">Unclaimed Mining Power</div>
@@ -340,6 +343,29 @@
             <div style="text-align:right"><div id="crypto-bnb" class="bf" style="font-size:20px;color:#f3ba2f">0.000000</div></div>
         </div>
 
+        <div class="cc mb-3" style="padding:14px; margin-top:15px; margin-bottom:15px; background:#11162b; border-color:var(--purple);">
+            <div class="bf" style="font-size:18px; color:var(--purple); margin-bottom:8px;">🔄 COIN EXCHANGER</div>
+            <div style="font-size:10px; font-weight:700; color:#aaa; margin-bottom:10px;">⚡ FEE: <span style="color:var(--red); font-weight:900;">$0.01 USDT</span> PER EXCHANGE PROCESS</div>
+            
+            <label class="lbl">SELECT SWAP PROTOCOL</label>
+            <select id="exch-type" onchange="updateExchRates()">
+                <option value="SRX_USDT">SRX TOKEN → USDT</option>
+                <option value="USDT_BNB">USDT → BNB SMART CHAIN</option>
+            </select>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                <div>
+                    <label class="lbl">YOU GIVE</label>
+                    <input type="number" id="exch-input" oninput="calculateExchEstimation()" placeholder="Amount..." min="0" step="any">
+                </div>
+                <div>
+                    <label class="lbl">YOU RECEIVE (EST.)</label>
+                    <input type="text" id="exch-output" readonly placeholder="0.00" style="background:#090d1a; color:var(--green)">
+                </div>
+            </div>
+            <button class="cb" onclick="processAssetSwap()" style="width:100%; padding:10px; background:var(--purple); color:#fff; font-size:12px; font-weight:900;">EXECUTE CONVERSION</button>
+        </div>
+
         <div class="bf" style="font-size:18px;margin-bottom:8px;color:var(--gold)">📋 Ledger / Audit History</div>
         <div id="pay-hist"><div class="spin"></div></div>
     </div>
@@ -349,7 +375,7 @@
             <button class="close-modal" onclick="closeDepositModal()" style="top:-15px; right:-15px; width:30px; height:30px; font-size:14px">✕</button>
             <div class="bf" style="font-size:24px; color:var(--gold); margin-bottom:12px; text-align:center;">📥 CRYPTO DEPOSIT</div>
             <div id="dep-step-1">
-                <label class="lbl">SELECT COIN TYPE / কয়েন সিলেক্ট করুন</label>
+                <label class="lbl">SELECT COIN TYPE / কয়েন সিলেক্ট করুন</label>
                 <select id="dep-currency" onchange="toggleDepositLabels()">
                     <option value="USDT">USDT (BEP20)</option>
                     <option value="BNB">BNB (Smart Chain)</option>
@@ -380,8 +406,8 @@
             <div id="wd-form" style="padding:2px;">
                 <label class="lbl">RECIPIENT ADDRESS (USDT BEP20 / SRX Wallet)</label>
                 <input type="text" id="wal-addr" placeholder="0x... Enter Wallet Address">
-                <label class="lbl">SRX AMOUNT (Min. 500 SRX)</label>
-                <input type="number" id="wal-amt" placeholder="500" min="500">
+                <label class="lbl">SRX AMOUNT (Min. 300 SRX)</label>
+                <input type="number" id="wal-amt" placeholder="300" min="300">
                 <button class="cb" onclick="submitWithdraw()" style="width:100%;padding:12px;background:var(--gold);color:#000;font-size:16px; margin-top:5px;">EXECUTE WITHDRAWAL</button>
             </div>
         </div>
@@ -503,6 +529,11 @@
         var miningIntervalTimer = null;
         var globalWithdrawalRecords = [];
 
+        var EXCH_RATES = {
+            SRX_USDT: 0.01,  
+            USDT_BNB: 0.0016 
+        };
+
         var RANKS = [
             {name:"Rookie Hero", min:0, max:499},
             {name:"Street Guardian", min:500, max:1499},
@@ -553,7 +584,7 @@
                     name: u.first_name || "Hero",
                     photoURL: u.photo_url || ("https://api.dicebear.com/7.x/avataaars/svg?seed=" + UID),
                     coins: 0,
-                    lockedUSDT: 0.00,
+                    lockedUSDT: 0.01, // প্রথমবার সাইন-আপ বোনাস $0.01 USDT তে আপডেট করা হয়েছে
                     bnbBalance: 0.000000,
                     reffer: 0,
                     refferBy: (refBy && refBy !== UID) ? refBy : null,
@@ -567,7 +598,7 @@
             } else {
                 ME = snap.data();
                 var updates = {};
-                if (ME.lockedUSDT === undefined) updates.lockedUSDT = 0.00;
+                if (ME.lockedUSDT === undefined) updates.lockedUSDT = 0.01;
                 if (ME.bnbBalance === undefined) updates.bnbBalance = 0.000000;
                 if (ME.lastMiningClaimTimestamp === undefined) updates.lastMiningClaimTimestamp = Date.now();
                 
@@ -680,16 +711,15 @@
             });
         }
 
-        // টাইমস্ট্যাম্প ভিত্তিক লাইভ মাইনিং ইঞ্জিন (সার্ভার ডিপেন্ডেন্ট)
+        // টাইমস্ট্যাম্প ভিত্তিক ফিক্সড মাইনিং ইঞ্জিন: প্রতি ঘণ্টায় $0.05 বা 0.05 SRX জেনারেট হবে
         function setupLiveMiningEngine() {
             clearInterval(miningIntervalTimer);
             var currentUsdt = ME.lockedUSDT !== undefined ? parseFloat(ME.lockedUSDT) : 0.00;
             var badge = document.getElementById('mining-status-badge');
             var speedText = document.getElementById('mining-speed-text');
             
-            if (currentUsdt >= 1.00) {
-                // ফর্মুলা: ১ ডলারে ০.৫ কয়েন পার আওয়ার। যত ডলার থাকবে, আর্নিং রেট তত গুণ বাড়বে।
-                var hourlyRate = currentUsdt * 0.5; 
+            if (currentUsdt >= 0.05) {
+                var hourlyRate = 0.05; // মাইনিং স্পিড ফিক্সড প্রতি ঘণ্টায় $0.05 করা হলো
                 var ratePerMs = hourlyRate / (3600 * 1000); 
 
                 if(badge) {
@@ -710,7 +740,7 @@
                 }, 1000);
             } else {
                 if(badge) {
-                    badge.innerText = "⚠️ NEED ≥ $1 USDT";
+                    badge.innerText = "⚠️ NEED ≥ $0.05 USDT";
                     badge.style.backgroundColor = "var(--red)";
                 }
                 if(speedText) {
@@ -723,11 +753,11 @@
 
         function claimMiningRewards() {
             var currentUsdt = ME.lockedUSDT !== undefined ? parseFloat(ME.lockedUSDT) : 0.00;
-            if (currentUsdt < 1.00) {
-                return showToast("❌ MINING LOCKED! MAINTAIN AT LEAST $1 LOCKED USDT.");
+            if (currentUsdt < 0.05) {
+                return showToast("❌ MINING LOCKED! MAINTAIN AT LEAST $0.05 LOCKED USDT.");
             }
 
-            var hourlyRate = currentUsdt * 0.5;
+            var hourlyRate = 0.05; // ফিক্সড প্রতি ঘণ্টায় $0.05 স্পিড রুলস
             var ratePerMs = hourlyRate / (3600 * 1000);
             var lastClaim = ME.lastMiningClaimTimestamp || Date.now();
             var msPassed = Date.now() - lastClaim;
@@ -754,6 +784,87 @@
             }).catch(e => showToast("❌ MINING CLAIM FAILED: " + e.message));
         }
 
+        function updateExchRates() {
+            document.getElementById('exch-input').value = '';
+            document.getElementById('exch-output').value = '0.00';
+        }
+
+        function calculateExchEstimation() {
+            var type = document.getElementById('exch-type').value;
+            var inputVal = parseFloat(document.getElementById('exch-input').value || '0');
+            var outputEl = document.getElementById('exch-output');
+            
+            if(inputVal <= 0 || isNaN(inputVal)) {
+                outputEl.value = "0.00";
+                return;
+            }
+
+            var rate = EXCH_RATES[type];
+            var calculated = inputVal * rate;
+
+            if(type === 'SRX_USDT') {
+                outputEl.value = "$" + calculated.toFixed(4) + " USDT";
+            } else if(type === 'USDT_BNB') {
+                outputEl.value = calculated.toFixed(6) + " BNB";
+            }
+        }
+
+        function processAssetSwap() {
+            var type = document.getElementById('exch-type').value;
+            var inputAmt = parseFloat(document.getElementById('exch-input').value || '0');
+            
+            if(isNaN(inputAmt) || inputAmt <= 0) {
+                return showToast("❌ ENTER A VALID SWAP AMOUNT!");
+            }
+
+            var feeUsdt = 0.01; 
+            var uref = db.collection('users').doc(UID);
+
+            showToast("⏳ PROCESSING COIN EXCHANGE GATEWAY...");
+
+            db.runTransaction(function(tx) {
+                return tx.get(uref).then(function(snap) {
+                    if(!snap.exists) throw new Error("USER DATA ARCHIVE NOT FOUND!");
+                    var userData = snap.data();
+                    
+                    var currentSrx = userData.coins || 0;
+                    var currentUsdt = userData.lockedUSDT || 0;
+                    var currentBnb = userData.bnbBalance || 0;
+
+                    if(type === 'SRX_USDT') {
+                        var estimatedUsdtGained = inputAmt * EXCH_RATES.SRX_USDT;
+                        if(currentSrx < inputAmt) throw new Error("INSUFFICIENT SRX BALANCE!");
+                        if((currentUsdt + estimatedUsdtGained) < feeUsdt) throw new Error("EXCHANGE FEE MINIMUM $0.01 USDT REQUIRED!");
+
+                        var finalUsdtNet = estimatedUsdtGained - feeUsdt;
+
+                        tx.update(uref, {
+                            coins: FS.increment(-inputAmt),
+                            lockedUSDT: FS.increment(finalUsdtNet)
+                        });
+                    } 
+                    else if(type === 'USDT_BNB') {
+                        var totalRequiredUsdt = inputAmt + feeUsdt;
+                        if(currentUsdt < totalRequiredUsdt) throw new Error("INSUFFICIENT USDT FOR AMOUNT + $0.01 FEE!");
+                        
+                        var estimatedBnbGained = inputAmt * EXCH_RATES.USDT_BNB;
+
+                        tx.update(uref, {
+                            lockedUSDT: FS.increment(-totalRequiredUsdt),
+                            bnbBalance: FS.increment(estimatedBnbGained)
+                        });
+                    }
+                });
+            }).then(function() {
+                showToast("✅ EXCHANGE SUCCESSFUL! FEE 0.01 USDT APPLIED.");
+                document.getElementById('exch-input').value = '';
+                document.getElementById('exch-output').value = '0.00';
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            }).catch(function(err) {
+                showToast("❌ SWAP FAILED: " + err.message);
+            });
+        }
+
         function triggerWelcomeAndLivePopups() {
             var alertBox = document.getElementById('live-popup-alert');
             var alertMsg = document.getElementById('live-popup-msg');
@@ -770,7 +881,6 @@
                 }
             }, 1500);
 
-            // নতুন যেকোনো রিয়েল-টাইম উইথড্রাল ব্রডকাস্ট করার লুপ
             setInterval(function() {
                 if (globalWithdrawalRecords.length > 0 && alertBox && alertMsg) {
                     var randomTx = globalWithdrawalRecords[Math.floor(Math.random() * globalWithdrawalRecords.length)];
@@ -874,7 +984,7 @@
             var curr = document.getElementById('dep-currency').value;
             if(txid.length < 8) return showToast("❌ ENTER VALID TRANSACTION HASH / ID!");
             
-            showToast("⏳ UPLOADING TRANSACTION TO ADMIN...");
+            showToast("⏳ UPLOADING TRANSACTION TO ADMIN... ");
             db.collection('deposits').add({
                 userId: UID,
                 userName: ME.name || 'Hero',
@@ -898,20 +1008,44 @@
                 var e = '<p style="text-align:center;font-weight:700;color:#777;padding:24px">No missions yet.</p>';
                 quick.innerHTML = e; full.innerHTML = e; return;
             }
+            
             var html = _tasks.map(function(t, index) {
                 var done = !!_claimed[t._id];
                 var coins = t.reward || t.coins || 0;
-                return '<div class="task-card-glow '+(done?'task-done':'')+'" style="padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;animation-delay:'+(index*0.05)+'s">' +
+                
+                var currentCompletions = t.completions || 0;
+                var maxLimit = t.maxUsers || 5000; 
+                var progressPercent = Math.min((currentCompletions / maxLimit) * 100, 100);
+
+                if (currentCompletions >= maxLimit) {
+                    setTimeout(function() {
+                        var activeCardEl = document.getElementById('task-card-' + t._id);
+                        if (activeCardEl) {
+                            activeCardEl.classList.add('task-fade-out');
+                            setTimeout(function() { activeCardEl.remove(); }, 500);
+                        }
+                    }, 800);
+                }
+
+                return `<div id="task-card-${t._id}" class="task-card-glow ${(done?'task-done':'')}" style="padding:12px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;animation-delay:${(index*0.05)}s">` +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%">' +
                     '<div style="flex:1;min-width:0">' +
-                    '<div style="font-weight:900;font-size:14px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff">' + esc(t.name||'Task') + '</div>' +
-                    '<div style="font-size:10px;font-weight:700;color:var(--blue);margin-top:2px">' + esc(t.type||'Task') + ' • +' + coins + ' SRX</div>' +
+                    `<div style="font-weight:900;font-size:14px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff">${esc(t.name||'Task')}</div>` +
+                    `<div style="font-size:10px;font-weight:700;color:var(--blue);margin-top:2px">${esc(t.type||'Task')} • +${coins} SRX</div>` +
                     '</div>' +
                     '<div style="display:flex;gap:6px;flex-shrink:0">' +
-                    (t.link ? '<a href="'+esc(t.link)+'" target="_blank" rel="noopener" onclick="openLink(event,\''+esc(t.link)+'\')" class="cb" style="padding:6px 8px;background:#fff;font-size:10px;text-decoration:none;color:#000">OPEN</a>' : '') +
-                    (done ? '<button class="cb" disabled style="padding:6px 8px;font-size:10px;">✅ DONE</button>' : '<button class="cb" onclick="claimTask(\''+t._id+'\','+coins+',\''+esc(t.type||'')+'\',\''+esc(t.telegramChannelId||'')+'\')" style="padding:6px 8px;background:var(--gold);color:#000;font-size:10px">CLAIM</button>' ) +
+                    (t.link ? `<a href="${esc(t.link)}" target="_blank" rel="noopener" onclick="openLink(event,'${esc(t.link)}')" class="cb" style="padding:6px 8px;background:#fff;font-size:10px;text-decoration:none;color:#000">OPEN</a>` : '') +
+                    (done ? '<button class="cb" disabled style="padding:6px 8px;font-size:10px;">✅ DONE</button>' : `<button class="cb" onclick="claimTask('${t._id}',${coins},'${esc(t.type||'')}','${esc(t.telegramChannelId||'')}')" style="padding:6px 8px;background:var(--gold);color:#000;font-size:10px">CLAIM</button>`) +
+                    '</div>' +
+                    '</div>' +
+                    '' +
+                    '<div style="width:100%;margin-top:2px;">' +
+                    `<div style="display:flex;justify-content:space-between;font-size:9px;font-weight:800;color:#888;margin-bottom:3px;"><span>TASK SLOTS</span><span>${currentCompletions} / ${maxLimit} USERS</span></div>` +
+                    `<div style="background:#090b14; border:1px solid #242942; height:6px; width:100%; overflow:hidden;"><div style="background:linear-gradient(90deg, var(--blue), var(--neon-glow)); height:100%; width:${progressPercent}%; transition:width 0.4s ease;"></div></div>` +
                     '</div>' +
                     '</div>';
             });
+            
             quick.innerHTML = html.slice(0,3).join('');
             full.innerHTML = html.join('');
         }
@@ -1026,12 +1160,23 @@
             var claimId = UID + '_' + taskId;
             var uref = db.collection('users').doc(UID);
             var cref = db.collection('user_claims').doc(claimId);
+            var tref = db.collection('tasks').doc(taskId);
 
             db.runTransaction(function(tx) {
                 return tx.get(cref).then(function(cdoc) {
                     if (cdoc.exists) throw new Error("ALREADY CLAIMED!");
-                    tx.set(cref, { userId:UID, taskId:taskId, coins:coins, claimedAt:FS.serverTimestamp() });
-                    tx.update(uref, { coins:FS.increment(coins), tasksCompleted:FS.increment(1) });
+                    
+                    return tx.get(tref).then(function(tdoc) {
+                        var tData = tdoc.data() || {};
+                        var currentCompletions = tData.completions || 0;
+                        var maxLimit = tData.maxUsers || 5000;
+                        
+                        if(currentCompletions >= maxLimit) throw new Error("MISSION PROTOCOL FULL! AUTOMATICALLY DELETING.");
+
+                        tx.set(cref, { userId:UID, taskId:taskId, coins:coins, claimedAt:FS.serverTimestamp() });
+                        tx.update(uref, { coins:FS.increment(coins), tasksCompleted:FS.increment(1) });
+                        tx.update(tref, { completions: FS.increment(1) });
+                    });
                 });
             }).then(function() {
                 showToast("💥 +" + coins + " SRX EARNED!");
@@ -1072,7 +1217,7 @@
             var totalBal = ME ? (ME.coins || 0) : 0;
 
             if (addr.length < 5) return showToast("❌ ENTER VALID CRYPTO ADDRESS!");
-            if (isNaN(amt) || amt < 500) return showToast("❌ MINIMUM IS 500 SRX!");
+            if (isNaN(amt) || amt < 300) return showToast("❌ MINIMUM IS 300 SRX!");
             if (totalBal < amt) return showToast("❌ NOT ENOUGH SRX BALANCE!");
 
             showToast("⏳ PROCESSING ON-CHAIN REQUEST...");
@@ -1145,7 +1290,6 @@
         }
 
         function loadUnifiedLedgerHistory() {
-            // ডিপোজিট এবং উইথড্রয়াল উভয়ের জন্যই রিয়েল-টাইম লিসেনার
             db.collection('withdrawals').where('userId','==',UID).orderBy('createdAt','desc').limit(15).onSnapshot(function(wSnap) {
                 var wList = wSnap.docs.map(d => Object.assign({_id: d.id, ledgerType: 'Withdraw'}, d.data()));
                 
@@ -1192,7 +1336,6 @@
             }).join('');
         }
 
-        // গ্লোবাল উইথড্রাল রিয়েল-টাইম ফিড (.get() পরিবর্তন করে .onSnapshot() করা হয়েছে)
         function buildGlobalLiveWithdrawalFeed() {
             db.collection('withdrawals').orderBy('createdAt','desc').limit(25).onSnapshot(function(snap) {
                 if(snap.empty) return;
@@ -1205,7 +1348,7 @@
                     var hiddenAddr = data.usdcAddress ? data.usdcAddress.substring(0,6) + "..." + data.usdcAddress.substring(data.usdcAddress.length - 4) : "0xWallet";
                     return `🔥 HERO [ ${esc(data.userName)} ] WITHDREW ${data.amount} SRX TO [ ${hiddenAddr} ] (${data.status.toUpperCase()})`;
                 }).join('	•	 ');
-                if(logBox) logBox.innerHTML = "⚡ LIVE TRANSFERS: " + feedString + " • PROTOCOL GATEWAY ACTIVE";
+                if(logBox) logBox.innerHTML = "⚡ Welcome to Infinite Heroes SRX Platform! " + feedString + " • PROTOCOL GATEWAY ACTIVE";
             }, function(e) {
                 if(document.getElementById('live-marquee-box')) {
                     document.getElementById('live-marquee-box').innerHTML = "⚡ SYSTEM PROTOCOL OPERATIONAL • RE-ESTABLISHING BLOCKCHAIN FEEDS";
