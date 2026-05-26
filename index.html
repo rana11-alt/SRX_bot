@@ -25,7 +25,7 @@
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg);
-            background-image: radial-gradient(rgba(255, 222, 3, 0.03) 1.5px, transparent 1.5px), radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-image: radial-gradient(rgba(255, 222, 3, 0.05) 1.5px, transparent 1.5px), radial-gradient(rgba(0, 255, 200, 0.02) 1px, transparent 1px);
             background-size: 24px 24px;
             background-position: 0 0, 12px 12px;
             color: var(--text-light);
@@ -38,7 +38,7 @@
         .cc {
             background: var(--card);
             border: 3px solid var(--border-ink);
-            box-shadow: 4px 4px 0 var(--border-ink);
+            box-shadow: 5px 5px 0 var(--border-ink);
             border-radius: 0;
             color: var(--text-light);
         }
@@ -57,6 +57,31 @@
         .cb:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--border-ink); }
         .cb:disabled { opacity: .5; cursor: not-allowed; }
 
+        .marquee-container {
+            background: linear-gradient(90deg, #ff0055, #7000ff);
+            border-bottom: 3px solid var(--border-ink);
+            color: #fff;
+            font-family: 'Bangers', cursive;
+            font-size: 14px;
+            letter-spacing: 1px;
+            padding: 6px 0;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            z-index: 1001;
+        }
+        .marquee-text {
+            display: inline-block;
+            white-space: nowrap;
+            padding-left: 100%;
+            animation: marquee 25s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
         .nav {
             position: fixed;
             bottom: 0;
@@ -70,8 +95,9 @@
         }
 
         .nav-i { font-size: 10px; font-weight: 900; text-align: center; color: #888; cursor: pointer; padding: 0 8px; }
-        .nav-i.on { color: var(--gold); }
-        .nav-ic { font-size: 22px; display: block; margin-bottom: 2px; }
+        .nav-i.on { color: var(--gold); text-shadow: 0 0 8px rgba(255,222,3,0.3); }
+        .nav-i.on .nav-ic { transform: scale(1.2); }
+        .nav-ic { font-size: 22px; display: block; margin-bottom: 2px; transition: transform 0.2s; }
 
         .tab { display: none; padding: 14px 14px 100px; animation: si .25s ease; }
         .tab.on { display: block; }
@@ -79,12 +105,23 @@
         @keyframes si { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
         #toast {
-            position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+            position: fixed; top: 50px; left: 50%; transform: translateX(-50%);
             z-index: 999999; padding: 12px 24px; background: var(--red); color: #fff;
             border: 3px solid var(--border-ink); box-shadow: 4px 4px 0 var(--border-ink);
             font-family: 'Bangers'; font-size: 18px; letter-spacing: 1px; display: none;
             white-space: nowrap; max-width: 90vw; text-align: center;
         }
+
+        #live-popup-alert {
+            position: fixed; bottom: 85px; left: 100%;
+            z-index: 99999; padding: 10px 18px; background: #101424; color: #fff;
+            border: 3px solid var(--border-ink); box-shadow: 4px 4px 0 var(--gold);
+            font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 800;
+            text-align: center; width: 85%; max-width: 360px; display: flex; align-items: center; gap: 10px;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #live-popup-alert.show { left: 50%; transform: translateX(-50%); }
+        #live-popup-alert.exit { left: -100%; transform: translateX(0); }
 
         .balance-glow { animation: bglow 1s ease-in-out infinite alternate; border: 3px solid var(--border-ink) !important; }
         @keyframes bglow {
@@ -122,7 +159,7 @@
         @keyframes sp { to { transform: rotate(360deg); } }
 
         input, select, textarea { width: 100%; padding: 8px 10px; border: 2px solid var(--border-ink); font-size: 13px; font-weight: 700; outline: none; font-family: 'Inter'; background: #191d32; color: #fff; margin-bottom: 10px; }
-        input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+        input:focus, select:focus, textarea:focus { border-color: var(--gold); box-shadow: 0 0 8px var(--gold); }
         .lbl { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; display: block; color: #aaa; }
 
         .comics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 15px; }
@@ -137,7 +174,7 @@
         .close-modal { position: absolute; top: 20px; right: 20px; z-index: 10005; background: var(--red); color: #fff; border: 3px solid var(--border-ink); box-shadow: 3px 3px 0 var(--border-ink); width: 42px; height: 42px; font-size: 20px; font-family: 'Bangers'; cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
         .close-modal:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--border-ink); }
 
-        .slider-window { position: relative; width: 92%; max-width: 420px; height: 72vh; margin: 6vh auto 0; z-index: 10000; overflow: hidden; border: 4px solid var(--border-ink); background: #000; box-shadow: 8px 8px 0 var(--border-ink); }
+        .slider-window { position: relative; width: 92%; max-width: 420px; height: 68vh; margin: 4vh auto 0; z-index: 10000; overflow: hidden; border: 4px solid var(--border-ink); background: #000; box-shadow: 8px 8px 0 var(--border-ink); }
         .slides-wrapper { display: flex; width: 100%; height: 100%; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15); }
         .comic-slide { min-width: 100%; height: 100%; display: flex; flex-direction: column; background: #000; position: relative; justify-content: space-between; }
         .comic-slide img { width: 100%; height: calc(100% - 110px); object-fit: contain; background: #050508; padding: 5px; }
@@ -150,6 +187,9 @@
         .nav-circle-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--border-ink); }
         .page-counter { background: #fff; color: #000; border: 3px solid var(--border-ink); box-shadow: 3px 3px 0 var(--border-ink); padding: 8px 22px; font-size: 16px; font-weight: 900; font-family: 'Bangers', cursive; letter-spacing: 1px; }
 
+        .lang-selector-box { position: absolute; top: 20px; left: 20px; z-index: 10005; width: 150px; }
+        .lang-selector-box select { margin-bottom: 0; background: var(--card); border: 3px solid var(--border-ink); box-shadow: 3px 3px 0 var(--border-ink); font-weight: 900; color: var(--gold); font-size: 12px; }
+
         .crypto-box { background: #16192b; border: 2px solid #282d47; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 3px 3px 0 var(--border-ink); }
         .crypto-info { display: flex; align-items: center; gap: 10px; }
         .crypto-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; color: #000; }
@@ -157,20 +197,31 @@
         .btn-deposit { background: var(--green); color: #000; padding: 10px; font-size: 14px; text-align: center; }
         .btn-withdraw { background: var(--gold); color: #000; padding: 10px; font-size: 14px; text-align: center; }
         
-        .lock-field { opacity: 0.65; position: relative; border-color: var(--red) !important; background: #221727 !important; }
-        .alert-text { font-family: 'Bangers', cursive; font-size: 11px; color: var(--red); letter-spacing: 0.8px; display: flex; align-items: center; gap: 4px; margin-top: 3px; }
-
+        .kyc-panel { border: 3px solid var(--neon-glow); box-shadow: 5px 5px 0 var(--border-ink); background: #11162b; padding: 15px; margin-top: 15px; text-align: left; }
+        .kyc-badge { background: var(--neon-glow); color: #000; font-size: 10px; font-weight: 900; padding: 2px 6px; display: inline-block; margin-bottom: 8px; border: 1px solid #000; }
+        .face-btn-placeholder { background: #1d2342; border: 2px dashed #4b5563; padding: 12px; text-align: center; font-size: 12px; color: #9ca3af; margin-top: 5px; font-weight: 700; cursor: not-allowed; }
         .custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999999; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); }
         .modal-content { background: var(--card); border: 4px solid var(--border-ink); width: 90%; max-width: 400px; margin: 15vh auto; padding: 20px; position: relative; box-shadow: 0 0 20px var(--gold); }
-        
         .ref-history-list { background: #0d0f1a; max-height: 200px; overflow-y: auto; border: 2px solid var(--border-ink); }
         .ref-history-item { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #1a1e33; font-size: 12px; }
-        .ref-history-item:last-child { border-bottom: none; }
     </style>
 </head>
 <body>
 
+    <div class="marquee-container">
+        <div class="marquee-text" id="live-marquee-box">⚡ Initializing SRX Protocol Network Logs... Loading global hero rewards...</div>
+    </div>
+
     <div id="toast"></div>
+    
+    <div id="live-popup-alert">
+        <span style="font-size:24px; flex-shrink:0;">🎉</span>
+        <div style="text-align:left;">
+            <div style="color:var(--gold); font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:0.5px;">SYSTEM PROTOCOL BROADCAST</div>
+            <p id="live-popup-msg" style="line-height:1.3; margin-top:1px;">Welcome to Infinite Heroes SRX Platform!</p>
+        </div>
+    </div>
+
     <a href="https://t.me/wait_for_end_404" target="_blank" class="support-btn">💬 SUPPORT</a>
 
     <div id="tab-home" class="tab on">
@@ -192,9 +243,24 @@
         <div class="cc mb-3" style="padding:10px;margin-bottom:12px">
             <div style="display:flex;justify-content:space-between;margin-bottom:4px">
                 <span style="font-size:10px;font-weight:900;text-transform:uppercase;color:#aaa">RANK PROGRESS</span>
-                <span id="rank-next" style="font-size:10px;font-weight:700;color:#777"></span>
+                <span id="rank-next" style="font-size:10px;font-700;color:#777"></span>
             </div>
             <div class="rb-out"><div class="rb-in" id="rank-bar" style="width:0%"></div></div>
+        </div>
+
+        <div class="cc mb-3" style="padding:14px; margin-bottom:12px; background:linear-gradient(135deg, #111428, #1c133a); border-color:var(--neon-glow); box-shadow:5px 5px 0 var(--border-ink);">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px dashed #282d47; padding-bottom:8px; margin-bottom:10px;">
+                <div>
+                    <div class="bf" style="font-size:18px; color:var(--neon-glow);">🚀 LIVE SRX MINING</div>
+                    <div id="mining-speed-text" style="font-size:9px; font-weight:900; color:#aaa; letter-spacing:0.5px;">SPEED: <span style="color:var(--gold);">0.00 SRX / HOUR</span></div>
+                </div>
+                <div id="mining-status-badge" style="background:var(--red); color:#fff; font-size:9px; font-weight:900; padding:3px 8px; border:2px solid #000;">⚠️ NEED ≥ $1 USDT</div>
+            </div>
+            <div style="text-align:center; padding:5px 0;">
+                <div style="font-size:10px; font-weight:900; color:#888; text-transform:uppercase;">Unclaimed Mining Power</div>
+                <div id="mining-live-counter" class="bf" style="font-size:32px; color:#fff; text-shadow:0 0 10px rgba(255,255,255,0.2); letter-spacing:1px; margin:2px 0;">0.000000</div>
+            </div>
+            <button id="btn-claim-mining" class="cb" onclick="claimMiningRewards()" style="width:100%; padding:8px; background:var(--neon-glow); color:#000; font-size:11px; font-weight:900; margin-top:6px;">⚡ CLAIM MINING TO BALANCE</button>
         </div>
 
         <div id="ann-box" class="cc mb-3 ann-animation" style="display:none;padding:10px;background:#1a2436;border-color:var(--blue);margin-bottom:12px">
@@ -238,7 +304,7 @@
         <div class="bf" style="font-size:26px;margin-bottom:12px;color:var(--gold)">💰 CRYPTO WALLET</div>
         <div class="wd-actions">
             <button class="cb btn-deposit" onclick="openDepositModal()">📥 DEPOSIT</button>
-            <button class="cb btn-withdraw" onclick="document.getElementById('wd-form').scrollIntoView({behavior:'smooth'})">📤 WITHDRAW</button>
+            <button class="cb btn-withdraw" onclick="openWithdrawModal()">📤 WITHDRAW</button>
         </div>
 
         <div class="crypto-box">
@@ -252,40 +318,29 @@
             <div style="text-align:right"><div id="crypto-srx" class="bf" style="font-size:20px;color:var(--gold)">0</div></div>
         </div>
 
-        <div class="crypto-box lock-field">
+        <div class="crypto-box">
             <div class="crypto-info">
                 <div class="crypto-icon" style="background:#26a17b;color:#fff">U</div>
                 <div>
-                    <div style="font-weight:900;font-size:14px; display:flex; align-items:center; gap:5px;">USDT Balance 🔒</div>
-                    <div style="font-size:10px;color:#aaa">Withdrawable (Tokens Value)</div>
-                    <div class="alert-text">⚠️ WITHDRAW NOT AVAILABLE</div>
+                    <div style="font-weight:900;font-size:14px;">USDT Balance</div>
+                    <div style="font-size:10px;color:#aaa">Locked Asset Wallet</div>
                 </div>
             </div>
-            <div style="text-align:right"><div id="crypto-usdt" class="bf" style="font-size:20px;color:var(--green)">$1.00</div></div>
+            <div style="text-align:right"><div id="crypto-usdt" class="bf" style="font-size:20px;color:var(--green)">$0.00</div></div>
         </div>
 
         <div class="crypto-box">
             <div class="crypto-info">
                 <div class="crypto-icon" style="background:#f3ba2f">B</div>
                 <div>
-                    <div style="font-weight:900;font-size:14px">BNB</div>
-                    <div style="font-size:10px;color:#aaa">Smart Chain</div>
+                    <div style="font-weight:900;font-size:14px">BNB Balance</div>
+                    <div style="font-size:10px;color:#aaa">Smart Chain Asset</div>
                 </div>
             </div>
-            <div style="text-align:right"><div class="bf" style="font-size:20px;color:#f3ba2f">0.0000</div></div>
+            <div style="text-align:right"><div id="crypto-bnb" class="bf" style="font-size:20px;color:#f3ba2f">0.000000</div></div>
         </div>
 
-        <div id="wd-form" class="cc" style="padding:14px;margin-top:15px;margin-bottom:14px">
-            <div class="bf" style="font-size:18px;margin-bottom:10px;color:var(--gold)">⚡ WITHDRAW SRX</div>
-            <label class="lbl">RECIPIENT ADDRESS (USDT BEP20 / SRX Wallet)</label>
-            <input type="text" id="wal-addr" placeholder="0x... Enter Wallet Address">
-            <label class="lbl">SRX AMOUNT (Min. 500 SRX)</label>
-            <input type="number" id="wal-amt" placeholder="500" min="500">
-            <div style="font-size:12px;font-weight:700;color:#aaa;margin-bottom:10px">Withdrawable Value: <span id="wal-usd" style="color:var(--green)">$0.00</span></div>
-            <button class="cb" onclick="submitWithdraw()" style="width:100%;padding:12px;background:var(--gold);color:#000;font-size:16px">EXECUTE WITHDRAWAL</button>
-        </div>
-
-        <div class="bf" style="font-size:18px;margin-bottom:8px;color:var(--gold)">📋 Transaction History</div>
+        <div class="bf" style="font-size:18px;margin-bottom:8px;color:var(--gold)">📋 Ledger / Audit History</div>
         <div id="pay-hist"><div class="spin"></div></div>
     </div>
 
@@ -294,13 +349,19 @@
             <button class="close-modal" onclick="closeDepositModal()" style="top:-15px; right:-15px; width:30px; height:30px; font-size:14px">✕</button>
             <div class="bf" style="font-size:24px; color:var(--gold); margin-bottom:12px; text-align:center;">📥 CRYPTO DEPOSIT</div>
             <div id="dep-step-1">
-                <label class="lbl">ENTER DEPOSIT AMOUNT (USD / USDT)</label>
-                <input type="number" id="dep-amount" placeholder="Min. $5" min="5">
+                <label class="lbl">SELECT COIN TYPE / কয়েন সিলেক্ট করুন</label>
+                <select id="dep-currency" onchange="toggleDepositLabels()">
+                    <option value="USDT">USDT (BEP20)</option>
+                    <option value="BNB">BNB (Smart Chain)</option>
+                </select>
+
+                <label class="lbl" id="lbl-dep-amount">ENTER AMOUNT (USD / USDT)</label>
+                <input type="number" id="dep-amount" placeholder="Min. Value" step="any">
                 <button class="cb" onclick="nextDepositStep()" style="width:100%; padding:10px; background:var(--gold); color:#000;">NEXT STEP →</button>
             </div>
             <div id="dep-step-2" style="display:none;">
-                <p style="font-size:12px; margin-bottom:8px; color:#aaa;">Please send exactly <b id="show-dep-amt" style="color:var(--green)">$0</b> USDT to the admin address below:</p>
-                <label class="lbl">USDT BEP20 DEPOSIT ADDRESS</label>
+                <p style="font-size:12px; margin-bottom:8px; color:#aaa;">Please send exactly <b id="show-dep-amt" style="color:var(--green)">0</b> <span id="show-dep-curr" style="color:var(--gold)">USDT</span> to the address below:</p>
+                <label class="lbl" id="lbl-admin-addr-title">USDT BEP20 DEPOSIT ADDRESS</label>
                 <div style="display:flex; gap:6px; margin-bottom:12px;">
                     <input type="text" id="admin-usdt-addr" readonly style="margin:0; font-size:11px;">
                     <button class="cb" onclick="copyAdminAddress()" style="background:#fff; color:#000; padding:0 8px; font-size:11px;">COPY</button>
@@ -308,6 +369,20 @@
                 <label class="lbl">ENTER TRANSACTION ID / TXID / HASH</label>
                 <input type="text" id="dep-txid" placeholder="Paste your transfer transaction hash">
                 <button class="cb" onclick="submitDepositTx()" style="width:100%; padding:10px; background:var(--green); color:#000;">SUBMIT DEPOSIT</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="withdrawModal" class="custom-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeWithdrawModal()" style="top:-15px; right:-15px; width:30px; height:30px; font-size:14px">✕</button>
+            <div class="bf" style="font-size:24px; color:var(--gold); margin-bottom:12px; text-align:center;">📤 SECURE WITHDRAWAL</div>
+            <div id="wd-form" style="padding:2px;">
+                <label class="lbl">RECIPIENT ADDRESS (USDT BEP20 / SRX Wallet)</label>
+                <input type="text" id="wal-addr" placeholder="0x... Enter Wallet Address">
+                <label class="lbl">SRX AMOUNT (Min. 500 SRX)</label>
+                <input type="number" id="wal-amt" placeholder="500" min="500">
+                <button class="cb" onclick="submitWithdraw()" style="width:100%;padding:12px;background:var(--gold);color:#000;font-size:16px; margin-top:5px;">EXECUTE WITHDRAWAL</button>
             </div>
         </div>
     </div>
@@ -326,6 +401,19 @@
                 <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:12px"><span>Referred By</span><span id="prefby" style="color:var(--blue)">None</span></div>
             </div>
 
+            <div class="kyc-panel">
+                <div class="kyc-badge">🛡️ KYC SECURITY PROTOCOL</div>
+                <div id="kyc-form-box">
+                    <label class="lbl">Full Name (As in NID/Passport)</label>
+                    <input type="text" id="kyc-name" placeholder="Enter full name">
+                    <label class="lbl">Date of Birth</label>
+                    <input type="date" id="kyc-dob">
+                    <label class="lbl">National ID (NID) Number</label>
+                    <input type="number" id="kyc-nid" placeholder="Enter NID card number">
+                    <div class="face-btn-placeholder">📸 Face Verification Feature Coming Soon...</div>
+                    <button class="cb" onclick="submitKycData()" style="width:100%; padding:10px; background:var(--neon-glow); color:#000; font-size:12px; margin-top:12px; font-weight:900;">SUBMIT KYC FOR REVIEW</button>
+                </div>
+            </div>
             <div style="text-align:left;margin-top:10px;">
                 <div class="bf" style="font-size:16px;color:var(--gold);margin-bottom:6px;border-top:1px dashed #333;padding-top:8px">👥 REFERRAL HISTORY</div>
                 <div class="ref-history-list" id="referral-history-box">
@@ -340,6 +428,22 @@
     <div id="comicReaderModal" class="comic-modal">
         <div class="modal-bg"></div>
         <button class="close-modal" onclick="closeComicReader()">✕</button>
+        
+        <div class="lang-selector-box">
+            <select id="comicLangSelect" onchange="changeComicLanguage()">
+                <option value="en">🌐 English</option>
+                <option value="bn">🌐 বাংলা (Bengali)</option>
+                <option value="ar">🌐 العربية (Arabic)</option>
+                <option value="ur">🌐 اردو (Urdu)</option>
+                <option value="fa">🌐 فارسی (Persian)</option>
+                <option value="zh">🌐 中文 (Chinese)</option>
+                <option value="hi">🌐 हिन्दी (Hindi)</option>
+                <option value="es">🌐 Español (Spanish)</option>
+                <option value="pt">🌐 Português (Portuguese)</option>
+                <option value="ru">🌐 Русский (Russian)</option>
+            </select>
+        </div>
+
         <div class="slider-window">
             <div class="slides-wrapper" id="comicSlidesWrapper"></div>
         </div>
@@ -394,6 +498,11 @@
         var _listeners = {};
         var _toastT;
         var ADMIN_USDT_WALLET = "0xLoadingAdminWalletFromFirebaseConfig...";
+        var ADMIN_BNB_WALLET = "0xLoadingAdminWalletFromFirebaseConfig...";
+
+        var miningUnclaimedBalance = 0.000000;
+        var miningIntervalTimer = null;
+        var globalWithdrawalRecords = [];
 
         var RANKS = [
             {name:"Rookie Hero", min:0, max:499},
@@ -418,6 +527,9 @@
             initUser(u, refBy).then(function() {
                 attachListeners();
                 fetchAdminConfig();
+                checkKycStatus();
+                buildGlobalLiveWithdrawalFeed();
+                triggerWelcomeAndLivePopups();
             }).catch(function(e){
                 showToast("❌ " + e.message);
             });
@@ -442,7 +554,8 @@
                     name: u.first_name || "Hero",
                     photoURL: u.photo_url || ("https://api.dicebear.com/7.x/avataaars/svg?seed=" + UID),
                     coins: 0,
-                    lockedUSDT: 1.00,
+                    lockedUSDT: 0.00,
+                    bnbBalance: 0.000000,
                     reffer: 0,
                     refferBy: (refBy && refBy !== UID) ? refBy : null,
                     tasksCompleted: 0,
@@ -453,10 +566,8 @@
                 ME = newU;
             } else {
                 ME = snap.data();
-                if (ME.lockedUSDT === undefined) {
-                    await uref.update({ lockedUSDT: 1.00 });
-                    ME.lockedUSDT = 1.00;
-                }
+                if (ME.lockedUSDT === undefined) await uref.update({ lockedUSDT: 0.00 });
+                if (ME.bnbBalance === undefined) await uref.update({ bnbBalance: 0.000000 });
             }
             setAvatarAndRef();
         }
@@ -469,14 +580,36 @@
 
         function fetchAdminConfig() {
             db.collection('settings').doc('admin_config').onSnapshot(function(snap) {
-                if(snap.exists && snap.data().usdt_address) {
-                    ADMIN_USDT_WALLET = snap.data().usdt_address;
+                if(snap.exists) {
+                    var data = snap.data();
+                    ADMIN_USDT_WALLET = data.usdt_address || "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X";
+                    ADMIN_BNB_WALLET = data.bnb_address || "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X";
                 } else {
                     ADMIN_USDT_WALLET = "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X";
+                    ADMIN_BNB_WALLET = "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X";
                 }
-                var el = document.getElementById('admin-usdt-addr');
-                if(el) el.value = ADMIN_USDT_WALLET;
+                toggleDepositLabels();
             });
+        }
+
+        function toggleDepositLabels() {
+            var curr = document.getElementById('dep-currency').value;
+            var lblAmount = document.getElementById('lbl-dep-amount');
+            var inputAmount = document.getElementById('dep-amount');
+            var lblAddressTitle = document.getElementById('lbl-admin-addr-title');
+            var inputAddr = document.getElementById('admin-usdt-addr');
+
+            if(curr === 'USDT') {
+                lblAmount.innerText = "ENTER DEPOSIT AMOUNT (USDT)";
+                inputAmount.placeholder = "Min. $5 USDT";
+                lblAddressTitle.innerText = "USDT BEP20 DEPOSIT ADDRESS";
+                if(inputAddr) inputAddr.value = ADMIN_USDT_WALLET;
+            } else {
+                lblAmount.innerText = "ENTER DEPOSIT AMOUNT (BNB)";
+                inputAmount.placeholder = "Min. 0.01 BNB";
+                lblAddressTitle.innerText = "BNB SMART CHAIN (BSC) ADDRESS";
+                if(inputAddr) inputAddr.value = ADMIN_BNB_WALLET;
+            }
         }
 
         function attachListeners() {
@@ -487,9 +620,10 @@
                 updateRankUI(ME.coins || 0);
                 updateProfileUI();
                 if (document.getElementById('crypto-srx')) document.getElementById('crypto-srx').innerText = ME.coins || 0;
+                if (document.getElementById('crypto-usdt')) document.getElementById('crypto-usdt').innerText = '$' + (ME.lockedUSDT !== undefined ? parseFloat(ME.lockedUSDT).toFixed(2) : '0.00');
+                if (document.getElementById('crypto-bnb')) document.getElementById('crypto-bnb').innerText = (ME.bnbBalance !== undefined ? parseFloat(ME.bnbBalance).toFixed(6) : '0.000000');
                 
-                var totalUSDTWithBonus = ((ME.coins || 0) / 100) + (ME.lockedUSDT || 1.00);
-                if (document.getElementById('crypto-usdt')) document.getElementById('crypto-usdt').innerText = '$' + totalUSDTWithBonus.toFixed(2);
+                setupLiveMiningEngine();
             });
 
             _listeners.tasks = db.collection('tasks').orderBy('createdAt','desc').onSnapshot(function(snap) {
@@ -503,9 +637,7 @@
                 renderTasks();
             });
 
-            _listeners.pays = db.collection('withdrawals').where('userId','==',UID).orderBy('createdAt','desc').limit(20).onSnapshot(function(snap) {
-                renderPayHistory(snap.docs.map(function(d){ return Object.assign({_id:d.id}, d.data()); }));
-            });
+            loadUnifiedLedgerHistory();
 
             db.collection('users').where('refferBy', '==', UID).onSnapshot(function(snap) {
                 var refBox = document.getElementById('referral-history-box');
@@ -539,6 +671,106 @@
                 _comics = snap.docs.map(function(d) { return Object.assign({_id: d.id}, d.data()); });
                 renderComicsTab();
             });
+        }
+
+        function setupLiveMiningEngine() {
+            clearInterval(miningIntervalTimer);
+            var currentUsdt = ME.lockedUSDT !== undefined ? parseFloat(ME.lockedUSDT) : 0.00;
+            var badge = document.getElementById('mining-status-badge');
+            var speedText = document.getElementById('mining-speed-text');
+            
+            if (currentUsdt >= 1.00) {
+                var hourlyRate = currentUsdt * 0.05; 
+                var MINING_RATE_PER_SEC = hourlyRate / 3600; 
+
+                if(badge) {
+                    badge.innerText = "⚡ MINING ACTIVE";
+                    badge.style.backgroundColor = "var(--green)";
+                }
+                if(speedText) {
+                    speedText.innerHTML = `SPEED: <span style="color:var(--gold);">${hourlyRate.toFixed(2)} SRX / HOUR</span>`;
+                }
+
+                miningIntervalTimer = setInterval(function() {
+                    miningUnclaimedBalance += MINING_RATE_PER_SEC;
+                    var counterEl = document.getElementById('mining-live-counter');
+                    if(counterEl) counterEl.innerText = miningUnclaimedBalance.toFixed(6);
+                }, 1000);
+            } else {
+                if(badge) {
+                    badge.innerText = "⚠️ NEED ≥ $1 USDT";
+                    badge.style.backgroundColor = "var(--red)";
+                }
+                if(speedText) {
+                    speedText.innerHTML = `SPEED: <span style="color:var(--gold);">0.00 SRX / HOUR</span>`;
+                }
+                var counterEl = document.getElementById('mining-live-counter');
+                if(counterEl) counterEl.innerText = "0.000000";
+            }
+        }
+
+        function claimMiningRewards() {
+            if (miningUnclaimedBalance <= 0) {
+                return showToast("❌ NO TOKENS MINED YET!");
+            }
+            var usdtCheck = ME.lockedUSDT !== undefined ? parseFloat(ME.lockedUSDT) : 0.00;
+            if (usdtCheck < 1.00) {
+                return showToast("❌ MINING LOCKED! MAINTAIN AT LEAST $1 LOCKED USDT.");
+            }
+
+            var rewardToClaim = Math.floor(miningUnclaimedBalance * 100) / 100; 
+            if(rewardToClaim < 1) {
+                return showToast("❌ MINIMUM CLAIM AMOUNT IS 1 SRX!");
+            }
+
+            showToast(`⏳ CLAIMING ${rewardToClaim} SRX TO ASSET WALLET...`);
+            var uref = db.collection('users').doc(UID);
+
+            db.runTransaction(function(tx) {
+                return tx.get(uref).then(function(doc) {
+                    tx.update(uref, { coins: FS.increment(rewardToClaim) });
+                });
+            }).then(function() {
+                showToast(`💥 SUCCESS! +${rewardToClaim} SRX ADDED TO WALLET!`);
+                miningUnclaimedBalance = 0.000000;
+                document.getElementById('mining-live-counter').innerText = "0.000000";
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            }).catch(e => showToast("❌ MINING CLAIM FAILED: " + e.message));
+        }
+
+        function triggerWelcomeAndLivePopups() {
+            var alertBox = document.getElementById('live-popup-alert');
+            var alertMsg = document.getElementById('live-popup-msg');
+            
+            setTimeout(function() {
+                if(alertBox && alertMsg) {
+                    alertBox.classList.remove('exit');
+                    alertMsg.innerText = `Welcome back, ${ME.name || 'Hero'}! SRX Protocol v2026 initialized successfully.`;
+                    alertBox.classList.add('show');
+                    setTimeout(function() { 
+                        alertBox.classList.remove('show');
+                        alertBox.classList.add('exit');
+                    }, 3000);
+                }
+            }, 1500);
+
+            setInterval(function() {
+                if (globalWithdrawalRecords.length > 0 && alertBox && alertMsg) {
+                    var randomTx = globalWithdrawalRecords[Math.floor(Math.random() * globalWithdrawalRecords.length)];
+                    var maskAddr = randomTx.usdcAddress ? randomTx.usdcAddress.substring(0,6) + "..." + randomTx.usdcAddress.substring(randomTx.usdcAddress.length - 4) : "0xWallet";
+                    
+                    alertBox.classList.remove('show', 'exit');
+                    void alertBox.offsetWidth; 
+
+                    alertMsg.innerHTML = `User <span style="color:var(--neon-glow);">${esc(randomTx.userName)}</span> requested a withdrawal of <span style="color:var(--gold);">${randomTx.amount} SRX</span> to ${maskAddr}`;
+                    alertBox.classList.add('show');
+                    
+                    setTimeout(function() {
+                        alertBox.classList.remove('show');
+                        alertBox.classList.add('exit');
+                    }, 2000);
+                }
+            }, 8000);
         }
 
         function updateStats() {
@@ -581,17 +813,30 @@
         function openDepositModal() {
             document.getElementById('dep-step-1').style.display = 'block';
             document.getElementById('dep-step-2').style.display = 'none';
+            document.getElementById('dep-currency').value = 'USDT';
             document.getElementById('dep-amount').value = '';
             document.getElementById('dep-txid').value = '';
+            toggleDepositLabels();
             document.getElementById('depositModal').style.display = 'block';
         }
-
         function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
 
+        function openWithdrawModal() {
+            document.getElementById('wal-addr').value = '';
+            document.getElementById('wal-amt').value = '';
+            document.getElementById('withdrawModal').style.display = 'block';
+        }
+        function closeWithdrawModal() { document.getElementById('withdrawModal').style.display = 'none'; }
+
         function nextDepositStep() {
+            var curr = document.getElementById('dep-currency').value;
             var amt = parseFloat(document.getElementById('dep-amount').value || '0');
-            if(isNaN(amt) || amt < 5) { return showToast("❌ MINIMUM DEPOSIT IS $5!"); }
-            document.getElementById('show-dep-amt').innerText = "$" + amt.toFixed(2);
+            
+            if(curr === 'USDT' && (isNaN(amt) || amt < 5)) { return showToast("❌ MINIMUM DEPOSIT IS $5 USDT!"); }
+            if(curr === 'BNB' && (isNaN(amt) || amt < 0.01)) { return showToast("❌ MINIMUM DEPOSIT IS 0.01 BNB!"); }
+            
+            document.getElementById('show-dep-amt').innerText = amt;
+            document.getElementById('show-dep-curr').innerText = curr;
             document.getElementById('dep-step-1').style.display = 'none';
             document.getElementById('dep-step-2').style.display = 'block';
         }
@@ -602,20 +847,23 @@
             addrInput.select();
             try {
                 navigator.clipboard.writeText(addrInput.value);
-                showToast("🔗 ADMIN DEPOSIT ADDRESS COPIED!");
+                showToast("🔗 DEPOSIT ADDRESS COPIED!");
             } catch(e) { showToast("❌ COPY FAILED"); }
         }
 
         function submitDepositTx() {
             var txid = document.getElementById('dep-txid').value.trim();
             var amt = parseFloat(document.getElementById('dep-amount').value || '0');
+            var curr = document.getElementById('dep-currency').value;
             if(txid.length < 8) return showToast("❌ ENTER VALID TRANSACTION HASH / ID!");
             
             showToast("⏳ UPLOADING TRANSACTION TO ADMIN...");
             db.collection('deposits').add({
                 userId: UID,
                 userName: ME.name || 'Hero',
-                amountUSD: amt,
+                amountUSD: curr === 'USDT' ? amt : 0, 
+                amountBNB: curr === 'BNB' ? amt : 0,  
+                currency: curr, 
                 txid: txid,
                 status: 'pending',
                 createdAt: FS.serverTimestamp()
@@ -673,20 +921,55 @@
             if(!activeComicObj.pages || !activeComicObj.pages.length) {
                 showToast("❌ THIS COMIC BOOK HAS NO PAGES!"); return;
             }
+            document.getElementById('comicLangSelect').value = 'en';
+            loadComicPagesView();
+            document.getElementById('comicReaderModal').style.display = 'block';
+        }
+
+        function loadComicPagesView() {
             var wrapper = document.getElementById('comicSlidesWrapper');
             wrapper.innerHTML = '';
             activeComicObj.pages.forEach(function(page) {
                 var slide = document.createElement('div');
                 slide.className = 'comic-slide';
-                slide.innerHTML = `<img src="${esc(page.img)}" alt="Page"><div class="comic-text-container">${esc(page.txt || '')}</div>`;
+                var panelText = page.txt || '';
+                slide.innerHTML = `<img src="${esc(page.img)}" alt="Page"><div class="comic-text-container" data-origin-txt="${esc(panelText)}">${esc(panelText)}</div>`;
                 wrapper.appendChild(slide);
             });
-            document.getElementById('comicReaderModal').style.display = 'block';
             updateComicSliderView();
         }
 
-        function closeComicReader() { document.getElementById('comicReaderModal').style.display = 'none'; }
+        async function changeComicLanguage() {
+            var currentLang = document.getElementById('comicLangSelect').value;
+            if(currentLang === 'en') {
+                document.querySelectorAll('.comic-text-container').forEach(function(box) {
+                    box.innerText = box.getAttribute('data-origin-txt');
+                });
+                return;
+            }
 
+            showToast("🌐 Translating panel content...");
+            
+            var boxes = document.querySelectorAll('.comic-text-container');
+            for (let box of boxes) {
+                var originalText = box.getAttribute('data-origin-txt');
+                if(!originalText || originalText.trim() === "") continue;
+
+                try {
+                    var url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${currentLang}&dt=t&q=${encodeURIComponent(originalText)}`;
+                    var res = await fetch(url);
+                    var data = await res.json();
+                    if(data && data[0]) {
+                        var translatedText = data[0].map(item => item[0]).join('');
+                        box.innerText = translatedText;
+                    }
+                } catch(e) {
+                    box.innerText = `[Translation Error] ${originalText}`;
+                }
+            }
+        }
+
+        function closeComicReader() { document.getElementById('comicReaderModal').style.display = 'none'; }
         function updateComicSliderView() {
             var wrapper = document.getElementById('comicSlidesWrapper');
             wrapper.style.transform = `translateX(-${activeSlideIdx * 100}%)`;
@@ -776,7 +1059,6 @@
             if (totalBal < amt) return showToast("❌ NOT ENOUGH SRX BALANCE!");
 
             showToast("⏳ PROCESSING ON-CHAIN REQUEST...");
-            
             var uref = db.collection('users').doc(UID);
             
             db.runTransaction(function(transaction) {
@@ -802,19 +1084,115 @@
                 });
             }).then(function() {
                 showToast("✅ SRX WITHDRAWAL ORDERED!");
-                document.getElementById('wal-addr').value = '';
-                document.getElementById('wal-amt').value = '';
-                if(document.getElementById('wal-usd')) document.getElementById('wal-usd').innerText = '$0.00';
+                closeWithdrawModal();
             }).catch(e => showToast("❌ FAILED: " + e.message));
         }
 
-        function renderPayHistory(arr) {
+        function submitKycData() {
+            var name = document.getElementById('kyc-name').value.trim();
+            var dob = document.getElementById('kyc-dob').value;
+            var nid = document.getElementById('kyc-nid').value.trim();
+
+            if(!name || !dob || !nid) { return showToast("❌ PLEASE FILL ALL KYC FIELDS!"); }
+            if(nid.length < 8) { return showToast("❌ ENTER A VALID NATIONAL ID NUMBER!"); }
+
+            showToast("⏳ UPLOADING KYC DOCUMENTATION...");
+            db.collection('kyc_verification').doc(UID).set({
+                userId: UID,
+                fullName: name,
+                dateOfBirth: dob,
+                nidNumber: nid,
+                status: 'pending',
+                submittedAt: FS.serverTimestamp()
+            }).then(function() {
+                showToast("✅ KYC SUBMITTED! UNDER REVIEW.");
+                document.getElementById('kyc-form-box').innerHTML = '<p style="color:var(--neon-glow); font-weight:bold; font-size:13px; text-align:center; padding:15px; border:2px dashed var(--neon-glow)">⌛ KYC STATUS: PENDING REVIEW</p>';
+            }).catch(e => showToast("❌ KYC ERROR: " + e.message));
+        }
+
+        function checkKycStatus() {
+            db.collection('kyc_verification').doc(UID).onSnapshot(function(snap) {
+                if(snap.exists) {
+                    var data = snap.data();
+                    var box = document.getElementById('kyc-form-box');
+                    if(!box) return;
+                    if(data.status === 'pending') {
+                        box.innerHTML = '<p style="color:var(--neon-glow); font-weight:bold; font-size:13px; text-align:center; padding:15px; border:2px dashed var(--neon-glow)">⌛ KYC STATUS: PENDING REVIEW</p>';
+                    } else if(data.status === 'approved') {
+                        box.innerHTML = '<p style="color:var(--green); font-weight:bold; font-size:13px; text-align:center; padding:15px; border:2px dashed var(--green)">✅ KYC VERIFICATION APPROVED!</p>';
+                    } else if(data.status === 'rejected') {
+                        box.innerHTML = '<p style="color:var(--red); font-weight:bold; font-size:13px; text-align:center; padding:15px; border:2px dashed var(--red)">❌ KYC REJECTED. PLEASE CONTACT SUPPORT.</p>';
+                    }
+                }
+            });
+        }
+
+        function loadUnifiedLedgerHistory() {
+            var combinedHistory = [];
+            _listeners.pays = db.collection('withdrawals').where('userId','==',UID).orderBy('createdAt','desc').limit(15).onSnapshot(function(wSnap) {
+                var wList = wSnap.docs.map(d => Object.assign({_id: d.id, ledgerType: 'Withdraw'}, d.data()));
+                
+                db.collection('deposits').where('userId','==',UID).orderBy('createdAt','desc').limit(15).get().then(function(dSnap) {
+                    var dList = dSnap.docs.map(d => Object.assign({_id: d.id, ledgerType: 'Deposit'}, d.data()));
+                    
+                    combinedHistory = wList.concat(dList);
+                    combinedHistory.sort((a, b) => {
+                        var dateA = a.createdAt ? a.createdAt.seconds : 0;
+                        var dateB = b.createdAt ? b.createdAt.seconds : 0;
+                        return dateB - dateA; 
+                    });
+                    renderUnifiedLedger(combinedHistory);
+                });
+            });
+        }
+
+        function renderUnifiedLedger(arr) {
             var el = document.getElementById('pay-hist'); if(!el) return;
             if(!arr.length) { el.innerHTML = '<p style="padding:10px;color:#777;font-weight:700;">No transactions found.</p>'; return; }
-            el.innerHTML = arr.map(w => {
-                var sCls = w.status === 'approved' ? 'bapp' : (w.status === 'rejected' ? 'brej' : 'bpend');
-                return `<div class="cc" style="padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;background:#16192b;border-color:#282d47"><div><div style="font-weight:900;font-size:14px;color:var(--gold);">${w.amount} SRX</div><div style="font-size:9px;color:#aaa;font-family:monospace;max-width:180px;overflow:hidden;text-overflow:ellipsis;">${esc(w.usdcAddress)}</div></div><span class="${sCls}">${w.status.toUpperCase()}</span></div>`;
+            
+            el.innerHTML = arr.map(tx => {
+                var sCls = tx.status === 'approved' ? 'bapp' : (tx.status === 'rejected' ? 'brej' : 'bpend');
+                
+                var titleText = "";
+                if(tx.ledgerType === 'Withdraw') {
+                    titleText = `${tx.amount} SRX`;
+                } else {
+                    titleText = tx.currency === 'BNB' ? `${tx.amountBNB} BNB` : `$${parseFloat(tx.amountUSD).toFixed(2)} USDT`;
+                }
+
+                var subText = tx.ledgerType === 'Withdraw' ? tx.usdcAddress : tx.txid;
+                var formatType = tx.ledgerType === 'Withdraw' ? '📤 WITHDRAW' : `📥 DEPOSIT (${tx.currency || 'USDT'})`;
+                var typeColor = tx.ledgerType === 'Withdraw' ? 'var(--gold)' : 'var(--green)';
+
+                return `<div class="cc" style="padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;background:#16192b;border-color:#282d47">
+                    <div>
+                        <span style="font-size:9px; font-weight:bold; color:#aaa; display:block; margin-bottom:2px;">${formatType}</span>
+                        <div style="font-weight:900;font-size:14px;color:${typeColor};">${titleText}</div>
+                        <div style="font-size:9px;color:#aaa;font-family:monospace;max-width:180px;overflow:hidden;text-overflow:ellipsis;">${esc(subText)}</div>
+                    </div>
+                    <span class="${sCls}">${tx.status.toUpperCase()}</span>
+                </div>`;
             }).join('');
+        }
+
+        function buildGlobalLiveWithdrawalFeed() {
+            db.collection('withdrawals').orderBy('createdAt','desc').limit(25).get().then(function(snap) {
+                if(snap.empty) return;
+                
+                globalWithdrawalRecords = snap.docs.map(doc => doc.data());
+
+                var logBox = document.getElementById('live-marquee-box');
+                var feedString = snap.docs.map(function(doc) {
+                    var data = doc.data();
+                    var hiddenAddr = data.usdcAddress ? data.usdcAddress.substring(0,6) + "..." + data.usdcAddress.substring(data.usdcAddress.length - 4) : "0xWallet";
+                    return `🔥 HERO [ ${esc(data.userName)} ] WITHDREW ${data.amount} SRX TO [ ${hiddenAddr} ] (${data.status.toUpperCase()})`;
+                }).join('	•	 ');
+                if(logBox) logBox.innerHTML = "⚡ LIVE TRANSFERS: " + feedString + " • PROTOCOL GATEWAY ACTIVE";
+            }).catch(e => {
+                if(document.getElementById('live-marquee-box')) {
+                    document.getElementById('live-marquee-box').innerHTML = "⚡ SYSTEM PROTOCOL OPERATIONAL • RE-ESTABLISHING BLOCKCHAIN FEEDS";
+                }
+            });
         }
 
         function showToast(msg) {
@@ -827,14 +1205,6 @@
         function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
         document.addEventListener('DOMContentLoaded', function() {
-            var wa = document.getElementById('wal-amt');
-            if (wa) {
-                wa.oninput = function() {
-                    var v = parseInt(this.value) || 0;
-                    var el = document.getElementById('wal-usd');
-                    if (el) el.innerText = '$' + (v / 100).toFixed(2);
-                };
-            }
             boot();
         });
     </script>
