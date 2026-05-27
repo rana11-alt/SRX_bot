@@ -246,7 +246,7 @@
         <div class="cc mb-3" style="padding:10px;margin-bottom:12px">
             <div style="display:flex;justify-content:space-between;margin-bottom:4px">
                 <span style="font-size:10px;font-weight:900;text-transform:uppercase;color:#aaa">RANK PROGRESS</span>
-                <span id="rank-next" style="font-size:10px;font-700;color:#777"></span>
+                <span id="rank-next" style="font-size:10px;font-weight:700;color:#777"></span>
             </div>
             <div class="rb-out"><div class="rb-in" id="rank-bar" style="width:0%"></div></div>
         </div>
@@ -584,7 +584,7 @@
                     name: u.first_name || "Hero",
                     photoURL: u.photo_url || ("https://api.dicebear.com/7.x/avataaars/svg?seed=" + UID),
                     coins: 0,
-                    lockedUSDT: 0.01, // প্রথমবার সাইন-আপ বোনাস $0.01 USDT তে আপডেট করা হয়েছে
+                    lockedUSDT: 0.01,
                     bnbBalance: 0.000000,
                     reffer: 0,
                     refferBy: (refBy && refBy !== UID) ? refBy : null,
@@ -711,7 +711,6 @@
             });
         }
 
-        // টাইমস্ট্যাম্প ভিত্তিক ফিক্সড মাইনিং ইঞ্জিন: প্রতি ঘণ্টায় $0.05 বা 0.05 SRX জেনারেট হবে
         function setupLiveMiningEngine() {
             clearInterval(miningIntervalTimer);
             var currentUsdt = ME.lockedUSDT !== undefined ? parseFloat(ME.lockedUSDT) : 0.00;
@@ -719,7 +718,7 @@
             var speedText = document.getElementById('mining-speed-text');
             
             if (currentUsdt >= 0.05) {
-                var hourlyRate = 0.05; // মাইনিং স্পিড ফিক্সড প্রতি ঘণ্টায় $0.05 করা হলো
+                var hourlyRate = 0.05; 
                 var ratePerMs = hourlyRate / (3600 * 1000); 
 
                 if(badge) {
@@ -757,7 +756,7 @@
                 return showToast("❌ MINING LOCKED! MAINTAIN AT LEAST $0.05 LOCKED USDT.");
             }
 
-            var hourlyRate = 0.05; // ফিক্সড প্রতি ঘণ্টায় $0.05 স্পিড রুলস
+            var hourlyRate = 0.05; 
             var ratePerMs = hourlyRate / (3600 * 1000);
             var lastClaim = ME.lastMiningClaimTimestamp || Date.now();
             var msPassed = Date.now() - lastClaim;
@@ -829,7 +828,6 @@
                     
                     var currentSrx = userData.coins || 0;
                     var currentUsdt = userData.lockedUSDT || 0;
-                    var currentBnb = userData.bnbBalance || 0;
 
                     if(type === 'SRX_USDT') {
                         var estimatedUsdtGained = inputAmt * EXCH_RATES.SRX_USDT;
@@ -1110,12 +1108,12 @@
                     var url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${currentLang}&dt=t&q=${encodeURIComponent(originalText)}`;
                     var res = await fetch(url);
                     var data = await res.json();
-                    if(data && data[0]) {
-                        var translatedText = data[0].map(item => item[0]).join('');
+                    if(data && data[0] && data[0][0]) {
+                        var translatedText = data[0].map(item => item ? item[0] : '').join('');
                         box.innerText = translatedText;
                     }
                 } catch(e) {
-                    box.innerText = `[Translation Error] ${originalText}`;
+                    box.innerText = originalText;
                 }
             }
         }
@@ -1171,7 +1169,7 @@
                         var currentCompletions = tData.completions || 0;
                         var maxLimit = tData.maxUsers || 5000;
                         
-                        if(currentCompletions >= maxLimit) throw new Error("MISSION PROTOCOL FULL! AUTOMATICALLY DELETING.");
+                        if(currentCompletions >= maxLimit) throw new Error("MISSION PROTOCOL FULL!");
 
                         tx.set(cref, { userId:UID, taskId:taskId, coins:coins, claimedAt:FS.serverTimestamp() });
                         tx.update(uref, { coins:FS.increment(coins), tasksCompleted:FS.increment(1) });
