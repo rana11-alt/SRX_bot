@@ -24,7 +24,7 @@ async def send_spam_message(context: ContextTypes.DEFAULT_TYPE):
         "Exclusive offers 💰 and incredible giveaways are live right now! 🚀💥\n"
         "Don't miss out on this gold rush! 🏃💨\n\n"
         "Click the button below and join our group immediately! 👇✨"
-        "https://t.me/green2life2024"
+        
     )
     
     # Inline Button Setup
