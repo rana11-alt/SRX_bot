@@ -1,24 +1,23 @@
 import logging
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes, ChatMemberHandler
 
-# লগিং সেটআপ
+# Logging setup
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 
-# আপনার সঠিক বোট টোকেনটি এখানে বসাবেন
+# Your Bot Token
 TOKEN = "7738804330:AAEYizHtBCaUdoo5O5bPhtpJ4yTXIV_c3TA"
 
-# সচল গ্রুপ আইডিগুলো জমা রাখার জন্য একটি সেট (Set)
-# এর ফলে বটটি যতগুলো গ্রুপে অ্যাড হবে, সবগুলোর আইডি এখানে স্বয়ংক্রিয়ভাবে জমা হবে
+# Set to store active group IDs automatically
 ACTIVE_GROUPS = set()
 
-# ৩০ সেকেন্ড পর পর এই ফাংশনটি সব গ্রুপে মেসেজ পাঠাবে
+# Function to send messages to all active groups every 30 seconds
 async def send_spam_message(context: ContextTypes.DEFAULT_TYPE):
     if not ACTIVE_GROUPS:
-        return # কোনো গ্রুপে অ্যাড না থাকলে কিছুই করবে না
+        return # Do nothing if not added to any group
 
     text = (
         "🎉🤩 **Welcome Everyone!** 🌟🎁\n\n"
@@ -27,49 +26,63 @@ async def send_spam_message(context: ContextTypes.DEFAULT_TYPE):
         "Click the button below and join our group immediately! 👇✨"
     )
     
-    # তালিকায় থাকা প্রতিটি গ্রুপে লুপ চালিয়ে মেসেজ পাঠানো হবে
+    # Inline Button Setup
+    keyboard = [
+        [
+            InlineKeyboardButton("Join Channel 🚀", url="https://t.me/green2life2024")
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    # Loop through all saved groups and send the message with the button
     for chat_id in list(ACTIVE_GROUPS):
         try:
-            await context.bot.send_message(chat_id=chat_id, text=text, parse_mode="Markdown")
+            await context.bot.send_message(
+                chat_id=chat_id, 
+                text=text, 
+                parse_mode="Markdown",
+                reply_markup=reply_markup
+            )
         except Exception as e:
-            logging.error(f"গ্রুপ {chat_id}-এ মেসেজ পাঠানো যায়নি (হয়তো বটকে রিমুভ করা হয়েছে): {e}")
-            # যদি বটকে গ্রুপ থেকে বের করে দেওয়া হয় বা মেসেজ ব্লক করা হয়, তবে তালিকা থেকে বাদ যাবে
+            logging.error(f"Could not send message to group {chat_id} (Bot might be removed): {e}")
+            # Remove group ID if the bot is blocked or kicked
             ACTIVE_GROUPS.discard(chat_id)
 
-# বট নতুন কোনো গ্রুপে অ্যাড হলে বা গ্রুপ থেকে রিমুভ হলে এই ফাংশনটি কাজ করবে
+# Handler to track when the bot is added or removed from groups
 async def track_chats(update: Update, context: ContextTypes.DEFAULT_TYPE):
     result = update.my_chat_member
     chat_id = result.chat.id
     new_status = result.new_chat_member.status
 
-    # বট গ্রুপে অ্যাড হলে (মেম্বার বা অ্যাডমিন হিসেবে)
+    # If bot is added as member or administrator
     if new_status in ["member", "administrator"]:
         ACTIVE_GROUPS.add(chat_id)
-        logging.info(f"নতুন গ্রুপে যুক্ত হয়েছি! আইডি: {chat_id}")
-        # গ্রুপে ঢোকার সাথে সাথে প্রথম একটা স্বাগত মেসেজ দিবে
+        logging.info(f"Added to a new group! ID: {chat_id}")
+        
+        # Send a welcome message immediately upon joining
         try:
-            await context.bot.send_message(chat_id=chat_id, text="🤖 বটটি সফলভাবে গ্রুপে সক্রিয় হয়েছে এবং অফার মেসেজ পাঠানো শুরু করছে!")
+            await context.bot.send_message(chat_id=chat_id, text="🤖 Bot has been successfully activated in this group!")
         except Exception as e:
             pass
             
-    # বটকে গ্রুপ থেকে বের করে দিলে বা লেফট নিলে
+    # If bot is removed or left the group
     elif new_status in ["left", "kicked"]:
         ACTIVE_GROUPS.discard(chat_id)
-        logging.info(f"গ্রুপ থেকে রিমুভ করা হয়েছে। আইডি: {chat_id}")
+        logging.info(f"Removed from group. ID: {chat_id}")
 
 def main():
-    # অ্যাপ্লিকেশন তৈরি
+    # Create the application
     application = Application.builder().token(TOKEN).build()
 
-    # বট কোন কোন গ্রুপে আছে তা ট্র্যাক করার হ্যান্ডলার
+    # Handler to track chat members status
     application.add_handler(ChatMemberHandler(track_chats, ChatMemberHandler.MY_CHAT_MEMBER))
 
-    # JobQueue সেটআপ করা (৩০ সেকেন্ড পর পর রান হবে)
+    # JobQueue setup (runs every 30 seconds, starts after 10 seconds)
     job_queue = application.job_queue
     job_queue.run_repeating(send_spam_message, interval=30, first=10)
 
-    # বট চালু করা
-    print("ডাইনামিক বটটি সফলভাবে চালু হয়েছে...")
+    # Start the bot
+    print("Dynamic bot started successfully...")
     application.run_polling()
 
 if __name__ == '__main__':
