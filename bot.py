@@ -19,7 +19,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     reply_markup = InlineKeyboardMarkup(keyboard)
     
     await update.message.reply_text(
-        text="হ্যালো! আমাদের বোটে আপনাকে স্বাগতম। নিচে দেওয়া বাটনে ক্লিক করে আমাদের গ্রুপে জয়েন করুন:",
+        user_name = update.message.from_user.first_name
+text = "🎉🤩 Welcome, {user_name}! 🌟🎁 Exclusive offers 💰 and incredible giveaways are live right now! 🚀💥 Don't miss out on this gold rush! 🏃💨 Click the button below and join our group immediately! 👇✨"
+,
         reply_markup=reply_markup
     )
 
