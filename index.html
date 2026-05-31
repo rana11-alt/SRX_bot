@@ -411,15 +411,10 @@
             <button class="close-modal" onclick="closeDepositModal()" style="top:-15px; right:-15px; width:30px; height:30px; font-size:14px">✕</button>
             <div class="bf" style="font-size:24px; color:var(--gold); margin-bottom:12px; text-align:center;">📥 DEPOSIT PROTOCOL</div>
             <div id="dep-step-1">
-                <label class="lbl">SELECT METHOD / মেথড সিলেক্ট করুন</label>
+                <label class="lbl">SELECT METHOD</label>
                 <select id="dep-currency" onchange="toggleDepositLabels()">
                     <option value="USDT">Crypto: USDT (BEP20)</option>
                     <option value="BNB">Crypto: BNB (Smart Chain)</option>
-                    <option value="bKash">🇧🇩 bKash (Cash Out)</option>
-                    <option value="Nagad">🇧🇩 Nagad (Cash Out)</option>
-                    <option value="UPI">🇮🇳 India: UPI / Paytm</option>
-                    <option value="EasyPaisa">🇵🇰 Pakistan: EasyPaisa</option>
-                    <option value="JazzCash">🇵🇰 Pakistan: JazzCash</option>
                 </select>
 
                 <label class="lbl" id="lbl-dep-amount">ENTER AMOUNT (USD / USDT)</label>
@@ -445,15 +440,15 @@
             <button class="close-modal" onclick="closeWithdrawModal()" style="top:-15px; right:-15px; width:30px; height:30px; font-size:14px">✕</button>
             <div class="bf" style="font-size:24px; color:var(--gold); margin-bottom:12px; text-align:center;">📤 SECURE WITHDRAWAL</div>
             <div id="wd-form" style="padding:2px;">
-                <label class="lbl">SELECT METHOD / মেথড সিলেক্ট করুন</label>
+                <label class="lbl">SELECT METHOD</label>
                 <select id="wal-currency" onchange="toggleWithdrawFields()">
                     <option value="USDT">Crypto: USDT (BEP20)</option>
                     <option value="SRX">Crypto: SRX Wallet</option>
-                    <option value="bKash">🇧🇩 bKash (Personal)</option>
-                    <option value="Nagad">🇧🇩 Nagad (Personal)</option>
-                    <option value="UPI">🇮🇳 India: UPI / Paytm</option>
-                    <option value="EasyPaisa">🇵🇰 Pakistan: EasyPaisa</option>
-                    <option value="JazzCash">🇵🇰 Pakistan: JazzCash</option>
+                    <option value="bKash">bKash (Personal)</option>
+                    <option value="Nagad">Nagad (Personal)</option>
+                    <option value="UPI">India: UPI / Paytm</option>
+                    <option value="EasyPaisa">Pakistan: EasyPaisa</option>
+                    <option value="JazzCash">Pakistan: JazzCash</option>
                 </select>
 
                 <label class="lbl" id="lbl-wal-addr">RECIPIENT ADDRESS</label>
@@ -481,7 +476,7 @@
             </div>
 
             <div id="manual-ref-box" class="cc" style="padding:12px; margin-top:12px; background:#0f1222; border: 2px dashed var(--gold); text-align:left;">
-                <div class="bf" style="font-size:14px; color:var(--gold); margin-bottom:6px;">🔗 BIND REFER CODE / রেফার কোড বসান</div>
+                <div class="bf" style="font-size:14px; color:var(--gold); margin-bottom:6px;">🔗 BIND REFER CODE</div>
                 <div style="display:flex; gap:8px;">
                     <input type="text" id="manual-ref-input" placeholder="Enter Inviter User ID" style="margin-bottom:0; flex:1;">
                     <button class="cb" onclick="bindReferCode()" style="padding:0 12px; background:var(--gold); color:#000; font-size:12px;">BIND</button>
@@ -587,11 +582,6 @@
         var _toastT;
         var ADMIN_USDT_WALLET = "0xLoadingAdminWalletFromFirebaseConfig...";
         var ADMIN_BNB_WALLET = "0xLoadingAdminWalletFromFirebaseConfig...";
-        var ADMIN_BKASH_NO = "017XXXXXXXX (Admin bKash)";
-        var ADMIN_NAGAD_NO = "019XXXXXXXX (Admin Nagad)";
-        var ADMIN_UPI_ID = "admin@upi";
-        var ADMIN_EASYPAISA_NO = "03XXXXXXXXX";
-        var ADMIN_JAZZCASH_NO = "03XXXXXXXXX";
 
         var miningIntervalTimer = null;
         var globalWithdrawalRecords = [];
@@ -703,19 +693,9 @@
                     var data = snap.data();
                     ADMIN_USDT_WALLET = data.usdt_address || "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X";
                     ADMIN_BNB_WALLET = data.bnb_address || "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X";
-                    ADMIN_BKASH_NO = data.bkash_no || "01700000000";
-                    ADMIN_NAGAD_NO = data.nagad_no || "01900000000";
-                    ADMIN_UPI_ID = data.upi_id || "admin@upi";
-                    ADMIN_EASYPAISA_NO = data.easypaisa_no || "03000000000";
-                    ADMIN_JAZZCASH_NO = data.jazzcash_no || "03100000000";
                 } else {
                     ADMIN_USDT_WALLET = "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X";
                     ADMIN_BNB_WALLET = "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X";
-                    ADMIN_BKASH_NO = "01700000000";
-                    ADMIN_NAGAD_NO = "01900000000";
-                    ADMIN_UPI_ID = "admin@upi";
-                    ADMIN_EASYPAISA_NO = "03000000000";
-                    ADMIN_JAZZCASH_NO = "03100000000";
                 }
                 toggleDepositLabels();
             });
@@ -738,31 +718,6 @@
                 inputAmount.placeholder = "Min. 0.01 BNB";
                 lblAddressTitle.innerText = "BNB SMART CHAIN (BSC) ADDRESS";
                 if(inputAddr) inputAddr.value = ADMIN_BNB_WALLET;
-            } else if(curr === 'bKash') {
-                lblAmount.innerText = "ENTER AMOUNT IN BDT / টাকা লিখুন";
-                inputAmount.placeholder = "Min. 500 BDT";
-                lblAddressTitle.innerText = "ADMIN BKASH AGENT NUMBER (CASH OUT)";
-                if(inputAddr) inputAddr.value = ADMIN_BKASH_NO;
-            } else if(curr === 'Nagad') {
-                lblAmount.innerText = "ENTER AMOUNT IN BDT / টাকা লিখুন";
-                inputAmount.placeholder = "Min. 500 BDT";
-                lblAddressTitle.innerText = "ADMIN NAGAD AGENT NUMBER (CASH OUT)";
-                if(inputAddr) inputAddr.value = ADMIN_NAGAD_NO;
-            } else if(curr === 'UPI') {
-                lblAmount.innerText = "ENTER AMOUNT IN INR (₹)";
-                inputAmount.placeholder = "Min. 400 INR";
-                lblAddressTitle.innerText = "ADMIN UPI CHANNELS TARGET ID";
-                if(inputAddr) inputAddr.value = ADMIN_UPI_ID;
-            } else if(curr === 'EasyPaisa') {
-                lblAmount.innerText = "ENTER AMOUNT IN PKR (Rs)";
-                inputAmount.placeholder = "Min. 1000 PKR";
-                lblAddressTitle.innerText = "ADMIN EASYPAISA TARGET ACCOUNT";
-                if(inputAddr) inputAddr.value = ADMIN_EASYPAISA_NO;
-            } else if(curr === 'JazzCash') {
-                lblAmount.innerText = "ENTER AMOUNT IN PKR (Rs)";
-                inputAmount.placeholder = "Min. 1000 PKR";
-                lblAddressTitle.innerText = "ADMIN JAZZCASH TARGET ACCOUNT";
-                if(inputAddr) inputAddr.value = ADMIN_JAZZCASH_NO;
             }
         }
 
@@ -780,7 +735,6 @@
                 setupLiveMiningEngine();
                 checkAndProcessReferralBonus();
 
-                // যদি অলরেডি কোনো কোড বাইন্ড করা থাকে, তবে বাইন্ডার বক্সটি হাইড করে দাও
                 var mRefBox = document.getElementById('manual-ref-box');
                 if(mRefBox) {
                     if(ME.refferBy) { mRefBox.style.display = 'none'; } 
@@ -842,7 +796,6 @@
             });
         }
 
-        // ম্যানুয়াল রেফার কোড বাইন্ড করার ফাংশন
         async function bindReferCode() {
             var inviterId = document.getElementById('manual-ref-input').value.trim();
             if(!inviterId) return showToast("❌ ENTER A VALID ID!");
@@ -983,7 +936,7 @@
                         matchId: selectedMatchId,
                         matchName: match.team1 + " VS " + match.team2,
                         prediction: selectedPrediction,
-                        predictionText: selectionText, // এখানে স্পষ্ট স্টোর করা হচ্ছে
+                        predictionText: selectionText, 
                         betAmount: amount,
                         odds: odds,
                         potentialWin: (amount * odds).toFixed(2),
@@ -1269,7 +1222,7 @@
                 lblAddr.innerText = "RECIPIENT ADDRESS (CRYPTO WALLET)";
                 inputAddr.placeholder = "0x... Enter Wallet Address";
             } else if(curr === 'bKash' || curr === 'Nagad') {
-                lblAddr.innerText = "ENTER MOBILE NUMBER (বিকাশ/নগদ নম্বর)";
+                lblAddr.innerText = "ENTER MOBILE NUMBER";
                 inputAddr.placeholder = "01XXXXXXXXX";
             } else if(curr === 'UPI') {
                 lblAddr.innerText = "ENTER UPI ID / PAYTM NUMBER";
@@ -1295,30 +1248,17 @@
             
             if(curr === 'USDT' && (isNaN(amt) || amt < 5)) { return showToast("❌ MINIMUM DEPOSIT IS $5 USDT!"); }
             if(curr === 'BNB' && (isNaN(amt) || amt < 0.01)) { return showToast("❌ MINIMUM DEPOSIT IS 0.01 BNB!"); }
-            if((curr === 'bKash' || curr === 'Nagad') && (isNaN(amt) || amt < 500)) { return showToast("❌ সর্বনিম্ন ডিপোজিট ৫০০ টাকা!"); }
-            if(curr === 'UPI' && (isNaN(amt) || amt < 400)) { return showToast("❌ MINIMUM DEPOSIT IS 400 INR!"); }
-            if((curr === 'EasyPaisa' || curr === 'JazzCash') && (isNaN(amt) || amt < 1000)) { return showToast("❌ MINIMUM DEPOSIT IS 1000 PKR!"); }
             
             document.getElementById('show-dep-amt').innerText = amt;
-            document.getElementById('show-dep-curr').innerText = (curr === 'bKash' || curr === 'Nagad') ? 'BDT' : (curr === 'UPI' ? 'INR' : (curr === 'EasyPaisa' || curr === 'JazzCash' ? 'PKR' : curr));
+            document.getElementById('show-dep-curr').innerText = curr;
             
             var instrText = document.getElementById('dep-instruction-text');
             var txidLabel = document.getElementById('lbl-dep-txid');
             var txidInput = document.getElementById('dep-txid');
 
-            if(curr === 'bKash' || curr === 'Nagad') {
-                instrText.innerHTML = 'নিচের নম্বরে ঠিক <b id="show-dep-amt" style="color:var(--green)">' + amt + '</b> টাকা ক্যাশアウト (Cash Out) করুন এবং ট্রানজেকশন আইডি সাবমিট করুন:';
-                txidLabel.innerText = "ENTER TRANSACTION ID (TrxID)";
-                txidInput.placeholder = "Example: BK20X91LSK";
-            } else if (curr === 'USDT' || curr === 'BNB') {
-                instrText.innerHTML = 'Please send exactly <b id="show-dep-amt" style="color:var(--green)">' + amt + '</b> <span>' + curr + '</span> to the address below:';
-                txidLabel.innerText = "ENTER TRANSACTION ID / TXID / HASH";
-                txidInput.placeholder = "Paste your transfer transaction hash";
-            } else {
-                instrText.innerHTML = 'Please transfer exactly <b id="show-dep-amt" style="color:var(--green)">' + amt + '</b> <span>' + (curr === 'UPI'?'INR':'PKR') + '</span> to the asset endpoint below:';
-                txidLabel.innerText = "ENTER REF NO / TRANSACTION ID";
-                txidInput.placeholder = "Enter payment proof reference ID";
-            }
+            instrText.innerHTML = 'Please send exactly <b id="show-dep-amt" style="color:var(--green)">' + amt + '</b> <span>' + curr + '</span> to the address below:';
+            txidLabel.innerText = "ENTER TRANSACTION ID / TXID / HASH";
+            txidInput.placeholder = "Paste your transfer transaction hash";
 
             document.getElementById('dep-step-1').style.display = 'none';
             document.getElementById('dep-step-2').style.display = 'block';
@@ -1346,7 +1286,7 @@
                 userName: ME.name || 'Hero',
                 amountUSD: (curr === 'USDT') ? amt : 0, 
                 amountBNB: (curr === 'BNB') ? amt : 0,
-                amountLocal: (curr !== 'USDT' && curr !== 'BNB') ? amt : 0,
+                amountLocal: 0,
                 currency: curr, 
                 txid: txid,
                 status: 'pending',
@@ -1647,7 +1587,6 @@
             });
         }
 
-        // অডিট লেজারে উইথড্র, ডিপোজিট এবং স্পোর্টস বাজি কম্বাইন করে রেন্ডার করার ফাংশন
         function loadUnifiedLedgerHistory() {
             db.collection('withdrawals').where('userId','==',UID).orderBy('createdAt','desc').limit(15).onSnapshot(function(wSnap) {
                 var wList = wSnap.docs.map(d => Object.assign({_id: d.id, ledgerType: 'Withdraw'}, d.data()));
@@ -1690,7 +1629,6 @@
                 } else if(tx.ledgerType === 'Deposit') {
                     if (tx.currency === 'BNB') titleText = tx.amountBNB + " BNB";
                     else if (tx.currency === 'USDT') titleText = "$" + parseFloat(tx.amountUSD).toFixed(2) + " USDT";
-                    else titleText = tx.amountLocal + " " + tx.currency;
                     
                     formatType = '📥 DEPOSIT (' + (tx.currency || 'USDT') + ')';
                     typeColor = 'var(--green)';
