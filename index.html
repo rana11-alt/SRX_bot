@@ -206,7 +206,7 @@
         .custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999999; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); }
         .modal-content { background: var(--card); border: 4px solid var(--border-ink); width: 90%; max-width: 400px; margin: 15vh auto; padding: 20px; position: relative; box-shadow: 0 0 20px var(--gold); }
         .ref-history-list { background: #0d0f1a; max-height: 200px; overflow-y: auto; border: 2px solid var(--border-ink); }
-        .ref-history-item { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #1a1e33; font-size: 12px; }
+        .ref-history-item { display: flex; flex-direction: column; padding: 8px 12px; border-bottom: 1px solid #1a1e33; font-size: 12px; }
 
         /* Sports Custom Styles */
         .match-card { background: #161a36; border: 3px solid var(--border-ink); box-shadow: 4px 4px 0 var(--border-ink); padding: 12px; margin-bottom: 12px; position: relative; }
@@ -480,6 +480,14 @@
                 <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-bottom:12px"><span>Referred By</span><span id="prefby" style="color:var(--blue)">None</span></div>
             </div>
 
+            <div id="manual-ref-box" class="cc" style="padding:12px; margin-top:12px; background:#0f1222; border: 2px dashed var(--gold); text-align:left;">
+                <div class="bf" style="font-size:14px; color:var(--gold); margin-bottom:6px;">🔗 BIND REFER CODE / রেফার কোড বসান</div>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="manual-ref-input" placeholder="Enter Inviter User ID" style="margin-bottom:0; flex:1;">
+                    <button class="cb" onclick="bindReferCode()" style="padding:0 12px; background:var(--gold); color:#000; font-size:12px;">BIND</button>
+                </div>
+            </div>
+
             <div class="kyc-panel">
                 <div class="kyc-badge">🛡️ KYC SECURITY PROTOCOL</div>
                 <div id="kyc-form-box">
@@ -587,6 +595,7 @@
 
         var miningIntervalTimer = null;
         var globalWithdrawalRecords = [];
+        var combinedUnifiedHistory = []; 
 
         var EXCH_RATES = {
             SRX_USDT: 0.01,  
@@ -645,8 +654,7 @@
                     var rsnap = await rref.get();
                     if (rsnap.exists) {
                         await rref.update({
-                            reffer: FS.increment(1),
-                            coins: FS.increment(50) // রেফারাল বোনাস ৫০ কয়েন করা হলো
+                            reffer: FS.increment(1)
                         });
                     }
                 }
@@ -659,6 +667,7 @@
                     bnbBalance: 0.000000,
                     reffer: 0,
                     refferBy: (refBy && refBy !== UID) ? refBy : null,
+                    refBonusClaimed: false, 
                     tasksCompleted: 0,
                     totalWithdrawals: 0,
                     lastMiningClaimTimestamp: Date.now(), 
@@ -672,6 +681,7 @@
                 if (ME.lockedUSDT === undefined) updates.lockedUSDT = 0.01;
                 if (ME.bnbBalance === undefined) updates.bnbBalance = 0.000000;
                 if (ME.lastMiningClaimTimestamp === undefined) updates.lastMiningClaimTimestamp = Date.now();
+                if (ME.refBonusClaimed === undefined) updates.refBonusClaimed = false;
                 
                 if (Object.keys(updates).length > 0) {
                     await uref.update(updates);
@@ -768,6 +778,14 @@
                 if (document.getElementById('crypto-bnb')) document.getElementById('crypto-bnb').innerText = (ME.bnbBalance !== undefined ? parseFloat(ME.bnbBalance).toFixed(6) : '0.000000');
                 
                 setupLiveMiningEngine();
+                checkAndProcessReferralBonus();
+
+                // যদি অলরেডি কোনো কোড বাইন্ড করা থাকে, তবে বাইন্ডার বক্সটি হাইড করে দাও
+                var mRefBox = document.getElementById('manual-ref-box');
+                if(mRefBox) {
+                    if(ME.refferBy) { mRefBox.style.display = 'none'; } 
+                    else { mRefBox.style.display = 'block'; }
+                }
             });
 
             _listeners.tasks = db.collection('tasks').orderBy('createdAt','desc').onSnapshot(function(snap) {
@@ -792,7 +810,14 @@
                 }
                 refBox.innerHTML = snap.docs.map(function(doc) {
                     var d = doc.data();
-                    return '<div class="ref-history-item"><span style="color:#fff;font-weight:700;">👤 ' + esc(d.name) + '</span><span style="color:var(--gold); font-weight:bold;">⚡ ' + (d.tasksCompleted || 0) + ' Done</span></div>';
+                    var taskCount = d.tasksCompleted || 0;
+                    var statusText = taskCount >= 5 ? '<span style="color:var(--green)">✅ Completed (50 SRX Sent)</span>' : '<span style="color:var(--red)">⏳ Needs ' + (5 - taskCount) + ' more Tasks</span>';
+                    
+                    return '<div class="ref-history-item" style="margin-bottom: 6px; background:#080a14; padding:6px; border:1px solid #222;">' + 
+                           '<span style="color:#fff;font-weight:700;">👤 ' + esc(d.name) + '</span>' + 
+                           '<span style="color:var(--gold); font-size:11px;">⚡ Total Missions: ' + taskCount + ' / 5</span>' +
+                           '<div style="font-size:10px; margin-top:2px;">' + statusText + '</div>' + 
+                           '</div>';
                 }).join('');
             });
 
@@ -815,6 +840,67 @@
                 _comics = snap.docs.map(function(d) { return Object.assign({_id: d.id}, d.data()); });
                 renderComicsTab();
             });
+        }
+
+        // ম্যানুয়াল রেফার কোড বাইন্ড করার ফাংশন
+        async function bindReferCode() {
+            var inviterId = document.getElementById('manual-ref-input').value.trim();
+            if(!inviterId) return showToast("❌ ENTER A VALID ID!");
+            if(inviterId === UID) return showToast("❌ YOU CANNOT REFER YOURSELF!");
+            if(ME.refferBy) return showToast("❌ ALREADY REFERRED BY SOMEONE!");
+
+            showToast("⏳ BINDING REFER PROTOCOL...");
+            var inviterRef = db.collection('users').doc(inviterId);
+            var myRef = db.collection('users').doc(UID);
+
+            try {
+                var inviterSnap = await inviterRef.get();
+                if(!inviterSnap.exists) {
+                    return showToast("❌ INVALID INVITER ID! USER NOT FOUND.");
+                }
+
+                await db.runTransaction(async (transaction) => {
+                    transaction.update(inviterRef, {
+                        reffer: FS.increment(1)
+                    });
+                    transaction.update(myRef, {
+                        refferBy: inviterId
+                    });
+                });
+
+                showToast("✅ REFER CODE BOUND SUCCESSFULLY!");
+                document.getElementById('manual-ref-input').value = '';
+            } catch(e) {
+                showToast("❌ BIND FAILED: " + e.message);
+            }
+        }
+
+        async function checkAndProcessReferralBonus() {
+            if (ME && ME.refferBy && !ME.refBonusClaimed && (ME.tasksCompleted || 0) >= 5) {
+                var inviterId = ME.refferBy;
+                var myUid = UID;
+                
+                var inviterRef = db.collection('users').doc(inviterId);
+                var myRef = db.collection('users').doc(myUid);
+
+                try {
+                    await db.runTransaction(async (transaction) => {
+                        var myDoc = await transaction.get(myRef);
+                        if (!myDoc.exists || myDoc.data().refBonusClaimed) return;
+
+                        transaction.update(inviterRef, {
+                            coins: FS.increment(50) 
+                        });
+
+                        transaction.update(myRef, {
+                            refBonusClaimed: true 
+                        });
+                    });
+                    console.log("Referral Bonus of 50 SRX successfully dispatched to Inviter: " + inviterId);
+                } catch (e) {
+                    console.error("Referral transaction error: ", e);
+                }
+            }
         }
 
         function updateTasksProgress() {
@@ -850,9 +936,9 @@
             selectedPrediction = pick;
             var match = WORLD_CUP_MATCHES.find(m => m.id === matchId);
             var text = "";
-            if(pick === '1') text = match.team1 + " to Win";
-            else if(pick === '2') text = match.team2 + " to Win";
-            else text = "Match to Draw";
+            if(pick === '1') text = match.team1 + " (To Win)";
+            else if(pick === '2') text = match.team2 + " (To Win)";
+            else text = "Match to Draw (X)";
 
             document.getElementById('predicted-selection').innerText = text;
             document.getElementById('bet-srx-amount').value = '';
@@ -877,6 +963,11 @@
             var match = WORLD_CUP_MATCHES.find(m => m.id === selectedMatchId);
             var odds = selectedPrediction === '1' ? match.odds1 : (selectedPrediction === '2' ? match.odds2 : match.oddsX);
             
+            var selectionText = "";
+            if(selectedPrediction === '1') selectionText = match.team1 + " (To Win)";
+            else if(selectedPrediction === '2') selectionText = match.team2 + " (To Win)";
+            else selectionText = "Draw (X)";
+
             showToast("🎲 LOGGING PREDICTION PROTOCOL...");
             var uref = db.collection('users').doc(UID);
 
@@ -888,9 +979,11 @@
                     var betRef = db.collection('sports_bets').doc();
                     tx.set(betRef, {
                         userId: UID,
+                        userName: ME.name || 'Hero',
                         matchId: selectedMatchId,
                         matchName: match.team1 + " VS " + match.team2,
                         prediction: selectedPrediction,
+                        predictionText: selectionText, // এখানে স্পষ্ট স্টোর করা হচ্ছে
                         betAmount: amount,
                         odds: odds,
                         potentialWin: (amount * odds).toFixed(2),
@@ -919,10 +1012,12 @@
                 el.innerHTML = snap.docs.map(doc => {
                     var data = doc.data();
                     var sCls = data.status === 'won' ? 'bapp' : (data.status === 'lost' ? 'brej' : 'bpend');
+                    var pText = data.predictionText ? data.predictionText : data.prediction;
                     return '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #1c213a; padding:6px 2px;">' +
                         '<div>' +
                             '<div style="font-weight:900; color:#fff;">' + esc(data.matchName) + '</div>' +
-                            '<div style="font-size:10px;">Risked: <span style="color:var(--gold);">' + data.betAmount + ' SRX</span> @ Odds: ' + data.odds + '</div>' +
+                            '<div style="font-size:11px; color:var(--neon-glow);">Pick: ' + esc(pText) + '</div>' +
+                            '<div style="font-size:10px; color:#aaa;">Risked: <span style="color:var(--gold);">' + data.betAmount + ' SRX</span> @ Odds: ' + data.odds + '</div>' +
                         '</div>' +
                         '<span class="' + sCls + '">' + data.status.toUpperCase() + '</span>' +
                     '</div>';
@@ -1212,7 +1307,7 @@
             var txidInput = document.getElementById('dep-txid');
 
             if(curr === 'bKash' || curr === 'Nagad') {
-                instrText.innerHTML = 'নিচের নম্বরে ঠিক <b id="show-dep-amt" style="color:var(--green)">' + amt + '</b> টাকা ক্যাশ আউট (Cash Out) করুন এবং ট্রানজেকশন আইডি সাবমিট করুন:';
+                instrText.innerHTML = 'নিচের নম্বরে ঠিক <b id="show-dep-amt" style="color:var(--green)">' + amt + '</b> টাকা ক্যাশアウト (Cash Out) করুন এবং ট্রানজেকশন আইডি সাবমিট করুন:';
                 txidLabel.innerText = "ENTER TRANSACTION ID (TrxID)";
                 txidInput.placeholder = "Example: BK20X91LSK";
             } else if (curr === 'USDT' || curr === 'BNB') {
@@ -1302,7 +1397,7 @@
                     '</div>' +
                     '<div style="width:100%;margin-top:2px;">' +
                     '<div style="display:flex;justify-content:space-between;font-size:9px;font-weight:800;color:#888;margin-bottom:3px;"><span>TASK SLOTS</span><span>' + currentCompletions + ' / ' + maxLimit + ' USERS</span></div>' +
-                    '<div style="background:#090b14; border:1px solid #242942; height:6px; width:100%; overflow:hidden;"><div style="background:linear-gradient(90deg, var(--blue), var(--neon-glow)); height:100%; width:' + progressPercent + '%; transition:width 0.4s ease;"></div></div> +' +
+                    '<div style="background:#090b14; border:1px solid #242942; height:6px; width:100%; overflow:hidden;"><div style="background:linear-gradient(90deg, var(--blue), var(--neon-glow)); height:100%; width:' + progressPercent + '%; transition:width 0.4s ease;"></div></div>' +
                     '</div>' +
                     '</div>';
             });
@@ -1552,6 +1647,7 @@
             });
         }
 
+        // অডিট লেজারে উইথড্র, ডিপোজিট এবং স্পোর্টস বাজি কম্বাইন করে রেন্ডার করার ফাংশন
         function loadUnifiedLedgerHistory() {
             db.collection('withdrawals').where('userId','==',UID).orderBy('createdAt','desc').limit(15).onSnapshot(function(wSnap) {
                 var wList = wSnap.docs.map(d => Object.assign({_id: d.id, ledgerType: 'Withdraw'}, d.data()));
@@ -1559,13 +1655,17 @@
                 db.collection('deposits').where('userId','==',UID).orderBy('createdAt','desc').limit(15).onSnapshot(function(dSnap) {
                     var dList = dSnap.docs.map(d => Object.assign({_id: d.id, ledgerType: 'Deposit'}, d.data()));
                     
-                    var combinedHistory = wList.concat(dList);
-                    combinedHistory.sort((a, b) => {
-                        var dateA = a.createdAt ? a.createdAt.seconds : 0;
-                        var dateB = b.createdAt ? b.createdAt.seconds : 0;
-                        return dateB - dateA; 
+                    db.collection('sports_bets').where('userId','==',UID).orderBy('createdAt','desc').limit(15).onSnapshot(function(sSnap) {
+                        var sList = sSnap.docs.map(d => Object.assign({_id: d.id, ledgerType: 'Prediction'}, d.data()));
+                        
+                        combinedUnifiedHistory = wList.concat(dList).concat(sList);
+                        combinedUnifiedHistory.sort((a, b) => {
+                            var dateA = a.createdAt ? a.createdAt.seconds : 0;
+                            var dateB = b.createdAt ? b.createdAt.seconds : 0;
+                            return dateB - dateA; 
+                        });
+                        renderUnifiedLedger(combinedUnifiedHistory);
                     });
-                    renderUnifiedLedger(combinedHistory);
                 });
             });
         }
@@ -1575,26 +1675,38 @@
             if(!arr.length) { el.innerHTML = '<p style="padding:10px;color:#777;font-weight:700;">No transactions found.</p>'; return; }
             
             el.innerHTML = arr.map(tx => {
-                var sCls = tx.status === 'approved' ? 'bapp' : (tx.status === 'rejected' ? 'brej' : 'bpend');
+                var sCls = tx.status === 'approved' || tx.status === 'won' ? 'bapp' : (tx.status === 'rejected' || tx.status === 'lost' ? 'brej' : 'bpend');
                 
                 var titleText = "";
+                var formatType = "";
+                var typeColor = "var(--gold)";
+                var subText = "";
+
                 if(tx.ledgerType === 'Withdraw') {
                     titleText = tx.amount + " SRX";
-                } else {
+                    formatType = '📤 WITHDRAW (' + (tx.currency || 'Crypto') + ')';
+                    typeColor = 'var(--gold)';
+                    subText = tx.usdcAddress || "Network Log";
+                } else if(tx.ledgerType === 'Deposit') {
                     if (tx.currency === 'BNB') titleText = tx.amountBNB + " BNB";
                     else if (tx.currency === 'USDT') titleText = "$" + parseFloat(tx.amountUSD).toFixed(2) + " USDT";
                     else titleText = tx.amountLocal + " " + tx.currency;
+                    
+                    formatType = '📥 DEPOSIT (' + (tx.currency || 'USDT') + ')';
+                    typeColor = 'var(--green)';
+                    subText = tx.txid || "Network Log";
+                } else if(tx.ledgerType === 'Prediction') {
+                    titleText = tx.betAmount + " SRX";
+                    formatType = '🎲 MATCH PREDICTION';
+                    typeColor = 'var(--comic-orange)';
+                    subText = tx.matchName + " | Pick: " + (tx.predictionText ? tx.predictionText : tx.prediction);
                 }
-
-                var subText = tx.usdcAddress || tx.txid || "Network Log";
-                var formatType = tx.ledgerType === 'Withdraw' ? '📤 WITHDRAW (' + (tx.currency || 'Crypto') + ')' : '📥 DEPOSIT (' + (tx.currency || 'USDT') + ')';
-                var typeColor = tx.ledgerType === 'Withdraw' ? 'var(--gold)' : 'var(--green)';
 
                 return '<div class="cc" style="padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;background:#16192b;border-color:#282d47">' +
                     '<div>' +
                         '<span style="font-size:9px; font-weight:bold; color:#aaa; display:block; margin-bottom:2px;">' + formatType + '</span>' +
                         '<div style="font-weight:900;font-size:14px;color:' + typeColor + ';">' + titleText + '</div>' +
-                        '<div style="font-size:9px;color:#aaa;font-family:monospace;max-width:180px;overflow:hidden;text-overflow:ellipsis;">Data: ' + esc(subText) + '</div>' +
+                        '<div style="font-size:9px;color:#aaa;max-width:220px;overflow:hidden;text-overflow:ellipsis;">' + esc(subText) + '</div>' +
                     '</div>' +
                     '<span class="' + sCls + '">' + tx.status.toUpperCase() + '</span>' +
                 '</div>';
