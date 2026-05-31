@@ -94,10 +94,10 @@
             z-index: 1000;
         }
 
-        .nav-i { font-size: 10px; font-weight: 900; text-align: center; color: #888; cursor: pointer; padding: 0 8px; }
+        .nav-i { font-size: 10px; font-weight: 900; text-align: center; color: #888; cursor: pointer; padding: 0 4px; }
         .nav-i.on { color: var(--gold); text-shadow: 0 0 8px rgba(255,222,3,0.3); }
         .nav-i.on .nav-ic { transform: scale(1.2); }
-        .nav-ic { font-size: 22px; display: block; margin-bottom: 2px; transition: transform 0.2s; }
+        .nav-ic { font-size: 20px; display: block; margin-bottom: 2px; transition: transform 0.2s; }
 
         .tab { display: none; padding: 14px 14px 100px; animation: si .25s ease; }
         .tab.on { display: block; }
@@ -154,7 +154,7 @@
         .bpend { background: #f97316; color: #fff; font-size: 10px; font-weight: 900; padding: 2px 8px; border: 2px solid var(--border-ink); }
         .bapp { background: var(--green); color: #fff; font-size: 10px; font-weight: 900; padding: 2px 8px; border: 2px solid var(--border-ink); }
         .brej { background: var(--red); color: #fff; font-size: 10px; font-weight: 900; padding: 2px 8px; border: 2px solid var(--border-ink); }
-        
+
         .task-done { opacity: .4; pointer-events: none; box-shadow: 2px 2px 0 var(--border-ink) !important; animation: none !important; }
         .task-done .cb { background: #333 !important; color: #777 !important; }
         
@@ -207,6 +207,17 @@
         .modal-content { background: var(--card); border: 4px solid var(--border-ink); width: 90%; max-width: 400px; margin: 15vh auto; padding: 20px; position: relative; box-shadow: 0 0 20px var(--gold); }
         .ref-history-list { background: #0d0f1a; max-height: 200px; overflow-y: auto; border: 2px solid var(--border-ink); }
         .ref-history-item { display: flex; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid #1a1e33; font-size: 12px; }
+
+        /* Sports Custom Styles */
+        .match-card { background: #161a36; border: 3px solid var(--border-ink); box-shadow: 4px 4px 0 var(--border-ink); padding: 12px; margin-bottom: 12px; position: relative; }
+        .match-header { font-size: 10px; color: var(--gold); font-weight: 900; border-bottom: 1px dashed #2d355e; padding-bottom: 4px; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .match-teams { display: flex; justify-content: space-between; align-items: center; text-align: center; margin-bottom: 12px; }
+        .team-box { width: 40%; font-family: 'Bangers'; font-size: 18px; color: #fff; text-shadow: 1px 1px 0 #000; }
+        .vs-box { background: var(--comic-orange); color: #000; font-family: 'Bangers'; font-size: 14px; padding: 2px 8px; border: 2px solid var(--border-ink); }
+        .bet-odds-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+        .bet-btn { background: #252d54; border: 2px solid var(--border-ink); color: #fff; padding: 6px; font-size: 11px; font-weight: 900; text-align: center; cursor: pointer; }
+        .bet-btn:hover { background: var(--blue); }
+        .bet-btn span { display: block; color: var(--neon-glow); font-size: 10px; }
     </style>
 </head>
 <body>
@@ -298,6 +309,18 @@
         <div id="full-list"><div class="spin"></div></div>
     </div>
 
+    <div id="tab-sports" class="tab">
+        <div class="bf" style="font-size:28px;text-align:center;margin-bottom:4px;color:var(--gold)">⚽ FIFA WORLD CUP</div>
+        <div style="font-size:11px; text-align:center; font-weight:800; color:#aaa; margin-bottom:15px;">PREDICT MATCHES & WIN SRX TOKENS</div>
+        
+        <div id="matches-container"></div>
+
+        <div class="bf" style="font-size:18px; margin-top:20px; margin-bottom:8px; color:var(--neon-glow)">📋 YOUR PREDICTION LEDGER</div>
+        <div id="sports-history-list" class="cc" style="padding:10px; background:#0d0f1a; min-height:60px; font-size:12px; color:#aaa;">
+            No predictions logged yet.
+        </div>
+    </div>
+
     <div id="tab-comics" class="tab">
         <div class="bf" style="font-size:28px;text-align:center;margin-bottom:12px;color:var(--gold)">📚 HERO COMICS</div>
         <div id="comics-list-container"><div class="spin"></div></div>
@@ -370,15 +393,33 @@
         <div id="pay-hist"><div class="spin"></div></div>
     </div>
 
+    <div id="sportsBetModal" class="custom-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeBetModal()" style="top:-15px; right:-15px; width:30px; height:30px; font-size:14px">✕</button>
+            <div class="bf" style="font-size:24px; color:var(--gold); margin-bottom:12px; text-align:center;">🎲 CONFIRM PREDICTION</div>
+            <div style="padding:2px;">
+                <p style="font-size:13px; margin-bottom:10px; text-align:center;">You are predicting: <b id="predicted-selection" style="color:var(--neon-glow)">None</b></p>
+                <label class="lbl">ENTER SRX AMOUNT TO BET</label>
+                <input type="number" id="bet-srx-amount" placeholder="Min. 10 SRX" min="10">
+                <button class="cb" onclick="confirmPredictionBet()" style="width:100%;padding:12px;background:var(--comic-orange);color:#000;font-size:16px; margin-top:5px;">PLACE PREDICTION</button>
+            </div>
+        </div>
+    </div>
+
     <div id="depositModal" class="custom-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeDepositModal()" style="top:-15px; right:-15px; width:30px; height:30px; font-size:14px">✕</button>
-            <div class="bf" style="font-size:24px; color:var(--gold); margin-bottom:12px; text-align:center;">📥 CRYPTO DEPOSIT</div>
+            <div class="bf" style="font-size:24px; color:var(--gold); margin-bottom:12px; text-align:center;">📥 DEPOSIT PROTOCOL</div>
             <div id="dep-step-1">
-                <label class="lbl">SELECT COIN TYPE / কয়েন সিলেক্ট করুন</label>
+                <label class="lbl">SELECT METHOD / মেথড সিলেক্ট করুন</label>
                 <select id="dep-currency" onchange="toggleDepositLabels()">
-                    <option value="USDT">USDT (BEP20)</option>
-                    <option value="BNB">BNB (Smart Chain)</option>
+                    <option value="USDT">Crypto: USDT (BEP20)</option>
+                    <option value="BNB">Crypto: BNB (Smart Chain)</option>
+                    <option value="bKash">🇧🇩 bKash (Cash Out)</option>
+                    <option value="Nagad">🇧🇩 Nagad (Cash Out)</option>
+                    <option value="UPI">🇮🇳 India: UPI / Paytm</option>
+                    <option value="EasyPaisa">🇵🇰 Pakistan: EasyPaisa</option>
+                    <option value="JazzCash">🇵🇰 Pakistan: JazzCash</option>
                 </select>
 
                 <label class="lbl" id="lbl-dep-amount">ENTER AMOUNT (USD / USDT)</label>
@@ -386,13 +427,13 @@
                 <button class="cb" onclick="nextDepositStep()" style="width:100%; padding:10px; background:var(--gold); color:#000;">NEXT STEP →</button>
             </div>
             <div id="dep-step-2" style="display:none;">
-                <p style="font-size:12px; margin-bottom:8px; color:#aaa;">Please send exactly <b id="show-dep-amt" style="color:var(--green)">0</b> <span id="show-dep-curr" style="color:var(--gold)">USDT</span> to the address below:</p>
+                <p style="font-size:12px; margin-bottom:8px; color:#aaa;" id="dep-instruction-text">Please send exactly <b id="show-dep-amt" style="color:var(--green)">0</b> <span id="show-dep-curr" style="color:var(--gold)">USDT</span> to the address below:</p>
                 <label class="lbl" id="lbl-admin-addr-title">USDT BEP20 DEPOSIT ADDRESS</label>
                 <div style="display:flex; gap:6px; margin-bottom:12px;">
                     <input type="text" id="admin-usdt-addr" readonly style="margin:0; font-size:11px;">
                     <button class="cb" onclick="copyAdminAddress()" style="background:#fff; color:#000; padding:0 8px; font-size:11px;">COPY</button>
                 </div>
-                <label class="lbl">ENTER TRANSACTION ID / TXID / HASH</label>
+                <label class="lbl" id="lbl-dep-txid">ENTER TRANSACTION ID / TXID / HASH</label>
                 <input type="text" id="dep-txid" placeholder="Paste your transfer transaction hash">
                 <button class="cb" onclick="submitDepositTx()" style="width:100%; padding:10px; background:var(--green); color:#000;">SUBMIT DEPOSIT</button>
             </div>
@@ -404,8 +445,20 @@
             <button class="close-modal" onclick="closeWithdrawModal()" style="top:-15px; right:-15px; width:30px; height:30px; font-size:14px">✕</button>
             <div class="bf" style="font-size:24px; color:var(--gold); margin-bottom:12px; text-align:center;">📤 SECURE WITHDRAWAL</div>
             <div id="wd-form" style="padding:2px;">
-                <label class="lbl">RECIPIENT ADDRESS (USDT BEP20 / SRX Wallet)</label>
+                <label class="lbl">SELECT METHOD / মেথড সিলেক্ট করুন</label>
+                <select id="wal-currency" onchange="toggleWithdrawFields()">
+                    <option value="USDT">Crypto: USDT (BEP20)</option>
+                    <option value="SRX">Crypto: SRX Wallet</option>
+                    <option value="bKash">🇧🇩 bKash (Personal)</option>
+                    <option value="Nagad">🇧🇩 Nagad (Personal)</option>
+                    <option value="UPI">🇮🇳 India: UPI / Paytm</option>
+                    <option value="EasyPaisa">🇵🇰 Pakistan: EasyPaisa</option>
+                    <option value="JazzCash">🇵🇰 Pakistan: JazzCash</option>
+                </select>
+
+                <label class="lbl" id="lbl-wal-addr">RECIPIENT ADDRESS</label>
                 <input type="text" id="wal-addr" placeholder="0x... Enter Wallet Address">
+                
                 <label class="lbl">SRX AMOUNT (Min. 300 SRX)</label>
                 <input type="number" id="wal-amt" placeholder="300" min="300">
                 <button class="cb" onclick="submitWithdraw()" style="width:100%;padding:12px;background:var(--gold);color:#000;font-size:16px; margin-top:5px;">EXECUTE WITHDRAWAL</button>
@@ -483,6 +536,7 @@
     <nav class="nav">
         <div class="nav-i on" id="btn-home" onclick="goTab('home')"><span class="nav-ic">🏠</span>HOME</div>
         <div class="nav-i" id="btn-tasks" onclick="goTab('tasks')"><span class="nav-ic">⚡</span>TASKS</div>
+        <div class="nav-i" id="btn-sports" onclick="goTab('sports')"><span class="nav-ic">⚽</span>SPORTS</div>
         <div class="nav-i" id="btn-comics" onclick="goTab('comics')"><span class="nav-ic">📚</span>COMICS</div>
         <div class="nav-i" id="btn-wallet" onclick="goTab('wallet')"><span class="nav-ic">💰</span>WALLET</div>
         <div class="nav-i" id="btn-profile" onclick="goTab('profile')"><span class="nav-ic">👤</span>PROFILE</div>
@@ -525,6 +579,11 @@
         var _toastT;
         var ADMIN_USDT_WALLET = "0xLoadingAdminWalletFromFirebaseConfig...";
         var ADMIN_BNB_WALLET = "0xLoadingAdminWalletFromFirebaseConfig...";
+        var ADMIN_BKASH_NO = "017XXXXXXXX (Admin bKash)";
+        var ADMIN_NAGAD_NO = "019XXXXXXXX (Admin Nagad)";
+        var ADMIN_UPI_ID = "admin@upi";
+        var ADMIN_EASYPAISA_NO = "03XXXXXXXXX";
+        var ADMIN_JAZZCASH_NO = "03XXXXXXXXX";
 
         var miningIntervalTimer = null;
         var globalWithdrawalRecords = [];
@@ -541,6 +600,15 @@
             {name:"Elite Avenger", min:4000, max:9999},
             {name:"Infinite Hero", min:10000, max:Infinity}
         ];
+
+        var WORLD_CUP_MATCHES = [
+            { id: "wc_m1", group: "GROUP A", team1: "ARGENTINA", team2: "FRANCE", odds1: 1.85, oddsX: 3.40, odds2: 2.10, status: "UPCOMING", time: "MAY 31, 2026 - 22:00 UTC" },
+            { id: "wc_m2", group: "GROUP B", team1: "BRAZIL", team2: "GERMANY", odds1: 1.65, oddsX: 3.60, odds2: 2.50, status: "UPCOMING", time: "JUNE 02, 2026 - 18:00 UTC" },
+            { id: "wc_m3", group: "GROUP C", team1: "SPAIN", team2: "ENGLAND", odds1: 2.00, oddsX: 3.20, odds2: 2.20, status: "UPCOMING", time: "JUNE 04, 2026 - 21:00 UTC" }
+        ];
+
+        var selectedMatchId = null;
+        var selectedPrediction = null;
 
         function getRank(c) {
             return RANKS.find(function(r){ return c >= r.min && c <= r.max; }) || RANKS[0];
@@ -560,6 +628,8 @@
                 checkKycStatus();
                 buildGlobalLiveWithdrawalFeed();
                 triggerWelcomeAndLivePopups();
+                renderSportsMatches();
+                listenToSportsBets();
             }).catch(function(e){
                 showToast("❌ " + e.message);
             });
@@ -568,6 +638,7 @@
         async function initUser(u, refBy) {
             var uref = db.collection('users').doc(UID);
             var snap = await uref.get();
+
             if (!snap.exists) {
                 if (refBy && refBy !== UID) {
                     var rref = db.collection('users').doc(refBy);
@@ -575,7 +646,7 @@
                     if (rsnap.exists) {
                         await rref.update({
                             reffer: FS.increment(1),
-                            coins: FS.increment(100)
+                            coins: FS.increment(50) // রেফারাল বোনাস ৫০ কয়েন করা হলো
                         });
                     }
                 }
@@ -622,9 +693,19 @@
                     var data = snap.data();
                     ADMIN_USDT_WALLET = data.usdt_address || "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X";
                     ADMIN_BNB_WALLET = data.bnb_address || "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X";
+                    ADMIN_BKASH_NO = data.bkash_no || "01700000000";
+                    ADMIN_NAGAD_NO = data.nagad_no || "01900000000";
+                    ADMIN_UPI_ID = data.upi_id || "admin@upi";
+                    ADMIN_EASYPAISA_NO = data.easypaisa_no || "03000000000";
+                    ADMIN_JAZZCASH_NO = data.jazzcash_no || "03100000000";
                 } else {
                     ADMIN_USDT_WALLET = "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X";
                     ADMIN_BNB_WALLET = "0x8704816043AAHNNljOcsYC4qTmruhp1OOMA0X";
+                    ADMIN_BKASH_NO = "01700000000";
+                    ADMIN_NAGAD_NO = "01900000000";
+                    ADMIN_UPI_ID = "admin@upi";
+                    ADMIN_EASYPAISA_NO = "03000000000";
+                    ADMIN_JAZZCASH_NO = "03100000000";
                 }
                 toggleDepositLabels();
             });
@@ -642,11 +723,36 @@
                 inputAmount.placeholder = "Min. $5 USDT";
                 lblAddressTitle.innerText = "USDT BEP20 DEPOSIT ADDRESS";
                 if(inputAddr) inputAddr.value = ADMIN_USDT_WALLET;
-            } else {
+            } else if(curr === 'BNB') {
                 lblAmount.innerText = "ENTER DEPOSIT AMOUNT (BNB)";
                 inputAmount.placeholder = "Min. 0.01 BNB";
                 lblAddressTitle.innerText = "BNB SMART CHAIN (BSC) ADDRESS";
                 if(inputAddr) inputAddr.value = ADMIN_BNB_WALLET;
+            } else if(curr === 'bKash') {
+                lblAmount.innerText = "ENTER AMOUNT IN BDT / টাকা লিখুন";
+                inputAmount.placeholder = "Min. 500 BDT";
+                lblAddressTitle.innerText = "ADMIN BKASH AGENT NUMBER (CASH OUT)";
+                if(inputAddr) inputAddr.value = ADMIN_BKASH_NO;
+            } else if(curr === 'Nagad') {
+                lblAmount.innerText = "ENTER AMOUNT IN BDT / টাকা লিখুন";
+                inputAmount.placeholder = "Min. 500 BDT";
+                lblAddressTitle.innerText = "ADMIN NAGAD AGENT NUMBER (CASH OUT)";
+                if(inputAddr) inputAddr.value = ADMIN_NAGAD_NO;
+            } else if(curr === 'UPI') {
+                lblAmount.innerText = "ENTER AMOUNT IN INR (₹)";
+                inputAmount.placeholder = "Min. 400 INR";
+                lblAddressTitle.innerText = "ADMIN UPI CHANNELS TARGET ID";
+                if(inputAddr) inputAddr.value = ADMIN_UPI_ID;
+            } else if(curr === 'EasyPaisa') {
+                lblAmount.innerText = "ENTER AMOUNT IN PKR (Rs)";
+                inputAmount.placeholder = "Min. 1000 PKR";
+                lblAddressTitle.innerText = "ADMIN EASYPAISA TARGET ACCOUNT";
+                if(inputAddr) inputAddr.value = ADMIN_EASYPAISA_NO;
+            } else if(curr === 'JazzCash') {
+                lblAmount.innerText = "ENTER AMOUNT IN PKR (Rs)";
+                inputAmount.placeholder = "Min. 1000 PKR";
+                lblAddressTitle.innerText = "ADMIN JAZZCASH TARGET ACCOUNT";
+                if(inputAddr) inputAddr.value = ADMIN_JAZZCASH_NO;
             }
         }
 
@@ -666,13 +772,13 @@
 
             _listeners.tasks = db.collection('tasks').orderBy('createdAt','desc').onSnapshot(function(snap) {
                 _tasks = snap.docs.map(function(d){ return Object.assign({_id:d.id}, d.data()); }).filter(function(t){ return t.isActive !== false; });
-                renderTasks();
+                updateTasksProgress();
             });
 
             _listeners.claims = db.collection('user_claims').where('userId','==',UID).onSnapshot(function(snap) {
                 _claimed = {};
                 snap.docs.forEach(function(d){ _claimed[d.data().taskId] = true; });
-                renderTasks();
+                updateTasksProgress();
             });
 
             loadUnifiedLedgerHistory();
@@ -686,7 +792,7 @@
                 }
                 refBox.innerHTML = snap.docs.map(function(doc) {
                     var d = doc.data();
-                    return `<div class="ref-history-item"><span style="color:#fff;font-weight:700;">👤 ${esc(d.name)}</span><span style="color:var(--gold); font-weight:bold;">⚡ ${d.tasksCompleted || 0} Done</span></div>`;
+                    return '<div class="ref-history-item"><span style="color:#fff;font-weight:700;">👤 ' + esc(d.name) + '</span><span style="color:var(--gold); font-weight:bold;">⚡ ' + (d.tasksCompleted || 0) + ' Done</span></div>';
                 }).join('');
             });
 
@@ -711,6 +817,119 @@
             });
         }
 
+        function updateTasksProgress() {
+            renderTasks();
+        }
+
+        function renderSportsMatches() {
+            var container = document.getElementById('matches-container');
+            if(!container) return;
+            
+            container.innerHTML = WORLD_CUP_MATCHES.map(function(m) {
+                return '<div class="match-card">' +
+                    '<div class="match-header">' +
+                    '<span>🏆 ' + m.group + '</span>' +
+                    '<span>⏰ ' + m.time + '</span>' +
+                    '</div>' +
+                    '<div class="match-teams">' +
+                    '<div class="team-box">' + m.team1 + '</div>' +
+                    '<div class="vs-box">VS</div>' +
+                    '<div class="team-box">' + m.team2 + '</div>' +
+                    '</div>' +
+                    '<div class="bet-odds-container">' +
+                    '<div class="bet-btn" onclick="openBetModal(\'' + m.id + '\', \'1\')">' + m.team1 + ' <span>Odds: ' + m.odds1 + '</span></div>' +
+                    '<div class="bet-btn" onclick="openBetModal(\'' + m.id + '\', \'X\')">DRAW <span>Odds: ' + m.oddsX + '</span></div>' +
+                    '<div class="bet-btn" onclick="openBetModal(\'' + m.id + '\', \'2\')">' + m.team2 + ' <span>Odds: ' + m.odds2 + '</span></div>' +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+        }
+
+        function openBetModal(matchId, pick) {
+            selectedMatchId = matchId;
+            selectedPrediction = pick;
+            var match = WORLD_CUP_MATCHES.find(m => m.id === matchId);
+            var text = "";
+            if(pick === '1') text = match.team1 + " to Win";
+            else if(pick === '2') text = match.team2 + " to Win";
+            else text = "Match to Draw";
+
+            document.getElementById('predicted-selection').innerText = text;
+            document.getElementById('bet-srx-amount').value = '';
+            document.getElementById('sportsBetModal').style.display = 'block';
+        }
+
+        function closeBetModal() {
+            document.getElementById('sportsBetModal').style.display = 'none';
+        }
+
+        function confirmPredictionBet() {
+            var amount = parseInt(document.getElementById('bet-srx-amount').value || '0');
+            var currentSrx = ME ? (ME.coins || 0) : 0;
+            
+            if(isNaN(amount) || amount < 10) {
+                return showToast("❌ MINIMUM BET IS 10 SRX!");
+            }
+            if(currentSrx < amount) {
+                return showToast("❌ INSUFFICIENT SRX TOKENS!");
+            }
+
+            var match = WORLD_CUP_MATCHES.find(m => m.id === selectedMatchId);
+            var odds = selectedPrediction === '1' ? match.odds1 : (selectedPrediction === '2' ? match.odds2 : match.oddsX);
+            
+            showToast("🎲 LOGGING PREDICTION PROTOCOL...");
+            var uref = db.collection('users').doc(UID);
+
+            db.runTransaction(function(tx) {
+                return tx.get(uref).then(function(userDoc) {
+                    var bal = userDoc.data().coins || 0;
+                    if(bal < amount) throw new Error("Insufficient balance!");
+                    
+                    var betRef = db.collection('sports_bets').doc();
+                    tx.set(betRef, {
+                        userId: UID,
+                        matchId: selectedMatchId,
+                        matchName: match.team1 + " VS " + match.team2,
+                        prediction: selectedPrediction,
+                        betAmount: amount,
+                        odds: odds,
+                        potentialWin: (amount * odds).toFixed(2),
+                        status: 'pending',
+                        createdAt: FS.serverTimestamp()
+                    });
+
+                    tx.update(uref, {
+                        coins: FS.increment(-amount)
+                    });
+                });
+            }).then(function() {
+                showToast("✅ PREDICTION PLACED SUCCESSFULLY!");
+                closeBetModal();
+            }).catch(e => showToast("❌ TRANSACTION ERROR: " + e.message));
+        }
+
+        function listenToSportsBets() {
+            db.collection('sports_bets').where('userId', '==', UID).orderBy('createdAt', 'desc').onSnapshot(function(snap) {
+                var el = document.getElementById('sports-history-list');
+                if(!el) return;
+                if(snap.empty) {
+                    el.innerHTML = '<p style="padding:5px; text-align:center; color:#777;">No history logs found.</p>';
+                    return;
+                }
+                el.innerHTML = snap.docs.map(doc => {
+                    var data = doc.data();
+                    var sCls = data.status === 'won' ? 'bapp' : (data.status === 'lost' ? 'brej' : 'bpend');
+                    return '<div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #1c213a; padding:6px 2px;">' +
+                        '<div>' +
+                            '<div style="font-weight:900; color:#fff;">' + esc(data.matchName) + '</div>' +
+                            '<div style="font-size:10px;">Risked: <span style="color:var(--gold);">' + data.betAmount + ' SRX</span> @ Odds: ' + data.odds + '</div>' +
+                        '</div>' +
+                        '<span class="' + sCls + '">' + data.status.toUpperCase() + '</span>' +
+                    '</div>';
+                }).join('');
+            });
+        }
+
         function setupLiveMiningEngine() {
             clearInterval(miningIntervalTimer);
             var currentUsdt = ME.lockedUSDT !== undefined ? parseFloat(ME.lockedUSDT) : 0.00;
@@ -722,11 +941,11 @@
                 var ratePerMs = hourlyRate / (3600 * 1000); 
 
                 if(badge) {
-                    badge.innerText = "⚡ MINING ACTIVE";
                     badge.style.backgroundColor = "var(--green)";
+                    badge.innerText = "⚡ MINING ACTIVE";
                 }
                 if(speedText) {
-                    speedText.innerHTML = `SPEED: <span style="color:var(--gold);">${hourlyRate.toFixed(2)} SRX / HOUR</span>`;
+                    speedText.innerHTML = 'SPEED: <span style="color:var(--gold);">' + hourlyRate.toFixed(2) + ' SRX / HOUR</span>';
                 }
 
                 miningIntervalTimer = setInterval(function() {
@@ -739,11 +958,11 @@
                 }, 1000);
             } else {
                 if(badge) {
-                    badge.innerText = "⚠️ NEED ≥ $0.05 USDT";
                     badge.style.backgroundColor = "var(--red)";
+                    badge.innerText = "⚠️ NEED ≥ $0.05 USDT";
                 }
                 if(speedText) {
-                    speedText.innerHTML = `SPEED: <span style="color:var(--gold);">0.00 SRX / HOUR</span>`;
+                    speedText.innerHTML = 'SPEED: <span style="color:var(--gold);">0.00 SRX / HOUR</span>';
                 }
                 var counterEl = document.getElementById('mining-live-counter');
                 if(counterEl) counterEl.innerText = "0.000000";
@@ -766,7 +985,7 @@
                 return showToast("❌ MINIMUM CLAIM AMOUNT IS 1 SRX!");
             }
 
-            showToast(`⏳ CLAIMING ${rewardToClaim.toFixed(2)} SRX TO ASSET WALLET...`);
+            showToast("⏳ CLAIMING " + rewardToClaim.toFixed(2) + " SRX TO ASSET WALLET...");
             var uref = db.collection('users').doc(UID);
             var nowServerTime = Date.now();
 
@@ -778,7 +997,7 @@
                     });
                 });
             }).then(function() {
-                showToast(`💥 SUCCESS! +${rewardToClaim.toFixed(2)} SRX ADDED TO WALLET!`);
+                showToast("💥 SUCCESS! +" + rewardToClaim.toFixed(2) + " SRX ADDED TO WALLET!");
                 if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             }).catch(e => showToast("❌ MINING CLAIM FAILED: " + e.message));
         }
@@ -870,7 +1089,7 @@
             setTimeout(function() {
                 if(alertBox && alertMsg) {
                     alertBox.classList.remove('exit');
-                    alertMsg.innerText = `Welcome back, ${ME.name || 'Hero'}! SRX Protocol v2026 initialized successfully.`;
+                    alertMsg.innerText = "Welcome back, " + (ME.name || 'Hero') + "! SRX Protocol v2026 initialized successfully.";
                     alertBox.classList.add('show');
                     setTimeout(function() { 
                         alertBox.classList.remove('show');
@@ -882,12 +1101,12 @@
             setInterval(function() {
                 if (globalWithdrawalRecords.length > 0 && alertBox && alertMsg) {
                     var randomTx = globalWithdrawalRecords[Math.floor(Math.random() * globalWithdrawalRecords.length)];
-                    var maskAddr = randomTx.usdcAddress ? randomTx.usdcAddress.substring(0,6) + "..." + randomTx.usdcAddress.substring(randomTx.usdcAddress.length - 4) : "0xWallet";
+                    var maskAddr = randomTx.usdcAddress ? randomTx.usdcAddress.substring(0,6) + "..." + randomTx.usdcAddress.substring(randomTx.usdcAddress.length - 4) : "Account";
                     
                     alertBox.classList.remove('show', 'exit');
                     void alertBox.offsetWidth; 
 
-                    alertMsg.innerHTML = `User <span style="color:var(--neon-glow);">${esc(randomTx.userName)}</span> requested a withdrawal of <span style="color:var(--gold);">${randomTx.amount} SRX</span> to ${maskAddr}`;
+                    alertMsg.innerHTML = 'User <span style="color:var(--neon-glow);">' + esc(randomTx.userName) + '</span> requested a withdrawal of <span style="color:var(--gold);">' + randomTx.amount + ' SRX</span> via [ ' + (randomTx.currency || 'Crypto') + ' ] to ' + maskAddr;
                     alertBox.classList.add('show');
                     
                     setTimeout(function() {
@@ -946,9 +1165,31 @@
         }
         function closeDepositModal() { document.getElementById('depositModal').style.display = 'none'; }
 
+        function toggleWithdrawFields() {
+            var curr = document.getElementById('wal-currency').value;
+            var lblAddr = document.getElementById('lbl-wal-addr');
+            var inputAddr = document.getElementById('wal-addr');
+
+            if(curr === 'USDT' || curr === 'SRX') {
+                lblAddr.innerText = "RECIPIENT ADDRESS (CRYPTO WALLET)";
+                inputAddr.placeholder = "0x... Enter Wallet Address";
+            } else if(curr === 'bKash' || curr === 'Nagad') {
+                lblAddr.innerText = "ENTER MOBILE NUMBER (বিকাশ/নগদ নম্বর)";
+                inputAddr.placeholder = "01XXXXXXXXX";
+            } else if(curr === 'UPI') {
+                lblAddr.innerText = "ENTER UPI ID / PAYTM NUMBER";
+                inputAddr.placeholder = "username@upi or Mobile Number";
+            } else if(curr === 'EasyPaisa' || curr === 'JazzCash') {
+                lblAddr.innerText = "ENTER PAKISTAN MOBILE NO / ACCOUNT";
+                inputAddr.placeholder = "03XXXXXXXXX";
+            }
+        }
+
         function openWithdrawModal() {
+            document.getElementById('wal-currency').value = 'USDT';
             document.getElementById('wal-addr').value = '';
             document.getElementById('wal-amt').value = '';
+            toggleWithdrawFields();
             document.getElementById('withdrawModal').style.display = 'block';
         }
         function closeWithdrawModal() { document.getElementById('withdrawModal').style.display = 'none'; }
@@ -959,9 +1200,31 @@
             
             if(curr === 'USDT' && (isNaN(amt) || amt < 5)) { return showToast("❌ MINIMUM DEPOSIT IS $5 USDT!"); }
             if(curr === 'BNB' && (isNaN(amt) || amt < 0.01)) { return showToast("❌ MINIMUM DEPOSIT IS 0.01 BNB!"); }
+            if((curr === 'bKash' || curr === 'Nagad') && (isNaN(amt) || amt < 500)) { return showToast("❌ সর্বনিম্ন ডিপোজিট ৫০০ টাকা!"); }
+            if(curr === 'UPI' && (isNaN(amt) || amt < 400)) { return showToast("❌ MINIMUM DEPOSIT IS 400 INR!"); }
+            if((curr === 'EasyPaisa' || curr === 'JazzCash') && (isNaN(amt) || amt < 1000)) { return showToast("❌ MINIMUM DEPOSIT IS 1000 PKR!"); }
             
             document.getElementById('show-dep-amt').innerText = amt;
-            document.getElementById('show-dep-curr').innerText = curr;
+            document.getElementById('show-dep-curr').innerText = (curr === 'bKash' || curr === 'Nagad') ? 'BDT' : (curr === 'UPI' ? 'INR' : (curr === 'EasyPaisa' || curr === 'JazzCash' ? 'PKR' : curr));
+            
+            var instrText = document.getElementById('dep-instruction-text');
+            var txidLabel = document.getElementById('lbl-dep-txid');
+            var txidInput = document.getElementById('dep-txid');
+
+            if(curr === 'bKash' || curr === 'Nagad') {
+                instrText.innerHTML = 'নিচের নম্বরে ঠিক <b id="show-dep-amt" style="color:var(--green)">' + amt + '</b> টাকা ক্যাশ আউট (Cash Out) করুন এবং ট্রানজেকশন আইডি সাবমিট করুন:';
+                txidLabel.innerText = "ENTER TRANSACTION ID (TrxID)";
+                txidInput.placeholder = "Example: BK20X91LSK";
+            } else if (curr === 'USDT' || curr === 'BNB') {
+                instrText.innerHTML = 'Please send exactly <b id="show-dep-amt" style="color:var(--green)">' + amt + '</b> <span>' + curr + '</span> to the address below:';
+                txidLabel.innerText = "ENTER TRANSACTION ID / TXID / HASH";
+                txidInput.placeholder = "Paste your transfer transaction hash";
+            } else {
+                instrText.innerHTML = 'Please transfer exactly <b id="show-dep-amt" style="color:var(--green)">' + amt + '</b> <span>' + (curr === 'UPI'?'INR':'PKR') + '</span> to the asset endpoint below:';
+                txidLabel.innerText = "ENTER REF NO / TRANSACTION ID";
+                txidInput.placeholder = "Enter payment proof reference ID";
+            }
+
             document.getElementById('dep-step-1').style.display = 'none';
             document.getElementById('dep-step-2').style.display = 'block';
         }
@@ -972,7 +1235,7 @@
             addrInput.select();
             try {
                 navigator.clipboard.writeText(addrInput.value);
-                showToast("🔗 DEPOSIT ADDRESS COPIED!");
+                showToast("🔗 COPIED TO CLIPBOARD!");
             } catch(e) { showToast("❌ COPY FAILED"); }
         }
 
@@ -980,20 +1243,21 @@
             var txid = document.getElementById('dep-txid').value.trim();
             var amt = parseFloat(document.getElementById('dep-amount').value || '0');
             var curr = document.getElementById('dep-currency').value;
-            if(txid.length < 8) return showToast("❌ ENTER VALID TRANSACTION HASH / ID!");
+            if(txid.length < 4) return showToast("❌ ENTER VALID TRANSACTION LOG VALUE!");
             
-            showToast("⏳ UPLOADING TRANSACTION TO ADMIN... ");
+            showToast("⏳ UPLOADING LOGS TO AUDIT ARCHIVE... ");
             db.collection('deposits').add({
                 userId: UID,
                 userName: ME.name || 'Hero',
-                amountUSD: curr === 'USDT' ? amt : 0, 
-                amountBNB: curr === 'BNB' ? amt : 0,  
+                amountUSD: (curr === 'USDT') ? amt : 0, 
+                amountBNB: (curr === 'BNB') ? amt : 0,
+                amountLocal: (curr !== 'USDT' && curr !== 'BNB') ? amt : 0,
                 currency: curr, 
                 txid: txid,
                 status: 'pending',
                 createdAt: FS.serverTimestamp()
             }).then(function() {
-                showToast("✅ DEPOSIT SUBMITTED! WAITING FOR APPROVAL.");
+                showToast("✅ DEPOSIT ORDER FILED! PENDING ADMIN APPROVAL.");
                 closeDepositModal();
             }).catch(e => showToast("❌ FIRESTORE ERROR: " + e.message));
         }
@@ -1025,21 +1289,20 @@
                     }, 800);
                 }
 
-                return `<div id="task-card-${t._id}" class="task-card-glow ${(done?'task-done':'')}" style="padding:12px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;animation-delay:${(index*0.05)}s">` +
+                return '<div id="task-card-' + t._id + '" class="task-card-glow ' + (done?'task-done':'') + '" style="padding:12px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;animation-delay:' + (index*0.05) + 's">' +
                     '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%">' +
                     '<div style="flex:1;min-width:0">' +
-                    `<div style="font-weight:900;font-size:14px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff">${esc(t.name||'Task')}</div>` +
-                    `<div style="font-size:10px;font-weight:700;color:var(--blue);margin-top:2px">${esc(t.type||'Task')} • +${coins} SRX</div>` +
+                    '<div style="font-weight:900;font-size:14px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff">' + esc(t.name||'Task') + '</div>' +
+                    '<div style="font-size:10px;font-weight:700;color:var(--blue);margin-top:2px">' + esc(t.type||'Task') + ' • +' + coins + ' SRX</div>' +
                     '</div>' +
                     '<div style="display:flex;gap:6px;flex-shrink:0">' +
-                    (t.link ? `<a href="${esc(t.link)}" target="_blank" rel="noopener" onclick="openLink(event,'${esc(t.link)}')" class="cb" style="padding:6px 8px;background:#fff;font-size:10px;text-decoration:none;color:#000">OPEN</a>` : '') +
-                    (done ? '<button class="cb" disabled style="padding:6px 8px;font-size:10px;">✅ DONE</button>' : `<button class="cb" onclick="claimTask('${t._id}',${coins},'${esc(t.type||'')}','${esc(t.telegramChannelId||'')}')" style="padding:6px 8px;background:var(--gold);color:#000;font-size:10px">CLAIM</button>`) +
+                    (t.link ? '<a href="' + esc(t.link) + '" target="_blank" rel="noopener" onclick="openLink(event,\'' + esc(t.link) + '\')" class="cb" style="padding:6px 8px;background:#fff;font-size:10px;text-decoration:none;color:#000">OPEN</a>' : '') +
+                    (done ? '<button class="cb" disabled style="padding:6px 8px;font-size:10px;">✅ DONE</button>' : '<button class="cb" onclick="claimTask(\'' + t._id + '\',' + coins + ',\'' + esc(t.type||'') + '\',\'' + esc(t.telegramChannelId||'') + '\')" style="padding:6px 8px;background:var(--gold);color:#000;font-size:10px">CLAIM</button>') +
                     '</div>' +
                     '</div>' +
-                    '' +
                     '<div style="width:100%;margin-top:2px;">' +
-                    `<div style="display:flex;justify-content:space-between;font-size:9px;font-weight:800;color:#888;margin-bottom:3px;"><span>TASK SLOTS</span><span>${currentCompletions} / ${maxLimit} USERS</span></div>` +
-                    `<div style="background:#090b14; border:1px solid #242942; height:6px; width:100%; overflow:hidden;"><div style="background:linear-gradient(90deg, var(--blue), var(--neon-glow)); height:100%; width:${progressPercent}%; transition:width 0.4s ease;"></div></div>` +
+                    '<div style="display:flex;justify-content:space-between;font-size:9px;font-weight:800;color:#888;margin-bottom:3px;"><span>TASK SLOTS</span><span>' + currentCompletions + ' / ' + maxLimit + ' USERS</span></div>' +
+                    '<div style="background:#090b14; border:1px solid #242942; height:6px; width:100%; overflow:hidden;"><div style="background:linear-gradient(90deg, var(--blue), var(--neon-glow)); height:100%; width:' + progressPercent + '%; transition:width 0.4s ease;"></div></div> +' +
                     '</div>' +
                     '</div>';
             });
@@ -1056,7 +1319,7 @@
                 return;
             }
             var gridHtml = '<div class="comics-grid">' + _comics.map(function(c, idx) {
-                return `<div class="comic-item-card" onclick="openComicReader(${idx})"><img src="${esc(c.cover_image)}" alt="Cover"><div class="c-title">${esc(c.title)}</div></div>`;
+                return '<div class="comic-item-card" onclick="openComicReader(' + idx + ')"><img src="' + esc(c.cover_image) + '" alt="Cover"><div class="c-title">' + esc(c.title) + '</div></div>';
             }).join('') + '</div>';
             container.innerHTML = gridHtml;
         }
@@ -1082,7 +1345,7 @@
                 var slide = document.createElement('div');
                 slide.className = 'comic-slide';
                 var panelText = page.txt || '';
-                slide.innerHTML = `<img src="${esc(page.img)}" alt="Page"><div class="comic-text-container" data-origin-txt="${esc(panelText)}">${esc(panelText)}</div>`;
+                slide.innerHTML = '<img src="' + esc(page.img) + '" alt="Page"><div class="comic-text-container" data-origin-txt="' + esc(panelText) + '">' + esc(panelText) + '</div>';
                 wrapper.appendChild(slide);
             });
             updateComicSliderView();
@@ -1105,7 +1368,7 @@
                 if(!originalText || originalText.trim() === "") continue;
 
                 try {
-                    var url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${currentLang}&dt=t&q=${encodeURIComponent(originalText)}`;
+                    var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=' + currentLang + '&dt=t&q=' + encodeURIComponent(originalText);
                     var res = await fetch(url);
                     var data = await res.json();
                     if(data && data[0] && data[0][0]) {
@@ -1121,8 +1384,8 @@
         function closeComicReader() { document.getElementById('comicReaderModal').style.display = 'none'; }
         function updateComicSliderView() {
             var wrapper = document.getElementById('comicSlidesWrapper');
-            wrapper.style.transform = `translateX(-${activeSlideIdx * 100}%)`;
-            document.getElementById('comicPageCounter').innerText = `${activeSlideIdx + 1} / ${activeComicObj.pages.length}`;
+            wrapper.style.transform = 'translateX(-' + (activeSlideIdx * 100) + '%)';
+            document.getElementById('comicPageCounter').innerText = (activeSlideIdx + 1) + ' / ' + activeComicObj.pages.length;
         }
 
         function comicSlideNext() { if (activeSlideIdx < activeComicObj.pages.length - 1) { activeSlideIdx++; updateComicSliderView(); } }
@@ -1133,7 +1396,7 @@
             var cleanChannel = channelId.trim();
             if(!cleanChannel.startsWith('@') && !cleanChannel.startsWith('-100')) { cleanChannel = '@' + cleanChannel; }
             try {
-                var res = await fetch(`https://api.telegram.org/bot${TOKEN}/getChatMember?chat_id=${cleanChannel}&user_id=${UID}`);
+                var res = await fetch('https://api.telegram.org/bot' + TOKEN + '/getChatMember?chat_id=' + cleanChannel + '&user_id=' + UID);
                 var data = await res.json();
                 return (data.ok && data.result && (data.result.status === 'member' || data.result.status === 'administrator' || data.result.status === 'creator'));
             } catch(e) { return false; }
@@ -1210,15 +1473,16 @@
         }
 
         function submitWithdraw() {
+            var curr = document.getElementById('wal-currency').value;
             var addr = (document.getElementById('wal-addr').value || '').trim();
             var amt = parseInt(document.getElementById('wal-amt').value || '0');
             var totalBal = ME ? (ME.coins || 0) : 0;
 
-            if (addr.length < 5) return showToast("❌ ENTER VALID CRYPTO ADDRESS!");
+            if (addr.length < 3) return showToast("❌ ENTER VALID RECIPIENT DATA!");
             if (isNaN(amt) || amt < 300) return showToast("❌ MINIMUM IS 300 SRX!");
             if (totalBal < amt) return showToast("❌ NOT ENOUGH SRX BALANCE!");
 
-            showToast("⏳ PROCESSING ON-CHAIN REQUEST...");
+            showToast("⏳ PROCESSING SECURE REQUEST...");
             var uref = db.collection('users').doc(UID);
             
             db.runTransaction(function(transaction) {
@@ -1231,7 +1495,8 @@
                     transaction.set(wref, {
                         userId: UID,
                         userName: ME.name || 'Hero',
-                        usdcAddress: addr,
+                        usdcAddress: addr, 
+                        currency: curr,
                         amount: amt,
                         status: 'pending',
                         createdAt: FS.serverTimestamp()
@@ -1243,7 +1508,7 @@
                     });
                 });
             }).then(function() {
-                showToast("✅ SRX WITHDRAWAL ORDERED!");
+                showToast("✅ WITHDRAWAL ORDERED VIA " + curr.toUpperCase() + "!");
                 closeWithdrawModal();
             }).catch(e => showToast("❌ FAILED: " + e.message));
         }
@@ -1314,23 +1579,25 @@
                 
                 var titleText = "";
                 if(tx.ledgerType === 'Withdraw') {
-                    titleText = `${tx.amount} SRX`;
+                    titleText = tx.amount + " SRX";
                 } else {
-                    titleText = tx.currency === 'BNB' ? `${tx.amountBNB} BNB` : `$${parseFloat(tx.amountUSD).toFixed(2)} USDT`;
+                    if (tx.currency === 'BNB') titleText = tx.amountBNB + " BNB";
+                    else if (tx.currency === 'USDT') titleText = "$" + parseFloat(tx.amountUSD).toFixed(2) + " USDT";
+                    else titleText = tx.amountLocal + " " + tx.currency;
                 }
 
-                var subText = tx.ledgerType === 'Withdraw' ? tx.usdcAddress : tx.txid;
-                var formatType = tx.ledgerType === 'Withdraw' ? '📤 WITHDRAW' : `📥 DEPOSIT (${tx.currency || 'USDT'})`;
+                var subText = tx.usdcAddress || tx.txid || "Network Log";
+                var formatType = tx.ledgerType === 'Withdraw' ? '📤 WITHDRAW (' + (tx.currency || 'Crypto') + ')' : '📥 DEPOSIT (' + (tx.currency || 'USDT') + ')';
                 var typeColor = tx.ledgerType === 'Withdraw' ? 'var(--gold)' : 'var(--green)';
 
-                return `<div class="cc" style="padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;background:#16192b;border-color:#282d47">
-                    <div>
-                        <span style="font-size:9px; font-weight:bold; color:#aaa; display:block; margin-bottom:2px;">${formatType}</span>
-                        <div style="font-weight:900;font-size:14px;color:${typeColor};">${titleText}</div>
-                        <div style="font-size:9px;color:#aaa;font-family:monospace;max-width:180px;overflow:hidden;text-overflow:ellipsis;">${esc(subText)}</div>
-                    </div>
-                    <span class="${sCls}">${tx.status.toUpperCase()}</span>
-                </div>`;
+                return '<div class="cc" style="padding:10px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;background:#16192b;border-color:#282d47">' +
+                    '<div>' +
+                        '<span style="font-size:9px; font-weight:bold; color:#aaa; display:block; margin-bottom:2px;">' + formatType + '</span>' +
+                        '<div style="font-weight:900;font-size:14px;color:' + typeColor + ';">' + titleText + '</div>' +
+                        '<div style="font-size:9px;color:#aaa;font-family:monospace;max-width:180px;overflow:hidden;text-overflow:ellipsis;">Data: ' + esc(subText) + '</div>' +
+                    '</div>' +
+                    '<span class="' + sCls + '">' + tx.status.toUpperCase() + '</span>' +
+                '</div>';
             }).join('');
         }
 
@@ -1343,9 +1610,9 @@
                 var logBox = document.getElementById('live-marquee-box');
                 var feedString = snap.docs.map(function(doc) {
                     var data = doc.data();
-                    var hiddenAddr = data.usdcAddress ? data.usdcAddress.substring(0,6) + "..." + data.usdcAddress.substring(data.usdcAddress.length - 4) : "0xWallet";
-                    return `🔥 HERO [ ${esc(data.userName)} ] WITHDREW ${data.amount} SRX TO [ ${hiddenAddr} ] (${data.status.toUpperCase()})`;
-                }).join('	•	 ');
+                    var hiddenAddr = data.usdcAddress ? data.usdcAddress.substring(0,6) + "..." : "Account";
+                    return '🔥 HERO [ ' + esc(data.userName) + ' ] WITHDREW ' + data.amount + ' SRX VIA [ ' + (data.currency || 'Crypto') + ' ] TO [ ' + hiddenAddr + ' ] (' + data.status.toUpperCase() + ')';
+                }).join(' •  ');
                 if(logBox) logBox.innerHTML = "⚡ Welcome to Infinite Heroes SRX Platform! " + feedString + " • PROTOCOL GATEWAY ACTIVE";
             }, function(e) {
                 if(document.getElementById('live-marquee-box')) {
